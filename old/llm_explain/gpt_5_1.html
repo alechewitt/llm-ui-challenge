@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>How LLMs Work – Interactive Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: light dark;
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 22px 22px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 720px) {
+      .app {
+        padding: 26px 28px 20px;
+      }
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 0 0, #4ade80, #22d3ee, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.6),
+        0 12px 30px rgba(56, 189, 248, 0.45);
+      position: relative;
+    }
+
+    .brand-logo span {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0b1020;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #bbf7d0;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      font-size: 12px;
+    }
+
+    .step-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.35);
+    }
+    .step-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .page {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.18), transparent 60%),
+        var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    .page-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-label span {
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text);
+    }
+
+    .page h2 {
+      margin: 2px 0 6px;
+      font-size: 20px;
+    }
+
+    .page p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .page-main {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .pill {
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+    }
+
+    .pill strong {
+      color: var(--accent);
+    }
+
+    .card {
+      border-radius: 14px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 10px 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.7);
+    }
+
+    .prompt {
+      background: #020617;
+      border-radius: 10px;
+      padding: 8px 9px;
+      font-size: 13px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .choice-btn {
+      border-radius: var(--radius-pill);
+      padding: 6px 12px;
+      font-size: 13px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease, background 0.08s ease;
+    }
+
+    .choice-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.8);
+    }
+
+    .choice-btn.correct {
+      border-color: #22c55e;
+      background: rgba(22, 163, 74, 0.17);
+    }
+
+    .choice-btn.incorrect {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.14);
+    }
+
+    .feedback {
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 16px;
+      color: var(--muted);
+    }
+
+    .feedback.positive {
+      color: #4ade80;
+    }
+
+    .feedback.negative {
+      color: #fca5a5;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .slider-label {
+      min-width: 92px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .slider-output {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .tips-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 2px;
+      font-size: 13px;
+    }
+
+    .tips-list li {
+      list-style: none;
+      padding-left: 0;
+      position: relative;
+    }
+
+    .tips-list li::before {
+      content: "•";
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+
+    .builder-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .builder-row label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .builder-row select,
+    .builder-row textarea,
+    .builder-row input[type="text"] {
+      background: #020617;
+      border-radius: 10px;
+      padding: 7px 9px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      color: var(--text);
+      font-size: 13px;
+      resize: vertical;
+      min-height: 34px;
+      outline: none;
+    }
+
+    .builder-row select:focus,
+    .builder-row textarea:focus,
+    .builder-row input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .btn-primary {
+      margin-top: 8px;
+      align-self: flex-start;
+      border-radius: var(--radius-pill);
+      padding: 7px 14px;
+      font-size: 13px;
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #22d3ee);
+      color: #020617;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 10px 28px rgba(34, 211, 238, 0.45);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 38px rgba(34, 211, 238, 0.6);
+      filter: brightness(1.03);
+    }
+
+    .btn-primary span {
+      font-size: 14px;
+    }
+
+    .generated-prompt {
+      margin-top: 8px;
+      padding: 8px 9px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      font-size: 13px;
+      white-space: pre-line;
+    }
+
+    .side-panel {
+      background: #020617;
+      border-radius: var(--radius-lg);
+      padding: 12px 14px 11px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .side-header {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.17em;
+      color: var(--muted);
+    }
+
+    .side-body {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .side-body strong {
+      color: var(--text);
+    }
+
+    .token-stream {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .token {
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+
+    .token.highlight {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .nav-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      border-radius: var(--radius-pill);
+      padding: 5px 12px;
+      font-size: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #22c55e, #22d3ee);
+      color: #020617;
+      font-weight: 600;
+    }
+
+    .nav-btn[disabled] {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .nav-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <span>Λ</span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">
+            LLM Mini-Tour
+            <span class="tag">3 steps • 5 minutes</span>
+          </div>
+          <div class="brand-subtitle">A gentle, hands-on guide to how large language models work.</div>
+        </div>
+      </div>
+      <div class="step-indicator" aria-label="Progress">
+        <div class="step-dot active" data-step-dot="1"></div>
+        <div class="step-dot" data-step-dot="2"></div>
+        <div class="step-dot" data-step-dot="3"></div>
+        <span>Step <span id="stepCountLabel">1</span> of 3</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- PAGE 1: What an LLM does -->
+      <section class="page active" data-page="1" aria-label="What an LLM does">
+        <div class="page-label">
+          <span>Step 1</span> What does a large language model actually do?
+        </div>
+        <h2>Think of it as “next-word prediction”</h2>
+        <p>
+          An LLM doesn’t “think” like a person. It’s very good at one narrow job:
+          predicting what word is likely to come next, based on everything it has already seen.
+        </p>
+
+        <div class="page-main">
+          <div class="pill-row">
+            <div class="pill"><strong>Input</strong> = your message (prompt)</div>
+            <div class="pill"><strong>Output</strong> = model’s best guess of next words</div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span>Try it: guess the next word</span>
+              <span class="badge">Interactive</span>
+            </div>
+            <div class="prompt">
+              Imagine the sentence:<br />
+              <strong>“The cat sat on the&nbsp;<span id="blankWord">▢▢▢</span>”</strong>
+              <div class="choices" aria-label="Guess the next word">
+                <button class="choice-btn" data-correct="true">mat</button>
+                <button class="choice-btn" data-correct="false">banana</button>
+                <button class="choice-btn" data-correct="false">ceiling</button>
+              </div>
+              <div class="feedback" id="nextWordFeedback"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span>What you just did</span>
+              <span class="badge">Concept</span>
+            </div>
+            <div class="side-body">
+              You looked at the <strong>context</strong> (“The cat sat on the…”) and guessed which word
+              fits best. An LLM does something very similar — only it has practiced on
+              <strong>billions</strong> of examples and can do this for whole paragraphs at a time.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2: How it learns -->
+      <section class="page" data-page="2" aria-label="How an LLM learns">
+        <div class="page-label">
+          <span>Step 2</span> How does it get good at guessing?
+        </div>
+        <h2>It learns patterns from lots of text</h2>
+        <p>
+          During training, the model sees huge amounts of text and practices predicting the next word.
+          Over time it picks up patterns in language: grammar, facts, styles… even jokes.
+        </p>
+
+        <div class="page-main">
+          <div class="card">
+            <div class="card-header">
+              <span>Play with the knobs</span>
+              <span class="badge">Training vs. style</span>
+            </div>
+            <div class="slider-group">
+              <div class="panel-title">1. Training data size</div>
+              <div class="slider-row">
+                <span class="slider-label">Practice amount</span>
+                <input type="range" min="1" max="3" value="2" id="dataSlider" />
+                <span class="slider-output" id="dataLabel">Many books</span>
+              </div>
+              <div class="feedback" id="dataExplanation">
+                With more examples, the model usually remembers more patterns and makes better guesses.
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <div class="panel-title">2. Creativity (“temperature”)</div>
+              <div class="slider-row">
+                <span class="slider-label">Creativity</span>
+                <input type="range" min="0" max="100" value="30" id="tempSlider" />
+                <span class="slider-output" id="tempLabel">Calm &amp; reliable</span>
+              </div>
+              <div class="feedback" id="tempExplanation">
+                Lower values: safer, more predictable answers. Higher values: more surprising, playful answers.
+              </div>
+            </div>
+          </div>
+
+          <div class="side-panel">
+            <div class="side-header">From text to tokens</div>
+            <div class="side-body">
+              LLMs don’t see whole sentences the way we do.
+              They break text into small pieces called <strong>tokens</strong> (a few characters or a short word),
+              then guess one token at a time.
+            </div>
+            <div class="token-stream" id="tokenStream" aria-label="Example token stream">
+              <div class="token">The</div>
+              <div class="token"> cat</div>
+              <div class="token"> sat</div>
+              <div class="token"> on</div>
+              <div class="token"> the</div>
+              <div class="token highlight"> mat</div>
+              <div class="token"> .</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: How to talk to an LLM -->
+      <section class="page" data-page="3" aria-label="How to talk to an LLM">
+        <div class="page-label">
+          <span>Step 3</span> How can you get better answers?
+        </div>
+        <h2>Good prompts = clearer instructions</h2>
+        <p>
+          You don’t need special jargon. Just be clear about what you want, who it’s for, and how the answer
+          should look. Let’s build a prompt together.
+        </p>
+
+        <div class="page-main">
+          <div class="card">
+            <div class="card-header">
+              <span>Prompt builder</span>
+              <span class="badge">Hands-on</span>
+            </div>
+
+            <div class="builder-row">
+              <label for="goalSelect">1. What do you want the model to do?</label>
+              <select id="goalSelect">
+                <option value="explain">Explain a concept simply</option>
+                <option value="summarize">Summarize a long text</option>
+                <option value="brainstorm">Brainstorm ideas</option>
+                <option value="rewrite">Rewrite something in a new style</option>
+              </select>
+            </div>
+
+            <div class="builder-row">
+              <label for="audienceSelect">2. Who is the answer for?</label>
+              <select id="audienceSelect">
+                <option value="child">A curious 10-year-old</option>
+                <option value="adult">An adult with no background</option>
+                <option value="expert">Someone who already knows the basics</option>
+              </select>
+            </div>
+
+            <div class="builder-row">
+              <label for="toneSelect">3. What tone do you prefer?</label>
+              <select id="toneSelect">
+                <option value="friendly">Friendly and encouraging</option>
+                <option value="neutral">Neutral and to the point</option>
+                <option value="playful">Playful with examples</option>
+              </select>
+            </div>
+
+            <div class="builder-row">
+              <label for="detailsInput">4. Extra details (optional)</label>
+              <input
+                type="text"
+                id="detailsInput"
+                placeholder="e.g. “Use a real-world example about cooking.”"
+              />
+            </div>
+
+            <button class="btn-primary" id="buildPromptBtn">
+              <span>✨</span> Build my prompt
+            </button>
+
+            <div class="generated-prompt" id="generatedPrompt">
+              Your custom prompt will appear here.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <span>3 quick tips</span>
+              <span class="badge">Cheat sheet</span>
+            </div>
+            <ul class="tips-list">
+              <li><strong>Show, don’t hint:</strong> give a concrete example of the style you like.</li>
+              <li><strong>Set constraints:</strong> ask for “3 bullet points” or “under 200 words”.</li>
+              <li><strong>Iterate:</strong> if the first answer isn’t right, say what to change.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Side column on small screens appears below pages -->
+      <aside class="side-panel" aria-label="Summary & key idea">
+        <div class="side-header">Big picture</div>
+        <div class="side-body">
+          A large language model is a <strong>pattern-spotter for text</strong>. It:
+          <ul class="tips-list" style="margin-top: 6px;">
+            <li>Reads your input (prompt)</li>
+            <li>Predicts likely next words, one by one</li>
+            <li>Uses patterns it learned from large amounts of text</li>
+          </ul>
+          You don’t need to know the math inside — just how to talk to it clearly.
+        </div>
+      </aside>
+    </main>
+
+    <div class="nav-footer">
+      <div class="nav-hint">
+        <div class="nav-dot"></div>
+        <span id="navHintText">Start with what an LLM actually does.</span>
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" disabled>
+          ← Back
+        </button>
+        <button class="nav-btn primary" id="nextBtn">
+          Next step →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --------- Simple page navigation (3 pages max) ----------
+    const pages = Array.from(document.querySelectorAll(".page"));
+    const stepDots = Array.from(document.querySelectorAll("[data-step-dot]"));
+    const stepCountLabel = document.getElementById("stepCountLabel");
+    const navHintText = document.getElementById("navHintText");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    let currentPage = 1;
+    const hints = {
+      1: "Start with what an LLM actually does.",
+      2: "Adjust the knobs to see how training and creativity matter.",
+      3: "Use prompts like clear instructions to a helpful assistant."
+    };
+
+    function updatePage() {
+      pages.forEach((p) => {
+        const pageNum = Number(p.dataset.page);
+        p.classList.toggle("active", pageNum === currentPage);
+      });
+
+      stepDots.forEach((dot) => {
+        const step = Number(dot.dataset.stepDot);
+        dot.classList.toggle("active", step === currentPage);
+      });
+
+      stepCountLabel.textContent = String(currentPage);
+      navHintText.textContent = hints[currentPage] || "";
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.textContent = currentPage === 3 ? "Finish" : "Next step →";
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage -= 1;
+        updatePage();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentPage < 3) {
+        currentPage += 1;
+        updatePage();
+      } else {
+        // On "Finish", scroll back to top of first page
+        currentPage = 1;
+        updatePage();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+
+    // --------- Page 1: Next-word guessing mini-game ----------
+    const choiceButtons = Array.from(document.querySelectorAll(".choice-btn"));
+    const nextWordFeedback = document.getElementById("nextWordFeedback");
+    const blankWord = document.getElementById("blankWord");
+
+    choiceButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        // Reset state
+        choiceButtons.forEach((b) => {
+          b.classList.remove("correct", "incorrect");
+        });
+
+        const isCorrect = btn.dataset.correct === "true";
+        if (isCorrect) {
+          btn.classList.add("correct");
+          blankWord.textContent = "mat";
+          nextWordFeedback.textContent =
+            "Exactly. Given that sentence, “mat” is the most typical next word.";
+          nextWordFeedback.classList.remove("negative");
+          nextWordFeedback.classList.add("positive");
+        } else {
+          btn.classList.add("incorrect");
+          blankWord.textContent = "▢▢▢";
+          nextWordFeedback.textContent =
+            "That would be surprising in everyday text, so the model gives it a low score.";
+          nextWordFeedback.classList.remove("positive");
+          nextWordFeedback.classList.add("negative");
+        }
+      });
+    });
+
+    // --------- Page 2: Sliders for training data & temperature ----------
+    const dataSlider = document.getElementById("dataSlider");
+    const dataLabel = document.getElementById("dataLabel");
+    const dataExplanation = document.getElementById("dataExplanation");
+
+    const tempSlider = document.getElementById("tempSlider");
+    const tempLabel = document.getElementById("tempLabel");
+    const tempExplanation = document.getElementById("tempExplanation");
+
+    function updateDataSlider() {
+      const value = Number(dataSlider.value);
+      if (value === 1) {
+        dataLabel.textContent = "Few examples";
+        dataExplanation.textContent =
+          "With just a little practice, the model might sound confused or repeat itself.";
+      } else if (value === 2) {
+        dataLabel.textContent = "Many books";
+        dataExplanation.textContent =
+          "With more data, it recognizes common patterns and gives more useful answers.";
+      } else {
+        dataLabel.textContent = "Huge dataset";
+        dataExplanation.textContent =
+          "Trained on very large collections of text, it learns lots of styles, topics, and languages.";
+      }
+    }
+
+    function updateTempSlider() {
+      const value = Number(tempSlider.value);
+      if (value <= 25) {
+        tempLabel.textContent = "Very careful";
+        tempExplanation.textContent =
+          "Answers are safer and more repetitive. Good when you want stable, predictable replies.";
+      } else if (value <= 60) {
+        tempLabel.textContent = "Calm & reliable";
+        tempExplanation.textContent =
+          "Balanced: not too boring, not too wild. This is a common default setting.";
+      } else {
+        tempLabel.textContent = "Very creative";
+        tempExplanation.textContent =
+          "More surprising and playful wording. Great for brainstorming, less ideal for strict facts.";
+      }
+    }
+
+    dataSlider.addEventListener("input", updateDataSlider);
+    tempSlider.addEventListener("input", updateTempSlider);
+
+    // Initialize slider descriptions
+    updateDataSlider();
+    updateTempSlider();
+
+    // --------- Page 3: Prompt builder ----------
+    const goalSelect = document.getElementById("goalSelect");
+    const audienceSelect = document.getElementById("audienceSelect");
+    const toneSelect = document.getElementById("toneSelect");
+    const detailsInput = document.getElementById("detailsInput");
+    const buildPromptBtn = document.getElementById("buildPromptBtn");
+    const generatedPrompt = document.getElementById("generatedPrompt");
+
+    function buildPrompt() {
+      const goal = goalSelect.value;
+      const audience = audienceSelect.value;
+      const tone = toneSelect.value;
+      const details = detailsInput.value.trim();
+
+      let goalText = "";
+      if (goal === "explain") goalText = "Explain the idea of large language models";
+      if (goal === "summarize") goalText = "Summarize this text";
+      if (goal === "brainstorm") goalText = "Brainstorm ideas";
+      if (goal === "rewrite") goalText = "Rewrite this text";
+
+      let audienceText = "";
+      if (audience === "child")
+        audienceText = "for a curious 10-year-old who has never heard about this before";
+      if (audience === "adult")
+        audienceText = "for an adult who is not technical and just wants the big picture";
+      if (audience === "expert")
+        audienceText = "for someone who already knows the basics and wants a deeper explanation";
+
+      let toneText = "";
+      if (tone === "friendly")
+        toneText = "Use a friendly and encouraging tone.";
+      if (tone === "neutral")
+        toneText = "Use a clear, neutral tone with no extra fluff.";
+      if (tone === "playful")
+        toneText = "Use a playful tone with simple real-world examples.";
+
+      const extra = details ? `\n\nExtra details: ${details}` : "";
+
+      const promptText =
+        `${goalText} ${audienceText}.\n` +
+        `Keep the answer under 200 words and format the main points as 3–5 bullet points.\n` +
+        toneText +
+        extra;
+
+      generatedPrompt.textContent = promptText;
+    }
+
+    buildPromptBtn.addEventListener("click", buildPrompt);
+
+    // Build an initial example prompt
+    buildPrompt();
+  </script>
+</body>
+</html>

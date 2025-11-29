@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 240px;
+            background-color: #000000;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .logo {
+            padding: 0 12px 18px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #1DB954;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #b3b3b3;
+            margin-bottom: 10px;
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: #282828;
+        }
+
+        .nav-item.active {
+            background-color: #282828;
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .playlist-section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .playlist-item {
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #b3b3b3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .playlist-item:hover {
+            color: #ffffff;
+        }
+
+        .playlist-name {
+            font-weight: 500;
+        }
+
+        .playlist-info {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #a0a0a0;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #282828;
+            margin: 16px 0;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: linear-gradient(180deg, #404040 0%, #121212 15%);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .nav-button {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-profile {
+            background-color: #333;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .playlist-card {
+            background-color: #181818;
+            border-radius: 6px;
+            padding: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .playlist-card:hover {
+            background-color: #282828;
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background-color: #333;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b3b3b3;
+            font-size: 14px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #b3b3b3;
+            line-height: 1.4;
+        }
+
+        .featured-section {
+            margin-bottom: 40px;
+        }
+
+        .featured-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        /* Player Controls */
+        .player-controls {
+            background-color: #181818;
+            border-top: 1px solid #282828;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .now-playing {
+            display: flex;
+            align-items: center;
+            width: 30%;
+        }
+
+        .track-info {
+            margin-left: 12px;
+        }
+
+        .track-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .track-artist {
+            font-size: 12px;
+            color: #b3b3b3;
+        }
+
+        .player-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+        }
+
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            color: #b3b3b3;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .control-button.play-pause {
+            background-color: white;
+            color: black;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #5e5e5e;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .progress {
+            position: absolute;
+            height: 100%;
+            background-color: #b3b3b3;
+            border-radius: 2px;
+            width: 30%;
+        }
+
+        .volume-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 30%;
+            gap: 8px;
+        }
+
+        .volume-bar {
+            width: 100px;
+            height: 4px;
+            background-color: #5e5e5e;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .volume-level {
+            position: absolute;
+            height: 100%;
+            background-color: #b3b3b3;
+            border-radius: 2px;
+            width: 70%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">Your<span>Library</span></div>
+            
+            <div class="nav-section">
+                <h3>Playlists</h3>
+                <div class="nav-item active">
+                    <i>🎵</i> Podcasts
+                </div>
+                <div class="nav-item">
+                    <i>📀</i> Album
+                </div>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Records</h3>
+                <div class="playlist-section">
+                    <div class="playlist-item">
+                        <div class="playlist-name">Liked Songs</div>
+                        <div class="playlist-info">Playlist - 51 songs</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Spanish baby boom</div>
+                        <div class="playlist-info">Playlist - alechewitt99</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Baby C Major EarAnchor</div>
+                        <div class="playlist-info">Playlist - alechewitt99</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Discover Weekly</div>
+                        <div class="playlist-info">Playlist - Spotify</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Piano Ideas</div>
+                        <div class="playlist-info">Playlist - alechewitt99</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Blueberry debut</div>
+                        <div class="playlist-info">Playlist - Simrita Shaheed</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Malpica</div>
+                        <div class="playlist-info">Artist</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Alec + Simi</div>
+                        <div class="playlist-info">Playlist - lhvvyhewitt</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Unplugged!</div>
+                        <div class="playlist-info">Playlist - 317x5x564hpvrnjngn...</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-name">Man of Steel!</div>
+                        <div class="playlist-info">Playlist - 311x735sngxqxhd7rx...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="navigation-buttons">
+                    <button class="nav-button">‹</button>
+                    <button class="nav-button">›</button>
+                </div>
+                <div class="user-actions">
+                    <div class="user-profile">A</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">What do you want to play?</h2>
+            <div class="playlist-grid">
+                <div class="playlist-card">
+                    <div class="card-image">Music</div>
+                    <div class="card-title">Music</div>
+                    <div class="card-description">Your favorite tracks and albums</div>
+                </div>
+                <div class="playlist-card">
+                    <div class="card-image">Podcasts</div>
+                    <div class="card-title">Podcasts</div>
+                    <div class="card-description">Listen to your favorite shows</div>
+                </div>
+                <div class="playlist-card">
+                    <div class="card-image">Audiobooks</div>
+                    <div class="card-title">Audiobooks</div>
+                    <div class="card-description">Enjoy your favorite stories</div>
+                </div>
+                <div class="playlist-card">
+                    <div class="card-image">Spanish</div>
+                    <div class="card-title">Spanish Songs for Kids</div>
+                    <div class="card-description">Fun songs for children</div>
+                </div>
+                <div class="playlist-card">
+                    <div class="card-image">Lullabies</div>
+                    <div class="card-title">Spanish Lullabies</div>
+                    <div class="card-description">Soothing bedtime songs</div>
+                </div>
+                <div class="playlist-card">
+                    <div class="card-image">Spidey</div>
+                    <div class="card-title">Puerto de SPIDEY</div>
+                    <div class="card-description">y su Superequip...</div>
+                </div>
+            </div>
+
+            <div class="featured-section">
+                <h2 class="featured-title">It's New Music Friday!</h2>
+                <div class="playlist-grid">
+                    <div class="playlist-card">
+                        <div class="card-image">New Releases</div>
+                        <div class="card-title">New Music</div>
+                        <div class="card-description">New music from Ed Sheeran, Lil Uzi Vert...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Latest</div>
+                        <div class="card-title">Latest Hits</div>
+                        <div class="card-description">Catch all the latest music from artists you...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Curated</div>
+                        <div class="card-title">Curated Selection</div>
+                        <div class="card-description">Meticulously selected by Spotify music...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Best of Month</div>
+                        <div class="card-title">Best of the Month</div>
+                        <div class="card-description">The best new songs of the month...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="featured-section">
+                <h2 class="featured-title">Made For You</h2>
+                <div class="playlist-grid">
+                    <div class="playlist-card">
+                        <div class="card-image">BETA</div>
+                        <div class="card-title">DJ</div>
+                        <div class="card-description">All kinds of music, picked by your own...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Daily Mix 1</div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-description">Dua Lipa, Chappell Roan, Taylor Swift and...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Daily Mix 2</div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-description">Ethan Éigar, Emile Cerise, Lexi Bradley...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Daily Mix 3</div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-description">Carita Juego, Whistlefritz, Marta...</div>
+                    </div>
+                    <div class="playlist-card">
+                        <div class="card-image">Daily Mix 4</div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-description">Miss Bee, Crystal Slowdown, Noise...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Controls -->
+    <div class="player-controls">
+        <div class="now-playing">
+            <div class="card-image">NP</div>
+            <div class="track-info">
+                <div class="track-name">We are the champions!</div>
+                <div class="track-artist">In the Stars - Jeremy Mayfield</div>
+            </div>
+        </div>
+        
+        <div class="player-buttons">
+            <div class="control-buttons">
+                <button class="control-button">⇄</button>
+                <button class="control-button">⏮</button>
+                <button class="control-button play-pause">▶</button>
+                <button class="control-button">⏭</button>
+                <button class="control-button">↻</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+        
+        <div class="volume-controls">
+            <button class="control-button">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-level"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Playlist item selection
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            playlistItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    playlistItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Play/pause button functionality
+            const playPauseButton = document.querySelector('.play-pause');
+            playPauseButton.addEventListener('click', function() {
+                if (this.textContent === '▶') {
+                    this.textContent = '⏸';
+                } else {
+                    this.textContent = '▶';
+                }
+            });
+
+            // Navigation buttons
+            const navButtons = document.querySelectorAll('.nav-button');
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // In a real app, this would navigate to different pages
+                    console.log('Navigation button clicked');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding LLMs - Interactive Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .page {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .interactive-demo {
+            background: #f7f7f7;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid #667eea;
+        }
+
+        .token-demo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .token {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .prediction-demo {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .word-option {
+            display: inline-block;
+            background: #e0e7ff;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .word-option:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .word-option.selected {
+            background: #764ba2;
+            color: white;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin: 10px 0;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .progress-bar {
+            background: #e0e7ff;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .highlight {
+            background: #fff4e6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .result-text {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+
+        .architecture-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .layer {
+            background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 10px;
+            flex: 1;
+            min-width: 150px;
+            border: 2px solid #667eea;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            margin: 0 10px;
+        }
+
+        @media (max-width: 600px) {
+            .page {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .arrow {
+                display: block;
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Page 1: Introduction -->
+        <div class="page active" id="page1">
+            <h1>🤖 What is an LLM?</h1>
+            <p>
+                LLM stands for <span class="highlight">Large Language Model</span>. Think of it as a very sophisticated 
+                autocomplete system - like the one on your phone, but incredibly more powerful!
+            </p>
+            
+            <div class="interactive-demo">
+                <h2>Let's See Tokens in Action</h2>
+                <p>Type a sentence below and watch how an LLM breaks it into "tokens" (pieces of words):</p>
+                <input type="text" id="tokenInput" placeholder="Try typing: The quick brown fox jumps">
+                <div class="token-demo" id="tokenDisplay"></div>
+            </div>
+
+            <p>
+                LLMs learn by reading billions of text examples from the internet, books, and articles. 
+                They learn patterns about how words typically follow each other, what makes sense in different 
+                contexts, and how to structure responses.
+            </p>
+
+            <p>
+                But here's the key: <span class="highlight">LLMs don't "understand" like humans do</span>. 
+                They're incredibly good at recognizing patterns and predicting what text should come next, 
+                which makes them seem intelligent!
+            </p>
+
+            <div class="nav-buttons">
+                <div></div>
+                <button onclick="goToPage(2)">Next: How It Works →</button>
+            </div>
+        </div>
+
+        <!-- Page 2: How It Works -->
+        <div class="page" id="page2">
+            <h1>⚙️ How Does It Work?</h1>
+            
+            <div class="architecture-visual">
+                <div class="layer">
+                    <strong>Input</strong><br>
+                    Your text
+                </div>
+                <div class="arrow">→</div>
+                <div class="layer">
+                    <strong>Processing</strong><br>
+                    Neural network<br>layers
+                </div>
+                <div class="arrow">→</div>
+                <div class="layer">
+                    <strong>Output</strong><br>
+                    Generated response
+                </div>
+            </div>
+
+            <h2>Predicting the Next Word</h2>
+            <p>
+                At its core, an LLM predicts what word should come next. It looks at all the words 
+                before and calculates probabilities for what might come next.
+            </p>
+
+            <div class="interactive-demo">
+                <h2>Try It Yourself!</h2>
+                <p>Complete the sentence: <strong>"The cat sat on the..."</strong></p>
+                <p>What word would you predict comes next?</p>
+                <div>
+                    <span class="word-option" onclick="selectWord(this, 'mat')">mat (80%)</span>
+                    <span class="word-option" onclick="selectWord(this, 'roof')">roof (10%)</span>
+                    <span class="word-option" onclick="selectWord(this, 'elephant')">elephant (0.1%)</span>
+                    <span class="word-option" onclick="selectWord(this, 'moon')">moon (0.5%)</span>
+                </div>
+                <div id="predictionResult"></div>
+            </div>
+
+            <p>
+                The LLM does this same process, but much more sophisticated! It considers:
+            </p>
+            <ul style="margin-left: 30px; line-height: 2;">
+                <li>The entire context of the conversation</li>
+                <li>Patterns learned from billions of examples</li>
+                <li>Grammar and syntax rules</li>
+                <li>The meaning and relationships between concepts</li>
+            </ul>
+
+            <div class="nav-buttons">
+                <button onclick="goToPage(1)">← Back</button>
+                <button onclick="goToPage(3)">Next: Try It →</button>
+            </div>
+        </div>
+
+        <!-- Page 3: Try It Yourself -->
+        <div class="page" id="page3">
+            <h1>🎯 Try It Yourself!</h1>
+            <p>
+                Now that you understand the basics, let's simulate how an LLM generates text. 
+                Start with a prompt and watch it build a response word by word!
+            </p>
+
+            <div class="interactive-demo">
+                <h2>Text Generation Simulator</h2>
+                <p>Enter a prompt:</p>
+                <input type="text" id="promptInput" placeholder="Once upon a time...">
+                <button onclick="generateText()">Generate Response</button>
+                
+                <div class="result-text" id="generatedText" style="display: none; margin-top: 20px;"></div>
+            </div>
+
+            <h2>Key Takeaways</h2>
+            <p>
+                ✅ LLMs are advanced pattern-matching systems<br>
+                ✅ They predict text one token at a time<br>
+                ✅ They learn from massive amounts of text data<br>
+                ✅ They don't truly "understand" but are very good at appearing to<br>
+                ✅ Each response is generated fresh based on probabilities
+            </p>
+
+            <p style="margin-top: 30px; padding: 20px; background: #fef3c7; border-radius: 8px;">
+                <strong>Remember:</strong> LLMs are powerful tools, but they can make mistakes, generate false 
+                information, or reflect biases from their training data. Always verify important information!
+            </p>
+
+            <div class="nav-buttons">
+                <button onclick="goToPage(2)">← Back</button>
+                <button onclick="goToPage(1)">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+
+        function goToPage(pageNum) {
+            // Hide current page
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            
+            // Show new page
+            currentPage = pageNum;
+            document.getElementById(`page${currentPage}`).classList.add('active');
+            
+            // Update progress bar
+            const progress = (currentPage / 3) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Token visualization
+        const tokenInput = document.getElementById('tokenInput');
+        if (tokenInput) {
+            tokenInput.addEventListener('input', function(e) {
+                const text = e.target.value;
+                const tokenDisplay = document.getElementById('tokenDisplay');
+                
+                if (text.length === 0) {
+                    tokenDisplay.innerHTML = '';
+                    return;
+                }
+                
+                // Simple tokenization (split by spaces and punctuation)
+                const tokens = text.match(/\w+|[^\w\s]/g) || [];
+                
+                tokenDisplay.innerHTML = '';
+                tokens.forEach((token, index) => {
+                    setTimeout(() => {
+                        const span = document.createElement('span');
+                        span.className = 'token';
+                        span.textContent = token;
+                        tokenDisplay.appendChild(span);
+                    }, index * 100);
+                });
+            });
+        }
+
+        // Word prediction demo
+        function selectWord(element, word) {
+            // Remove previous selection
+            document.querySelectorAll('.word-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selection
+            element.classList.add('selected');
+            
+            // Show result
+            const resultDiv = document.getElementById('predictionResult');
+            let message = '';
+            
+            if (word === 'mat') {
+                message = '✅ Great choice! "Mat" is the most probable word based on common patterns.';
+            } else if (word === 'roof') {
+                message = '👍 Good choice! "Roof" is less common but still makes sense.';
+            } else {
+                message = '🤔 Interesting! While grammatically possible, this is very unlikely based on common usage patterns.';
+            }
+            
+            resultDiv.innerHTML = `<p style="margin-top: 15px; padding: 15px; background: white; border-radius: 8px;">${message}</p>`;
+        }
+
+        // Text generation simulator
+        function generateText() {
+            const prompt = document.getElementById('promptInput').value;
+            const resultDiv = document.getElementById('generatedText');
+            
+            if (!prompt.trim()) {
+                alert('Please enter a prompt first!');
+                return;
+            }
+            
+            // Sample continuations based on common prompts
+            const continuations = [
+                "there was a curious explorer who loved to discover new places.",
+                "in a small village, there lived a wise old teacher who inspired everyone.",
+                "the sun was shining brightly over the peaceful countryside.",
+                "a young scientist made an incredible discovery that would change everything.",
+                "people gathered together to celebrate an important milestone."
+            ];
+            
+            const randomContinuation = continuations[Math.floor(Math.random() * continuations.length)];
+            const fullText = prompt + ' ' + randomContinuation;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<strong>Generating...</strong>';
+            
+            // Simulate word-by-word generation
+            const words = fullText.split(' ');
+            let currentText = '';
+            let wordIndex = 0;
+            
+            const interval = setInterval(() => {
+                if (wordIndex < words.length) {
+                    currentText += (wordIndex > 0 ? ' ' : '') + words[wordIndex];
+                    resultDiv.innerHTML = currentText + '<span style="animation: blink 1s infinite;">▊</span>';
+                    wordIndex++;
+                } else {
+                    clearInterval(interval);
+                    resultDiv.innerHTML = currentText;
+                }
+            }, 200);
+        }
+    </script>
+
+    <style>
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How AI Language Models Work</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FDF6E3;
+            --warm-white: #FFFBF5;
+            --ink: #2D2A26;
+            --terracotta: #C96B4B;
+            --terracotta-light: #E88B6B;
+            --sage: #7B9E87;
+            --sage-light: #A8C5B0;
+            --gold: #D4A84B;
+            --dusty-blue: #7B9CB8;
+            --shadow: rgba(45, 42, 38, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--warm-white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            z-index: 100;
+            box-shadow: 0 2px 20px var(--shadow);
+        }
+
+        .nav-btn {
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.5rem;
+            border: 2px solid var(--ink);
+            background: transparent;
+            color: var(--ink);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--ink);
+            color: var(--warm-white);
+        }
+
+        .nav-btn.active {
+            transform: scale(1.05);
+        }
+
+        /* Pages */
+        .page {
+            min-height: 100vh;
+            padding: 6rem 2rem 4rem;
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            color: var(--ink);
+        }
+
+        .highlight {
+            color: var(--terracotta);
+            font-weight: 600;
+        }
+
+        /* Page 1: The Big Picture */
+        .hero-section {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .hero-section h1 {
+            background: linear-gradient(135deg, var(--terracotta), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-card {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 8px 40px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--terracotta), var(--gold), var(--sage));
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, var(--sage-light) 0%, var(--sage) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            color: white;
+        }
+
+        .analogy-box h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .analogy-box p {
+            color: white;
+            opacity: 0.95;
+        }
+
+        /* Word Prediction Demo */
+        .demo-section {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 40px var(--shadow);
+        }
+
+        .demo-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--terracotta);
+        }
+
+        .sentence-builder {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            min-height: 3rem;
+        }
+
+        .word {
+            padding: 0.3rem 0.8rem;
+            background: var(--cream);
+            border-radius: 8px;
+            animation: wordAppear 0.3s ease;
+        }
+
+        @keyframes wordAppear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .prediction-area {
+            margin-top: 1.5rem;
+        }
+
+        .prediction-label {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--ink);
+        }
+
+        .predictions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .prediction-btn {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1rem;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prediction-btn.high {
+            background: var(--terracotta);
+            color: white;
+        }
+
+        .prediction-btn.medium {
+            background: var(--gold);
+            color: var(--ink);
+        }
+
+        .prediction-btn.low {
+            background: var(--dusty-blue);
+            color: white;
+        }
+
+        .prediction-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .prediction-btn::after {
+            content: attr(data-prob);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--ink);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .reset-btn {
+            font-family: 'Source Sans 3', sans-serif;
+            background: var(--ink);
+            color: var(--warm-white);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Page 2: Training */
+        .training-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .training-step {
+            background: var(--warm-white);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 40px var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .training-step:hover {
+            transform: translateY(-8px);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1.5rem;
+        }
+
+        .step-1 .step-icon { background: linear-gradient(135deg, var(--terracotta-light), var(--terracotta)); }
+        .step-2 .step-icon { background: linear-gradient(135deg, var(--gold), #B8912A); }
+        .step-3 .step-icon { background: linear-gradient(135deg, var(--sage-light), var(--sage)); }
+
+        .training-step h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Pattern Demo */
+        .pattern-demo {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 40px var(--shadow);
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .pattern-card {
+            background: var(--cream);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .pattern-card:hover {
+            border-color: var(--terracotta);
+            transform: scale(1.03);
+        }
+
+        .pattern-card.selected {
+            border-color: var(--terracotta);
+            background: white;
+        }
+
+        .pattern-input {
+            font-weight: 600;
+            color: var(--terracotta);
+            margin-bottom: 0.3rem;
+        }
+
+        .pattern-output {
+            font-size: 0.9rem;
+            color: var(--ink);
+            opacity: 0.8;
+        }
+
+        .pattern-explanation {
+            background: var(--sage-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--ink);
+            font-size: 1.1rem;
+        }
+
+        /* Page 3: Limitations */
+        .limitation-cards {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .limitation-card {
+            background: var(--warm-white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 40px var(--shadow);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.5rem;
+            align-items: start;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .limitation-card:hover {
+            transform: translateX(8px);
+        }
+
+        .limitation-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .limit-1 .limitation-icon { background: linear-gradient(135deg, #FFB4B4, #FF8080); }
+        .limit-2 .limitation-icon { background: linear-gradient(135deg, #B4D4FF, #80B3FF); }
+        .limit-3 .limitation-icon { background: linear-gradient(135deg, #FFD9B4, #FFBA80); }
+        .limit-4 .limitation-icon { background: linear-gradient(135deg, #D4B4FF, #BA80FF); }
+
+        .limitation-content h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .limitation-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            margin-top: 0;
+        }
+
+        .limitation-card.expanded .limitation-detail {
+            max-height: 200px;
+            margin-top: 1rem;
+        }
+
+        .limitation-detail p {
+            background: var(--cream);
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .expand-hint {
+            font-size: 0.85rem;
+            color: var(--terracotta);
+            font-weight: 500;
+        }
+
+        /* Hallucination Demo */
+        .hallucination-demo {
+            background: var(--warm-white);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 8px 40px var(--shadow);
+        }
+
+        .fact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .fact-card {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .fact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .fact-card.correct {
+            border-color: var(--sage);
+            background: #E8F5E9;
+        }
+
+        .fact-card.incorrect {
+            border-color: var(--terracotta);
+            background: #FFEBEE;
+        }
+
+        .fact-card .statement {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .fact-card .verdict {
+            font-weight: 700;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .fact-card.revealed .verdict {
+            opacity: 1;
+        }
+
+        .fact-card.correct .verdict { color: var(--sage); }
+        .fact-card.incorrect .verdict { color: var(--terracotta); }
+
+        .game-score {
+            text-align: center;
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        /* Summary */
+        .summary-section {
+            background: linear-gradient(135deg, var(--ink) 0%, #4A4541 100%);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem 0;
+            color: var(--warm-white);
+        }
+
+        .summary-section h2 {
+            color: var(--gold);
+        }
+
+        .summary-section p {
+            color: var(--warm-white);
+            opacity: 0.9;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .summary-point {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .summary-point .check {
+            width: 28px;
+            height: 28px;
+            background: var(--sage);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            nav {
+                flex-wrap: wrap;
+                padding: 0.8rem 1rem;
+            }
+
+            .nav-btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .intro-card, .demo-section, .pattern-demo, .hallucination-demo {
+                padding: 1.5rem;
+            }
+
+            .limitation-card {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <button class="nav-btn active" data-page="1">1. The Big Picture</button>
+        <button class="nav-btn" data-page="2">2. How They Learn</button>
+        <button class="nav-btn" data-page="3">3. What They Can't Do</button>
+    </nav>
+
+    <!-- Page 1: The Big Picture -->
+    <section class="page active" id="page1">
+        <div class="container">
+            <div class="hero-section">
+                <h1>How AI Language Models Actually Work</h1>
+                <p style="font-size: 1.3rem; max-width: 600px; margin: 0 auto;">A friendly guide to understanding the technology behind ChatGPT, Claude, and other AI assistants</p>
+            </div>
+
+            <div class="intro-card">
+                <h2>The Simple Truth</h2>
+                <p>Large Language Models (LLMs) are incredibly sophisticated <span class="highlight">word prediction machines</span>. When you ask them a question, they're predicting which words should come next, one word at a time, based on patterns they've learned.</p>
+                <p>They don't "think" or "know" things the way humans do. Instead, they've learned statistical patterns from enormous amounts of text.</p>
+            </div>
+
+            <div class="analogy-box">
+                <h3>💡 Think of it like...</h3>
+                <p>Imagine someone who has read millions of books, articles, and conversations. They don't remember specific facts, but they've developed an incredible intuition for how language flows and what typically comes next in any given context.</p>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">🎮 Try It: Word Prediction in Action</div>
+                <p>Click the predictions below to see how an LLM builds a response word by word. The percentages show how likely each word is.</p>
+                
+                <div class="sentence-builder" id="sentenceBuilder">
+                    <span class="word">The</span>
+                    <span class="word">weather</span>
+                    <span class="word">today</span>
+                    <span class="word">is</span>
+                </div>
+
+                <div class="prediction-area">
+                    <div class="prediction-label">Next word predictions:</div>
+                    <div class="predictions" id="predictions"></div>
+                </div>
+
+                <button class="reset-btn" id="resetBtn">↺ Start Over</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 2: How They Learn -->
+    <section class="page" id="page2">
+        <div class="container">
+            <h1>How LLMs Learn</h1>
+            <p style="font-size: 1.25rem;">Training an LLM is like teaching a student using billions of examples. Here's the process:</p>
+
+            <div class="training-visual">
+                <div class="training-step step-1">
+                    <div class="step-icon">📚</div>
+                    <h3>1. Gather Text</h3>
+                    <p>The model reads billions of pages: books, websites, articles, conversations, code, and more.</p>
+                </div>
+                <div class="training-step step-2">
+                    <div class="step-icon">🔍</div>
+                    <h3>2. Find Patterns</h3>
+                    <p>It learns which words tend to follow other words, and how context shapes meaning.</p>
+                </div>
+                <div class="training-step step-3">
+                    <div class="step-icon">⚡</div>
+                    <h3>3. Predict & Improve</h3>
+                    <p>It practices predicting hidden words, adjusting its "weights" when it makes mistakes.</p>
+                </div>
+            </div>
+
+            <div class="analogy-box">
+                <h3>💡 Think of it like...</h3>
+                <p>Learning a language by immersion. You don't memorize grammar rules — you develop an intuition for what "sounds right" based on exposure to thousands of examples.</p>
+            </div>
+
+            <div class="pattern-demo">
+                <div class="demo-title">🎮 Try It: Patterns in Action</div>
+                <p>Click each pattern to see what the model learned. Notice how context changes the prediction!</p>
+
+                <div class="pattern-grid" id="patternGrid">
+                    <div class="pattern-card" data-explanation="The model learned that 'doctor' and 'hospital' often appear together in medical contexts.">
+                        <div class="pattern-input">"The doctor went to the..."</div>
+                        <div class="pattern-output">→ hospital (85%)</div>
+                    </div>
+                    <div class="pattern-card" data-explanation="From coding tutorials and documentation, the model learned common programming patterns.">
+                        <div class="pattern-input">"print('Hello..."</div>
+                        <div class="pattern-output">→ World') (92%)</div>
+                    </div>
+                    <div class="pattern-card" data-explanation="The model learned common phrases and greetings from countless conversations.">
+                        <div class="pattern-input">"Thank you so..."</div>
+                        <div class="pattern-output">→ much (97%)</div>
+                    </div>
+                    <div class="pattern-card" data-explanation="From news articles and formal writing, the model learned how sentences typically conclude.">
+                        <div class="pattern-input">"In conclusion, we believe..."</div>
+                        <div class="pattern-output">→ that (78%)</div>
+                    </div>
+                    <div class="pattern-card" data-explanation="The model learned cultural references and famous quotes from books and articles.">
+                        <div class="pattern-input">"To be or not to..."</div>
+                        <div class="pattern-output">→ be (99%)</div>
+                    </div>
+                    <div class="pattern-card" data-explanation="Mathematical patterns and equations appear frequently in educational content.">
+                        <div class="pattern-input">"2 + 2 ="</div>
+                        <div class="pattern-output">→ 4 (99%)</div>
+                    </div>
+                </div>
+
+                <div class="pattern-explanation" id="patternExplanation">
+                    👆 Click a pattern to learn why the model predicts that word
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Page 3: Limitations -->
+    <section class="page" id="page3">
+        <div class="container">
+            <h1>What LLMs Can't Do</h1>
+            <p style="font-size: 1.25rem;">Understanding limitations helps you use AI tools more effectively. Click each card to learn more:</p>
+
+            <div class="limitation-cards">
+                <div class="limitation-card limit-1">
+                    <div class="limitation-icon">🎭</div>
+                    <div class="limitation-content">
+                        <h3>They Can "Hallucinate"</h3>
+                        <p class="expand-hint">Click to expand →</p>
+                        <div class="limitation-detail">
+                            <p>Since LLMs predict plausible-sounding text rather than looking up facts, they can confidently state things that are completely false. They might invent citations, make up statistics, or describe events that never happened — all while sounding authoritative.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="limitation-card limit-2">
+                    <div class="limitation-icon">📅</div>
+                    <div class="limitation-content">
+                        <h3>Knowledge Has a Cutoff</h3>
+                        <p class="expand-hint">Click to expand →</p>
+                        <div class="limitation-detail">
+                            <p>LLMs are trained on data up to a certain date. They don't know about recent events, new discoveries, or changes that happened after their training. Without web search, they can't access current information.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="limitation-card limit-3">
+                    <div class="limitation-icon">🧮</div>
+                    <div class="limitation-content">
+                        <h3>Math & Logic Aren't Their Strength</h3>
+                        <p class="expand-hint">Click to expand →</p>
+                        <div class="limitation-detail">
+                            <p>LLMs predict what mathematical answers "look like" rather than actually calculating. They can make errors on complex math, struggle with multi-step reasoning, and sometimes fail at tasks that require precise logical thinking.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="limitation-card limit-4">
+                    <div class="limitation-icon">🪞</div>
+                    <div class="limitation-content">
+                        <h3>They Reflect Training Data Biases</h3>
+                        <p class="expand-hint">Click to expand →</p>
+                        <div class="limitation-detail">
+                            <p>If biases exist in the text they learned from, LLMs may reproduce those biases. They learn patterns from human-written content — including our mistakes, stereotypes, and cultural assumptions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hallucination-demo">
+                <div class="demo-title">🎮 Try It: Spot the Hallucination</div>
+                <p>LLMs can generate false information confidently. Can you guess which "facts" below are made up? Click to reveal!</p>
+
+                <div class="fact-cards" id="factCards">
+                    <div class="fact-card" data-correct="true">
+                        <div class="statement">"The Great Wall of China is visible from space"</div>
+                        <div class="verdict">❌ FALSE — This is a common myth!</div>
+                    </div>
+                    <div class="fact-card" data-correct="true">
+                        <div class="statement">"Honey never spoils"</div>
+                        <div class="verdict">✅ TRUE — Archaeologists found edible honey in Egyptian tombs</div>
+                    </div>
+                    <div class="fact-card" data-correct="false">
+                        <div class="statement">"Einstein failed math class as a student"</div>
+                        <div class="verdict">❌ FALSE — He excelled at math from a young age</div>
+                    </div>
+                    <div class="fact-card" data-correct="true">
+                        <div class="statement">"Octopuses have three hearts"</div>
+                        <div class="verdict">✅ TRUE — Two for gills, one for the body</div>
+                    </div>
+                </div>
+
+                <p style="margin-top: 1.5rem; text-align: center; font-style: italic;">The point: always verify important facts from AI outputs with reliable sources!</p>
+            </div>
+
+            <div class="summary-section">
+                <h2>Key Takeaways</h2>
+                <p>Now you understand the basics of how LLMs work!</p>
+                <div class="summary-points">
+                    <div class="summary-point">
+                        <div class="check">✓</div>
+                        <div>LLMs are sophisticated pattern matchers that predict the next word</div>
+                    </div>
+                    <div class="summary-point">
+                        <div class="check">✓</div>
+                        <div>They learn by finding statistical patterns in massive amounts of text</div>
+                    </div>
+                    <div class="summary-point">
+                        <div class="check">✓</div>
+                        <div>They can generate false information that sounds convincing</div>
+                    </div>
+                    <div class="summary-point">
+                        <div class="check">✓</div>
+                        <div>Always verify important facts and use them as a helpful tool, not an oracle</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('page' + btn.dataset.page).classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Word Prediction Demo
+        const predictionTree = {
+            "The weather today is": [
+                { word: "beautiful", prob: "45%", class: "high" },
+                { word: "sunny", prob: "25%", class: "medium" },
+                { word: "cold", prob: "15%", class: "low" },
+                { word: "perfect", prob: "10%", class: "low" }
+            ],
+            "The weather today is beautiful": [
+                { word: "and", prob: "40%", class: "high" },
+                { word: "outside", prob: "25%", class: "medium" },
+                { word: "!", prob: "20%", class: "low" },
+                { word: "today", prob: "10%", class: "low" }
+            ],
+            "The weather today is beautiful and": [
+                { word: "sunny", prob: "35%", class: "high" },
+                { word: "warm", prob: "30%", class: "medium" },
+                { word: "perfect", prob: "20%", class: "low" },
+                { word: "I", prob: "10%", class: "low" }
+            ],
+            "The weather today is beautiful and sunny": [
+                { word: "!", prob: "40%", class: "high" },
+                { word: "outside", prob: "25%", class: "medium" },
+                { word: ",", prob: "20%", class: "low" },
+                { word: "today", prob: "10%", class: "low" }
+            ],
+            "The weather today is sunny": [
+                { word: "and", prob: "35%", class: "high" },
+                { word: "today", prob: "25%", class: "medium" },
+                { word: "!", prob: "20%", class: "low" },
+                { word: "outside", prob: "15%", class: "low" }
+            ],
+            "The weather today is cold": [
+                { word: "and", prob: "30%", class: "high" },
+                { word: "outside", prob: "25%", class: "medium" },
+                { word: ",", prob: "20%", class: "low" },
+                { word: "but", prob: "15%", class: "low" }
+            ],
+            "The weather today is perfect": [
+                { word: "for", prob: "45%", class: "high" },
+                { word: "!", prob: "25%", class: "medium" },
+                { word: "and", prob: "15%", class: "low" },
+                { word: "outside", prob: "10%", class: "low" }
+            ],
+            "The weather today is perfect for": [
+                { word: "a", prob: "40%", class: "high" },
+                { word: "outdoor", prob: "25%", class: "medium" },
+                { word: "hiking", prob: "20%", class: "low" },
+                { word: "relaxing", prob: "10%", class: "low" }
+            ]
+        };
+
+        let currentSentence = ["The", "weather", "today", "is"];
+
+        function renderPredictions() {
+            const key = currentSentence.join(" ");
+            const predictions = predictionTree[key] || [];
+            const container = document.getElementById('predictions');
+            
+            if (predictions.length === 0) {
+                container.innerHTML = '<p style="color: var(--ink); opacity: 0.7;">End of demo — click "Start Over" to try again!</p>';
+                return;
+            }
+
+            container.innerHTML = predictions.map(p => 
+                `<button class="prediction-btn ${p.class}" data-prob="${p.prob}" data-word="${p.word}">${p.word}</button>`
+            ).join('');
+
+            container.querySelectorAll('.prediction-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentSentence.push(btn.dataset.word);
+                    renderSentence();
+                    renderPredictions();
+                });
+            });
+        }
+
+        function renderSentence() {
+            const container = document.getElementById('sentenceBuilder');
+            container.innerHTML = currentSentence.map(word => 
+                `<span class="word">${word}</span>`
+            ).join('');
+        }
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            currentSentence = ["The", "weather", "today", "is"];
+            renderSentence();
+            renderPredictions();
+        });
+
+        renderPredictions();
+
+        // Pattern Demo
+        document.querySelectorAll('.pattern-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                document.getElementById('patternExplanation').textContent = card.dataset.explanation;
+            });
+        });
+
+        // Limitation Cards
+        document.querySelectorAll('.limitation-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('expanded');
+            });
+        });
+
+        // Fact Cards
+        document.querySelectorAll('.fact-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.add('revealed');
+                if (card.dataset.correct === 'false') {
+                    card.classList.add('incorrect');
+                } else {
+                    // Check the verdict text to determine if it's actually true or false
+                    const verdict = card.querySelector('.verdict').textContent;
+                    if (verdict.includes('FALSE')) {
+                        card.classList.add('incorrect');
+                    } else {
+                        card.classList.add('correct');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

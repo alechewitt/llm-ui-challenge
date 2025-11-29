@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How LLMs Work</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d3142;
+            --secondary: #6366f1;
+            --accent: #06b6d4;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Trebuchet MS, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #64748b;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .content h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .content p {
+            font-size: 1.05em;
+            margin-bottom: 20px;
+            color: #475569;
+        }
+
+        .visual-box {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
+            border-left: 4px solid var(--secondary);
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 12px;
+            font-size: 1.05em;
+            color: var(--primary);
+        }
+
+        .example {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            font-style: italic;
+            color: #334155;
+        }
+
+        .step-container {
+            margin: 30px 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 5px;
+        }
+
+        .step-content h3 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .step-content p {
+            margin: 0;
+            color: #475569;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .comparison-item h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .comparison-item p {
+            font-size: 0.95em;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .interactive-demo {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .demo-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .demo-output {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            min-height: 60px;
+            border: 1px solid var(--border);
+            color: #334155;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .page-indicator {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #94a3b8;
+            font-size: 0.95em;
+        }
+
+        .highlights {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+
+        .highlights strong {
+            color: #d97706;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                gap: 15px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>How LLMs Work</h1>
+            <p>Understanding AI Language Models in Simple Terms</p>
+        </div>
+
+        <!-- PAGE 1 -->
+        <div class="page active" id="page1">
+            <div class="page-indicator">Page 1 of 3</div>
+            <div class="content">
+                <h2>What is an LLM?</h2>
+                <p>An LLM (Large Language Model) is a type of artificial intelligence that learns from massive amounts of text. Think of it like a very well-read student who has studied countless books, articles, and conversations.</p>
+
+                <div class="visual-box">
+                    <strong>The Simple Version:</strong> An LLM learns patterns in language and can predict what words should come next in a sentence, just like how you can guess what someone will say next in a conversation based on context.
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">Key Characteristics</h3>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Trained on Massive Text Data</h3>
+                            <p>LLMs learn from billions of words from books, websites, articles, and conversations. This helps them understand language patterns and facts.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Predicts Word-by-Word</h3>
+                            <p>The model generates responses one word at a time, always choosing the word that makes the most sense based on what came before.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Works Without True Understanding</h3>
+                            <p>LLMs are sophisticated pattern matchers. They don't truly "understand" like humans do—they recognize patterns and generate likely responses.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">Real-World Analogy</h3>
+                <div class="example">
+                    Imagine you're an expert at completing sentences from a huge pile of books. Someone reads you: "The capital of France is..." and you instantly say "Paris" because you've seen this phrase thousands of times in your reading. That's similar to how an LLM works—it recognizes patterns and completes them.
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">What They Can Do</h3>
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <h3>✓ Strengths</h3>
+                        <p>Answer questions, write creative content, explain concepts, code assistance, translations, summarization</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h3>✗ Limitations</h3>
+                        <p>Can make up facts, don't access the internet, can be biased, struggle with math, may seem confident when wrong</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="nextPage()">Next →</button>
+            </div>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div class="page" id="page2">
+            <div class="page-indicator">Page 2 of 3</div>
+            <div class="content">
+                <h2>How Do They Actually Work?</h2>
+                <p>Behind the scenes, LLMs use something called <strong>neural networks</strong>—a system loosely inspired by how brains work. Let's break this down into digestible pieces.</p>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">The Training Process</h3>
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">Step 1</div>
+                        <div class="step-content">
+                            <h3>Data Collection</h3>
+                            <p>Developers gather billions of examples of text from books, websites, and other sources. This creates a massive training dataset.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">Step 2</div>
+                        <div class="step-content">
+                            <h3>Learning Patterns</h3>
+                            <p>The neural network looks at text and learns patterns. "When these words appear, these words usually follow." It builds statistical relationships.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">Step 3</div>
+                        <div class="step-content">
+                            <h3>Adjusting Weights</h3>
+                            <p>The network has billions of internal settings (called "parameters" or "weights"). Training adjusts these to get better at prediction.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">Step 4</div>
+                        <div class="step-content">
+                            <h3>Fine-Tuning</h3>
+                            <p>After initial training, developers refine the model with additional data to make it helpful, honest, and harmless.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">How It Generates Responses</h3>
+                <div class="visual-box">
+                    When you ask an LLM a question, it doesn't look anything up. Instead, it generates a response token-by-token (tokens are chunks of words). At each step, it calculates the probability of the next token and picks the most likely one (or sometimes takes a small risk with a less likely option to sound more natural).
+                </div>
+
+                <div class="example">
+                    <strong>Example:</strong> If you ask "What's 2+2?" the model might output:
+                    <br><br>
+                    Token 1: "The"<br>
+                    Token 2: "answer"<br>
+                    Token 3: "is"<br>
+                    Token 4: "4"<br>
+                    <br>
+                    Each token is chosen based on probability—"is" makes sense after "The answer," so it gets chosen.
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">The Brain Connection</h3>
+                <div class="highlights">
+                    <strong>Important:</strong> While neural networks are inspired by brains, they work very differently. They're mathematical functions, not biological. The "brain" metaphor is useful for intuition but don't take it too literally!
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="previousPage()">← Previous</button>
+                <button class="btn-primary" onclick="nextPage()">Next →</button>
+            </div>
+        </div>
+
+        <!-- PAGE 3 -->
+        <div class="page" id="page3">
+            <div class="page-indicator">Page 3 of 3</div>
+            <div class="content">
+                <h2>Common Questions Answered</h2>
+                <p>Let's address some things people wonder about LLMs.</p>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">Can I Try It?</h3>
+                <p>Yes! Try the interactive demo below. Type a prompt and see how the model continues it based on learned patterns.</p>
+
+                <div class="interactive-demo">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">Text Continuation Demo</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.95em; color: #475569;">Type the beginning of a sentence and the model will try to complete it:</p>
+                    <input type="text" class="demo-input" id="demoInput" placeholder="Example: 'The best way to learn is...'">
+                    <button class="btn-primary" onclick="runDemo()" style="width: auto;">Generate Continuation</button>
+                    <div class="demo-output" id="demoOutput" style="display: none;"></div>
+                </div>
+
+                <h3 style="margin-top: 35px; color: var(--primary);">FAQ</h3>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">Is the LLM accessing the internet?</h4>
+                    <p>No. It's using only knowledge from its training data (which has a knowledge cutoff date). It can't browse the web or access new information.</p>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">Why does it sometimes give wrong answers?</h4>
+                    <p>LLMs are pattern matchers, not fact checkers. Sometimes patterns in training data lead to plausible-sounding but false answers. They can also "hallucinate"—confidently state things that aren't true.</p>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">How is it different from a search engine?</h4>
+                    <p><strong>Search engines</strong> find existing documents. <strong>LLMs</strong> generate new text. A search engine shows you what exists; an LLM creates novel combinations of learned patterns.</p>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">Is it actually intelligent?</h4>
+                    <p>This depends on your definition of intelligence! LLMs are extremely good at pattern matching and language tasks, but they lack the general reasoning, learning, and adaptability of human intelligence. They can't learn from a conversation—each conversation starts fresh.</p>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">How much does it cost to make one?</h4>
+                    <p>Training a large LLM costs millions of dollars in computing power, data collection, and engineering. This is why only large companies and well-funded research labs can build them.</p>
+                </div>
+
+                <h3 style="margin-top: 40px; color: var(--primary);">Key Takeaways</h3>
+                <div class="visual-box">
+                    <strong>Remember:</strong> LLMs are sophisticated pattern-matching systems trained on massive amounts of text. They predict words probabilistically, work within their training data, and are tools—incredibly useful, but with real limitations. They're impressive at language tasks but don't truly understand language the way humans do.
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="previousPage()">← Previous</button>
+                <button class="btn-secondary" onclick="goToPage(1)">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const completionExamples = [
+            { start: "The best way to learn is", completion: " by doing it hands-on and practicing regularly." },
+            { start: "Coffee is", completion: " a beloved beverage that helps millions start their day." },
+            { start: "The internet has", completion: " transformed how we work, communicate, and access information." },
+            { start: "Artificial intelligence is", completion: " becoming increasingly important in many aspects of modern life." },
+            { start: "Reading books", completion: " expands your imagination and helps you understand different perspectives." },
+            { start: "Technology changes", completion: " rapidly, making continuous learning essential in today's world." },
+            { start: "A great teacher", completion: " inspires students to think critically and ask meaningful questions." },
+            { start: "To solve problems", completion: " requires breaking them down into smaller, manageable parts." },
+            { start: "Learning a new skill", completion: " takes time and patience, but the rewards are worth it." },
+            { start: "The future of AI", completion: " depends on how we choose to develop and use it responsibly." }
+        ];
+
+        function getCurrentPage() {
+            for (let i = 1; i <= 3; i++) {
+                if (document.getElementById(`page${i}`).classList.contains('active')) {
+                    return i;
+                }
+            }
+            return 1;
+        }
+
+        function goToPage(pageNum) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function nextPage() {
+            const current = getCurrentPage();
+            if (current < 3) {
+                goToPage(current + 1);
+            }
+        }
+
+        function previousPage() {
+            const current = getCurrentPage();
+            if (current > 1) {
+                goToPage(current - 1);
+            }
+        }
+
+        function runDemo() {
+            const input = document.getElementById('demoInput').value.trim();
+            const output = document.getElementById('demoOutput');
+            
+            if (!input) {
+                output.style.display = 'none';
+                return;
+            }
+
+            // Find a matching example
+            let result = null;
+            for (let example of completionExamples) {
+                if (input.toLowerCase().includes(example.start.toLowerCase())) {
+                    result = input + example.completion;
+                    break;
+                }
+            }
+
+            // If no exact match, show a generic response
+            if (!result) {
+                result = input + " [The model would continue this based on patterns in its training data...]";
+            }
+
+            output.textContent = result;
+            output.style.display = 'block';
+        }
+
+        document.getElementById('demoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                runDemo();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+# Front End Code Benchmarking System
+
+Create a benchmarking system using OpenRouter to test multiple LLMs' ability to recreate application interfaces from screenshots.
+
+## Prerequisites
+
+- OpenRouter API key (set as `OPENROUTER_API_KEY` environment variable)
+- uv installed for running Python scripts
+
+## Input Files
+
+Screenshots are provided in `./input_screenshots/` with the following naming convention:
+- `microsoft_word.png`
+- `jira.png`
+- `spotify.png`
+
+## Step 1: Create the API Script
+
+Create a Python script (`create_interface.py`) that calls the OpenRouter API with a multimodal prompt.
+
+**Parameters:**
+- `--application_name`: Name of the application (e.g., "Microsoft Word")
+- `--image_path`: Path to the screenshot file
+- `--model`: OpenRouter model identifier
+
+**Prompt to send:**
+```
+Generate this {APPLICATION_NAME} interface in HTML, CSS and JavaScript.
+Return a single HTML file with embedded CSS and JavaScript.
+```
+
+Along with the base64-encoded image. See: https://openrouter.ai/docs/guides/overview/multimodal/images
+
+**Output:**
+- Extract only the HTML code from the response (strip any markdown code fences)
+- Save to `outputs/{app_name}/{model_name}.html`
+- Convert model names to snake_case (e.g., `anthropic/claude-sonnet-4.5` → `claude_sonnet_4_5`)
+
+**Error Handling:**
+- Log failures to console with model name and error message
+- Continue processing remaining models if one fails
+- Handle rate limits with appropriate retries
+
+Use `uv` to run the script and install dependencies.
+
+## Step 2: Run Benchmarks
+
+Run the script for all combinations of:
+
+**Applications:**
+| Application    | Screenshot Path                      |
+|----------------|--------------------------------------|
+| Microsoft Word | `./input_screenshots/microsoft_word.png` |
+| Jira           | `./input_screenshots/jira.png`           |
+| Spotify        | `./input_screenshots/spotify.png`        |
+
+**Models:**
+- `anthropic/claude-sonnet-4.5`
+- `x-ai/grok-code-fast-1`
+- `google/gemini-2.5-pro`
+- `deepseek/deepseek-v3.2-exp`
+- `qwen/qwen3-vl-235b-a22b-thinking`
+- `openai/gpt-5.1`
+- `google/gemini-3-pro-preview`
+
+## Step 3: Capture Screenshots
+
+1. Start a local webserver: `python -m http.server 4141`
+2. Use Playwright MCP Server to screenshot each generated HTML page
+3. Navigate to URLs like: `http://localhost:4141/outputs/spotify/claude_sonnet_4_5.html`
+4. Save screenshots as `outputs/{app_name}/{model_name}.png`
+5. Match the aspect ratio of the original input screenshot for each application
+
+## Step 4: Build Gallery Website
+
+Create a static website to showcase the results.
+
+**Main Gallery Page (index.html):**
+- For each application, create a row containing:
+  - Row header: The prompt text used (e.g., "Generate this Spotify interface...")
+  - First image: Original screenshot (labeled "Original")
+  - Subsequent images: Each model's output screenshot
+- Clicking any image or its label opens the actual HTML file in a new tab
+- Label below each image: model name (snake_case) or "Original"
+- The screenshots should be large enough for users to view the details.
+
+**Technical Requirements:**
+- Vanilla HTML, CSS, and JavaScript only (no frameworks)
+- CSS Grid or Flexbox for layout
+- Responsive design for desktop and mobile
+- Works when opened from local filesystem (`file://`)
+- Graceful handling of missing screenshots (show placeholder)
+
+## File Structure
+
+```
+├── index.html
+├── styles.css
+├── create_interface.py
+├── input_screenshots/
+│   ├── microsoft_word.png
+│   ├── jira.png
+│   └── spotify.png
+└── outputs/
+    ├── microsoft_word/
+    │   ├── claude_sonnet_4_5.html
+    │   ├── claude_sonnet_4_5.png
+    │   ├── grok_code_fast_1.html
+    │   ├── grok_code_fast_1.png
+    │   └── ...
+    ├── jira/
+    │   └── ...
+    └── spotify/
+        └── ...
+```

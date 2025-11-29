@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document1 - Microsoft Word</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 12px;
+            color: #1a1a1a;
+            background: #e8e8e8;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            height: 28px;
+            background: linear-gradient(180deg, #f8f8f8 0%, #f0f0f0 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 12px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .window-btn.close { background: #ff5f57; }
+        .window-btn.minimize { background: #febc2e; }
+        .window-btn.maximize { background: #28c840; }
+
+        .title-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .autosave-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #444;
+            margin-left: 8px;
+        }
+
+        .toggle-switch {
+            width: 28px;
+            height: 16px;
+            background: #ccc;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .quick-access {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 12px;
+        }
+
+        .quick-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quick-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .title-center {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .confidential-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #666;
+            font-size: 11px;
+        }
+
+        .lock-icon {
+            width: 12px;
+            height: 12px;
+            fill: #666;
+        }
+
+        .title-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #fff;
+            border: 1px solid #d4d4d4;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .search-icon {
+            width: 12px;
+            height: 12px;
+            fill: #888;
+        }
+
+        /* Menu Bar / Ribbon Tabs */
+        .ribbon-tabs {
+            height: 32px;
+            background: #f8f8f8;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ribbon-tab {
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #444;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            position: relative;
+        }
+
+        .ribbon-tab:hover {
+            color: #1a1a1a;
+        }
+
+        .ribbon-tab.active {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .ribbon-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #2b579a;
+        }
+
+        .ribbon-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comments-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .editing-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            background: transparent;
+            border: 1px solid #d4d4d4;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #444;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 16px;
+            background: #2b579a;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Main Ribbon */
+        .ribbon {
+            background: #f8f8f8;
+            border-bottom: 1px solid #d4d4d4;
+            padding: 4px 8px 8px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .ribbon-group {
+            display: flex;
+            flex-direction: column;
+            padding: 0 8px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .ribbon-group:last-child {
+            border-right: none;
+        }
+
+        .ribbon-group-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .ribbon-group-label {
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* Clipboard Group */
+        .clipboard-group {
+            width: 80px;
+        }
+
+        .paste-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .paste-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .paste-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .paste-clipboard {
+            width: 24px;
+            height: 28px;
+            background: #f5d170;
+            border: 1px solid #c4a050;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .paste-clipboard::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 6px;
+            background: #d4b060;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .paste-clipboard::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 4px;
+            width: 14px;
+            height: 2px;
+            background: #888;
+            box-shadow: 0 4px 0 #888, 0 8px 0 #888;
+        }
+
+        .paste-label {
+            font-size: 11px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .paste-dropdown {
+            font-size: 8px;
+        }
+
+        .clipboard-small-btns {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .small-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+            font-size: 11px;
+            color: #444;
+        }
+
+        .small-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .small-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Font Group */
+        .font-group {
+            width: 200px;
+        }
+
+        .font-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .font-select {
+            width: 100px;
+            height: 24px;
+            border: 1px solid #d4d4d4;
+            border-radius: 3px;
+            padding: 0 4px;
+            font-size: 11px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .size-select {
+            width: 48px;
+            height: 24px;
+            border: 1px solid #d4d4d4;
+            border-radius: 3px;
+            padding: 0 4px;
+            font-size: 11px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .size-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .size-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .format-clear {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e74c3c;
+            font-size: 14px;
+        }
+
+        .font-format-row {
+            display: flex;
+            gap: 1px;
+        }
+
+        .format-btn {
+            width: 26px;
+            height: 24px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #444;
+        }
+
+        .format-btn:hover {
+            background: rgba(0,0,0,0.05);
+            border-color: #d4d4d4;
+        }
+
+        .format-btn.bold { font-weight: bold; }
+        .format-btn.italic { font-style: italic; }
+        .format-btn.underline { text-decoration: underline; }
+        .format-btn.strikethrough { text-decoration: line-through; }
+
+        .format-btn.subscript { font-size: 10px; }
+        .format-btn.superscript { font-size: 10px; }
+
+        .text-color-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .color-indicator {
+            width: 14px;
+            height: 3px;
+            margin-top: 1px;
+        }
+
+        .text-color .color-indicator { background: #c00; }
+        .highlight-color .color-indicator { background: #ff0; }
+
+        .divider {
+            width: 1px;
+            height: 20px;
+            background: #e0e0e0;
+            margin: 0 2px;
+        }
+
+        /* Paragraph Group */
+        .paragraph-group {
+            width: 180px;
+        }
+
+        .para-row {
+            display: flex;
+            gap: 1px;
+            margin-bottom: 2px;
+        }
+
+        .para-btn {
+            width: 26px;
+            height: 22px;
+            border: 1px solid transparent;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+        }
+
+        .para-btn:hover {
+            background: rgba(0,0,0,0.05);
+            border-color: #d4d4d4;
+        }
+
+        .para-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Styles Group */
+        .styles-group {
+            width: 100px;
+        }
+
+        .styles-content {
+            display: flex;
+            gap: 8px;
+        }
+
+        .style-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 3px;
+        }
+
+        .style-item:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .style-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #2b579a;
+            font-weight: 500;
+        }
+
+        .style-label {
+            font-size: 10px;
+            color: #444;
+        }
+
+        /* Voice/Other Groups */
+        .voice-group {
+            width: 60px;
+        }
+
+        .voice-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .voice-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .voice-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .voice-label {
+            font-size: 10px;
+            color: #444;
+            margin-top: 2px;
+        }
+
+        .single-group {
+            width: 65px;
+        }
+
+        .addon-group {
+            width: 60px;
+        }
+
+        .editor-group {
+            width: 60px;
+        }
+
+        .amazon-group {
+            width: 70px;
+        }
+
+        .amazon-icon {
+            font-size: 14px;
+            color: #232f3e;
+        }
+
+        /* Document Area */
+        .document-area {
+            flex: 1;
+            background: #e8e8e8;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .document-page {
+            width: 816px;
+            min-height: 1056px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            padding: 96px 72px;
+        }
+
+        .document-content {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            font-family: 'Calibri', 'Segoe UI', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 24px;
+            background: #f8f8f8;
+            border-top: 1px solid #d4d4d4;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 24px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .accessibility-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #28a745;
+        }
+
+        .accessibility-badge svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .focus-btn, .view-btn {
+            padding: 2px 8px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            color: #666;
+            border-radius: 2px;
+        }
+
+        .focus-btn:hover, .view-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .view-icons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .view-icon-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            border-radius: 2px;
+            color: #666;
+        }
+
+        .view-icon-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .zoom-control {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .zoom-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #d4d4d4;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .zoom-value {
+            width: 36px;
+            text-align: right;
+        }
+
+        /* SVG Icons */
+        .icon {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .icon-lg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Bar -->
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn close"></button>
+            <button class="window-btn minimize"></button>
+            <button class="window-btn maximize"></button>
+        </div>
+        <div class="title-bar-left">
+            <div class="autosave-toggle">
+                <span>AutoSave</span>
+                <div class="toggle-switch"></div>
+            </div>
+            <div class="quick-access">
+                <button class="quick-btn" title="Home">🏠</button>
+                <button class="quick-btn" title="Save">💾</button>
+                <button class="quick-btn" title="Undo">↩</button>
+                <button class="quick-btn" title="Redo">↪</button>
+                <button class="quick-btn" title="Share">⤴</button>
+                <button class="quick-btn" title="More">⋯</button>
+            </div>
+        </div>
+        <div class="title-center">
+            <span>Document1</span>
+            <div class="confidential-badge">
+                <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Confidential*</span>
+            </div>
+        </div>
+        <div class="title-right">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="M21 21l-4.35-4.35"></path>
+                </svg>
+                <span>Search (Cmd + Ctrl + U)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ribbon Tabs -->
+    <div class="ribbon-tabs">
+        <button class="ribbon-tab active">Home</button>
+        <button class="ribbon-tab">Insert</button>
+        <button class="ribbon-tab">Draw</button>
+        <button class="ribbon-tab">Design</button>
+        <button class="ribbon-tab">Layout</button>
+        <button class="ribbon-tab">References</button>
+        <button class="ribbon-tab">Mailings</button>
+        <button class="ribbon-tab">Review</button>
+        <button class="ribbon-tab">View</button>
+        <div class="ribbon-right">
+            <button class="comments-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Comments
+            </button>
+            <button class="editing-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Editing
+                <span style="font-size: 8px;">▼</span>
+            </button>
+            <button class="share-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"></path>
+                </svg>
+                Share
+                <span style="font-size: 8px;">▼</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Ribbon -->
+    <div class="ribbon">
+        <!-- Clipboard Group -->
+        <div class="ribbon-group clipboard-group">
+            <div class="ribbon-group-content">
+                <button class="paste-btn">
+                    <div class="paste-icon">
+                        <div class="paste-clipboard"></div>
+                    </div>
+                    <span class="paste-label">Paste <span class="paste-dropdown">▼</span></span>
+                </button>
+                <div class="clipboard-small-btns">
+                    <button class="small-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                    <button class="small-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                    <button class="small-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="ribbon-group-label">Paste</div>
+        </div>
+
+        <!-- Font Group -->
+        <div class="ribbon-group font-group">
+            <div class="ribbon-group-content" style="flex-direction: column; gap: 4px;">
+                <div class="font-row">
+                    <select class="font-select">
+                        <option>Calibri (Bo...</option>
+                    </select>
+                    <select class="size-select">
+                        <option>12</option>
+                    </select>
+                    <button class="size-btn">A<sup style="font-size:8px">▲</sup></button>
+                    <button class="size-btn">A<sup style="font-size:8px">▼</sup></button>
+                    <button class="format-clear" title="Clear Formatting">Aa<span style="color:#c00;font-size:10px;margin-left:-2px">✕</span></button>
+                </div>
+                <div class="font-format-row">
+                    <button class="format-btn bold" title="Bold">B</button>
+                    <button class="format-btn italic" title="Italic">I</button>
+                    <button class="format-btn underline" title="Underline">U <span style="font-size:8px">▼</span></button>
+                    <button class="format-btn strikethrough" title="Strikethrough">ab</button>
+                    <button class="format-btn subscript" title="Subscript">X₂</button>
+                    <button class="format-btn superscript" title="Superscript">X²</button>
+                    <div class="divider"></div>
+                    <button class="format-btn text-color-btn text-color" title="Font Color">
+                        <span style="font-weight:bold;">A</span>
+                        <div class="color-indicator"></div>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="format-btn text-color-btn highlight-color" title="Highlight">
+                        <span>🖍</span>
+                        <div class="color-indicator"></div>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="format-btn" title="Text Effects">
+                        A<span style="font-size:8px;color:#2b579a;">~</span>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paragraph Group -->
+        <div class="ribbon-group paragraph-group">
+            <div class="ribbon-group-content" style="flex-direction: column; gap: 2px;">
+                <div class="para-row">
+                    <button class="para-btn" title="Bullets">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="4" cy="6" r="2"></circle>
+                            <circle cx="4" cy="12" r="2"></circle>
+                            <circle cx="4" cy="18" r="2"></circle>
+                            <rect x="8" y="5" width="14" height="2"></rect>
+                            <rect x="8" y="11" width="14" height="2"></rect>
+                            <rect x="8" y="17" width="14" height="2"></rect>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="para-btn" title="Numbering">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <text x="2" y="8" font-size="6">1</text>
+                            <text x="2" y="14" font-size="6">2</text>
+                            <text x="2" y="20" font-size="6">3</text>
+                            <rect x="8" y="5" width="14" height="2"></rect>
+                            <rect x="8" y="11" width="14" height="2"></rect>
+                            <rect x="8" y="17" width="14" height="2"></rect>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="para-btn" title="Multilevel List">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="4" width="12" height="2"></rect>
+                            <rect x="4" y="8" width="10" height="2"></rect>
+                            <rect x="6" y="12" width="8" height="2"></rect>
+                            <rect x="2" y="16" width="12" height="2"></rect>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="para-btn" title="Decrease Indent">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="16" height="2"></rect>
+                            <rect x="6" y="10" width="16" height="2"></rect>
+                            <rect x="6" y="16" width="16" height="2"></rect>
+                            <path d="M2 10l4-4v8z"></path>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Increase Indent">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="16" height="2"></rect>
+                            <rect x="6" y="10" width="16" height="2"></rect>
+                            <rect x="6" y="16" width="16" height="2"></rect>
+                            <path d="M6 6l-4 4 4 4z"></path>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Sort">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <text x="2" y="10" font-size="8">A</text>
+                            <text x="2" y="20" font-size="8">Z</text>
+                            <path d="M16 4v16M12 16l4 4 4-4"></path>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Show/Hide">¶</button>
+                </div>
+                <div class="para-row">
+                    <button class="para-btn" title="Align Left">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="4" width="18" height="2"></rect>
+                            <rect x="2" y="9" width="14" height="2"></rect>
+                            <rect x="2" y="14" width="18" height="2"></rect>
+                            <rect x="2" y="19" width="12" height="2"></rect>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Center">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="4" width="20" height="2"></rect>
+                            <rect x="5" y="9" width="14" height="2"></rect>
+                            <rect x="2" y="14" width="20" height="2"></rect>
+                            <rect x="6" y="19" width="12" height="2"></rect>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Align Right">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="4" y="4" width="18" height="2"></rect>
+                            <rect x="8" y="9" width="14" height="2"></rect>
+                            <rect x="4" y="14" width="18" height="2"></rect>
+                            <rect x="10" y="19" width="12" height="2"></rect>
+                        </svg>
+                    </button>
+                    <button class="para-btn" title="Justify">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="4" width="20" height="2"></rect>
+                            <rect x="2" y="9" width="20" height="2"></rect>
+                            <rect x="2" y="14" width="20" height="2"></rect>
+                            <rect x="2" y="19" width="20" height="2"></rect>
+                        </svg>
+                    </button>
+                    <div class="divider"></div>
+                    <button class="para-btn" title="Line Spacing">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="16" height="2"></rect>
+                            <rect x="6" y="11" width="16" height="2"></rect>
+                            <rect x="6" y="18" width="16" height="2"></rect>
+                            <path d="M2 4v16M0 6l2-2 2 2M0 18l2 2 2-2"></path>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="para-btn" title="Shading">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="2" width="20" height="20" fill="#ddd" stroke="#888"></rect>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                    <button class="para-btn" title="Borders">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="2" y="2" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                            <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1"></line>
+                            <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1"></line>
+                        </svg>
+                        <span style="font-size:8px">▼</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Styles Group -->
+        <div class="ribbon-group styles-group">
+            <div class="ribbon-group-content">
+                <div class="styles-content">
+                    <div class="style-item">
+                        <div class="style-icon">A</div>
+                        <span class="style-label">Styles</span>
+                    </div>
+                    <div class="style-item">
+                        <div class="style-icon" style="position:relative;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2b579a" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="20" rx="2"></rect>
+                            </svg>
+                        </div>
+                        <span class="style-label">Styles Pane</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dictate Group -->
+        <div class="ribbon-group single-group">
+            <div class="ribbon-group-content" style="justify-content: center;">
+                <button class="voice-btn">
+                    <div class="voice-icon">🎤</div>
+                    <span class="voice-label">Dictate</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sensitivity Group -->
+        <div class="ribbon-group single-group">
+            <div class="ribbon-group-content" style="justify-content: center;">
+                <button class="voice-btn">
+                    <div class="voice-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <span class="voice-label">Sensitivity</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Add-ins Group -->
+        <div class="ribbon-group addon-group">
+            <div class="ribbon-group-content" style="justify-content: center;">
+                <button class="voice-btn">
+                    <div class="voice-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <span class="voice-label">Add-ins</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Editor Group -->
+        <div class="ribbon-group editor-group">
+            <div class="ribbon-group-content" style="justify-content: center;">
+                <button class="voice-btn">
+                    <div class="voice-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2b579a" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </div>
+                    <span class="voice-label">Editor</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Amazon Quick Suite Group -->
+        <div class="ribbon-group amazon-group" style="border-right: none;">
+            <div class="ribbon-group-content" style="justify-content: center;">
+                <button class="voice-btn">
+                    <div class="voice-icon amazon-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#232f3e">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <span class="voice-label" style="font-size:9px;">Amazon<br>Quick Suite</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Area -->
+    <div class="document-area">
+        <div class="document-page">
+            <div class="document-content" contenteditable="true" spellcheck="true"></div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span>Page 1 of 1</span>
+            <span>0 words</span>
+            <span>English (United States)</span>
+        </div>
+        <div class="status-center">
+            <div class="accessibility-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8v4l3 3"></path>
+                </svg>
+                <span>Accessibility: Good to go</span>
+            </div>
+        </div>
+        <div class="status-right">
+            <button class="focus-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                </svg>
+            </button>
+            <button class="focus-btn">Focus</button>
+            <div class="view-icons">
+                <button class="view-icon-btn" title="Read Mode">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="3" width="20" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                        <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="2"></line>
+                    </svg>
+                </button>
+                <button class="view-icon-btn" title="Print Layout">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3" y="2" width="18" height="20" fill="none" stroke="currentColor" stroke-width="2"></rect>
+                        <line x1="7" y1="6" x2="17" y2="6" stroke="currentColor" stroke-width="1"></line>
+                        <line x1="7" y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1"></line>
+                        <line x1="7" y1="14" x2="13" y2="14" stroke="currentColor" stroke-width="1"></line>
+                    </svg>
+                </button>
+                <button class="view-icon-btn" title="Web Layout">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="zoom-control">
+                <span>−</span>
+                <input type="range" class="zoom-slider" min="10" max="500" value="185">
+                <span>+</span>
+                <span class="zoom-value">185%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.ribbon-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.ribbon-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // AutoSave toggle
+        const toggleSwitch = document.querySelector('.toggle-switch');
+        let autoSaveOn = false;
+        toggleSwitch.addEventListener('click', function() {
+            autoSaveOn = !autoSaveOn;
+            this.style.background = autoSaveOn ? '#28c840' : '#ccc';
+            this.style.setProperty('--toggle-position', autoSaveOn ? '14px' : '2px');
+            this.querySelector('::after')?.style?.setProperty('transform', autoSaveOn ? 'translateX(12px)' : 'translateX(0)');
+        });
+
+        // Word count functionality
+        const documentContent = document.querySelector('.document-content');
+        const wordCountDisplay = document.querySelector('.status-left span:nth-child(2)');
+        
+        documentContent.addEventListener('input', function() {
+            const text = this.innerText.trim();
+            const wordCount = text ? text.split(/\s+/).filter(word => word.length > 0).length : 0;
+            wordCountDisplay.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+        });
+
+        // Zoom slider functionality
+        const zoomSlider = document.querySelector('.zoom-slider');
+        const zoomValue = document.querySelector('.zoom-value');
+        
+        zoomSlider.addEventListener('input', function() {
+            zoomValue.textContent = `${this.value}%`;
+        });
+
+        // Format button functionality
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                if (this.classList.contains('bold')) {
+                    document.execCommand('bold', false, null);
+                } else if (this.classList.contains('italic')) {
+                    document.execCommand('italic', false, null);
+                } else if (this.classList.contains('underline')) {
+                    document.execCommand('underline', false, null);
+                } else if (this.classList.contains('strikethrough')) {
+                    document.execCommand('strikeThrough', false, null);
+                }
+            });
+        });
+
+        // Alignment buttons
+        document.querySelectorAll('.para-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const title = this.getAttribute('title');
+                if (title === 'Align Left') {
+                    document.execCommand('justifyLeft', false, null);
+                } else if (title === 'Center') {
+                    document.execCommand('justifyCenter', false, null);
+                } else if (title === 'Align Right') {
+                    document.execCommand('justifyRight', false, null);
+                } else if (title === 'Justify') {
+                    document.execCommand('justifyFull', false, null);
+                }
+            });
+        });
+
+        // Focus on document on load
+        documentContent.focus();
+
+        // Window button effects
+        document.querySelectorAll('.window-btn').forEach(btn => {
+            btn.addEventListener('mouseover', function() {
+                if (this.classList.contains('close')) {
+                    this.innerHTML = '×';
+                    this.style.color = '#4d0000';
+                    this.style.fontSize = '10px';
+                    this.style.lineHeight = '12px';
+                    this.style.textAlign = 'center';
+                }
+            });
+            btn.addEventListener('mouseout', function() {
+                this.innerHTML = '';
+            });
+        });
+    </script>
+</body>
+</html>
