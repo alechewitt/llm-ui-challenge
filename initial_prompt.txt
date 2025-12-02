@@ -76,20 +76,29 @@ Run the script for all combinations of:
 Create a static website to showcase the results.
 
 **Main Gallery Page (index.html):**
-- For each application, create a row containing:
-  - Row header: The prompt text used (e.g., "Generate this Spotify interface...")
-  - First image: Original screenshot (labeled "Original")
-  - Subsequent images: Each model's output screenshot
-- Clicking any image or its label opens the actual HTML file in a new tab
-- Label below each image: model name (snake_case) or "Original"
-- The screenshots should be large enough for users to view the details.
+- For each application, create a section containing:
+  - Prompt box: Contains both the prompt text (e.g., "Generate this Spotify interface...") styled as monospace code with blue accent, AND the original reference screenshot directly below the text, with a blue border around the image
+  - Model outputs: Each model's output screenshot displayed in a single-column gallery below the prompt box
+- For model output images, display the model name label ABOVE the image (not below)
+- Clicking any image opens the actual HTML file (or original screenshot) in a new tab
+- Images should be large and easy to view - use a single column full-width layout so users can clearly see all interface details
+
+**Visual Design Requirements:**
+- Light theme with white (#ffffff) background
+- Light gray (#f8f9fa) section backgrounds with subtle borders
+- Blue (#0066cc) accent color for the original image border, badges, and prompt header
+- Clean, modern typography using system fonts
+- Subtle hover effects with lift animation and shadow
+- Card-based layout with rounded corners and borders
 
 **Technical Requirements:**
 - Vanilla HTML, CSS, and JavaScript only (no frameworks)
-- CSS Grid or Flexbox for layout
-- Responsive design for desktop and mobile
+- CSS Grid for image gallery layout with single column for maximum image visibility
+- Responsive design that works on all screen sizes
+- Wide container (max-width: 1800px) to utilize available screen space
 - Works when opened from local filesystem (`file://`)
 - Graceful handling of missing screenshots (show placeholder)
+- Separate styles.css file for maintainability
 
 ## File Structure
 

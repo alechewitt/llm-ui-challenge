@@ -1,0 +1,672 @@
+Of course! Here is a recreation of the Microsoft Word interface using HTML, CSS, and JavaScript, all contained within a single file.
+
+This implementation uses embedded SVGs for icons and CSS Flexbox for layout to closely match the provided image. The main text area is interactive (`contenteditable`).
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Word UI Clone</title>
+    <style>
+        :root {
+            --body-bg: #e0e0e0;
+            --window-bg: #f5f5f5;
+            --title-bar-bg: #e8e8e8;
+            --ribbon-bg: #fafafa;
+            --border-color: #d1d1d1;
+            --text-color: #333;
+            --text-color-light: #666;
+            --active-blue: #005a9e;
+            --button-blue: #0078d4;
+            --button-blue-hover: #005a9e;
+            --button-border-radius: 2px;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background-color: var(--body-bg);
+            font-family: var(--font-family);
+            font-size: 12px;
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .word-window {
+            max-width: 1440px;
+            height: 900px;
+            margin: auto;
+            background-color: var(--window-bg);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+
+        /* --- Title Bar --- */
+        .title-bar {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            height: 58px;
+            background-color: var(--title-bar-bg);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 12px;
+        }
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .window-control.red { background-color: #ff5f57; }
+        .window-control.yellow { background-color: #febc2e; }
+        .window-control.green { background-color: #28c840; }
+
+        .top-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .top-toolbar-left, .top-toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .top-toolbar-left .icon-btn-group {
+            display: flex;
+            background-color: #ddd;
+            border-radius: 4px;
+            padding: 2px;
+            gap: 1px;
+        }
+
+        .top-toolbar-left .icon-btn {
+            padding: 3px;
+        }
+        
+        .top-toolbar-left .icon-btn.home-icon {
+            background-color: var(--window-bg);
+            border-radius: 2px;
+        }
+
+        .icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--button-border-radius);
+        }
+        
+        .icon-btn:hover {
+            background-color: #d8d8d8;
+        }
+
+        .icon-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--text-color);
+            stroke-width: 1;
+        }
+        
+        .autosave {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 12px;
+        }
+        
+        .autosave .switch {
+            position: relative;
+            display: inline-block;
+            width: 32px;
+            height: 18px;
+        }
+
+        .autosave .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .autosave .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 18px;
+        }
+
+        .autosave .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .autosave input:checked + .slider {
+            background-color: var(--button-blue);
+        }
+
+        .autosave input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+
+        .document-title {
+            text-align: center;
+            font-weight: 500;
+        }
+        .document-title .confidential {
+            font-size: 11px;
+            color: var(--text-color-light);
+            background-color: #dcdcdc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        .document-title .confidential svg {
+            width: 10px;
+            height: 10px;
+            vertical-align: middle;
+            margin-right: 2px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 8px;
+            width: 200px;
+        }
+        .search-bar svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+            stroke: var(--text-color-light);
+        }
+        .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        .text-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 10px;
+            border: 1px solid #c5c5c5;
+            background-color: var(--window-bg);
+            border-radius: var(--button-border-radius);
+            cursor: pointer;
+        }
+        .text-btn:hover { background-color: #e5e5e5; }
+        .text-btn svg { width: 14px; height: 14px; }
+        
+        .btn-share {
+            background-color: var(--button-blue);
+            color: white;
+            border: none;
+        }
+        .btn-share:hover { background-color: var(--button-blue-hover); }
+        .btn-share svg { stroke: white; }
+
+        /* --- Ribbon --- */
+        .ribbon-container {
+            flex-shrink: 0;
+            background: var(--ribbon-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ribbon-menu {
+            display: flex;
+            padding: 0 20px;
+            gap: 20px;
+        }
+        .ribbon-tab {
+            padding: 8px 4px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: var(--text-color-light);
+            font-size: 14px;
+        }
+        .ribbon-tab.active {
+            font-weight: 600;
+            border-bottom-color: var(--active-blue);
+            color: var(--text-color);
+        }
+
+        .ribbon-toolbar {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            height: 90px;
+        }
+
+        .ribbon-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            padding: 0 10px;
+            border-right: 1px solid var(--border-color);
+        }
+        .ribbon-group:last-child { border-right: none; }
+
+        .group-content {
+            display: flex;
+            height: 100%;
+            align-items: flex-start;
+        }
+
+        .group-label {
+            font-size: 12px;
+            color: var(--text-color-light);
+            margin-top: 4px;
+        }
+
+        /* Group-specific styling */
+        .large-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--button-border-radius);
+        }
+        .large-btn:hover { background-color: #e5e5e5; }
+        .large-btn-icon-wrapper { position: relative; }
+        .large-btn-icon-wrapper svg.main-icon { width: 32px; height: 32px; }
+        .large-btn-icon-wrapper svg.dropdown-arrow {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 10px;
+            height: 10px;
+        }
+        .large-btn span { font-size: 12px; }
+
+        .clipboard-stack {
+             display: flex;
+             flex-direction: column;
+             justify-content: space-between;
+             height: 100%;
+             margin-left: 8px;
+        }
+
+        .font-section { display: flex; flex-direction: column; gap: 4px; }
+        .font-controls-top, .font-controls-bottom { display: flex; align-items: center; }
+        .font-controls-top select, .font-controls-top .btn-stack button {
+            height: 24px;
+            padding: 0 4px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: var(--button-border-radius);
+            margin-right: 2px;
+        }
+        .font-controls-top select:hover { border-color: #999; }
+        .font-family { width: 110px; }
+        .font-size { width: 50px; }
+        .btn-stack { display: flex; margin-left: 4px; }
+        .btn-stack button:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .btn-stack button:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none; }
+
+        .font-controls-bottom .icon-btn { padding: 4px; }
+        .font-controls-bottom .icon-btn.active { background-color: #cce1f1; }
+        .font-color-btn { position: relative; }
+        .font-color-bar {
+            position: absolute;
+            bottom: 2px;
+            left: 4px;
+            right: 4px;
+            height: 3px;
+            background-color: #ff0000;
+            border-radius: 1px;
+        }
+        
+        .paragraph-section { display: flex; flex-direction: column; gap: 4px; }
+        .paragraph-controls-top, .paragraph-controls-bottom { display: flex; align-items: center; }
+        
+        /* --- Document Area --- */
+        .document-area {
+            flex-grow: 1;
+            background-color: var(--body-bg);
+            padding: 20px;
+            display: flex;
+            overflow: auto;
+        }
+
+        .page-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page {
+            width: 816px; /* 8.5in * 96dpi */
+            min-height: 1056px; /* 11in * 96dpi */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            padding: 96px; /* 1 inch margins */
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.5;
+            color: black;
+            font-family: 'Calibri', sans-serif;
+            outline: none;
+        }
+
+        .scrollbar-container {
+            width: 16px;
+            background-color: #e6e6e6;
+            flex-shrink: 0;
+             margin-left: 10px;
+        }
+        .scrollbar {
+            width: 10px;
+            height: 40%;
+            background-color: #c1c1c1;
+            border-radius: 5px;
+            margin: 3px;
+        }
+
+        /* --- Status Bar --- */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 12px;
+            height: 28px;
+            border-top: 1px solid var(--border-color);
+            background: var(--ribbon-bg);
+            flex-shrink: 0;
+            color: var(--text-color-light);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-left > div, .status-right > div {
+             padding: 0 8px;
+             border-right: 1px solid var(--border-color);
+             height: 16px;
+             display: flex;
+             align-items: center;
+        }
+        .status-left > div:last-child {border: none;}
+        .status-right > div:last-child {border: none;}
+        .status-right .icon-btn { padding: 2px; }
+        
+        .zoom-slider { display: flex; align-items: center; gap: 8px; }
+        .zoom-slider .slider-track {
+            width: 120px;
+            height: 3px;
+            background-color: #b9b9b9;
+            position: relative;
+        }
+        .zoom-slider .slider-thumb {
+            width: 12px;
+            height: 12px;
+            background-color: #888;
+            border: 1px solid #666;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 70%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- Utility classes for icons with dropdowns --- */
+        .btn-with-dropdown {
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-with-dropdown .icon-btn {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .dropdown-part {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 2px;
+            border-top-right-radius: var(--button-border-radius);
+            border-bottom-right-radius: var(--button-border-radius);
+        }
+        
+        .btn-with-dropdown:hover,
+        .btn-with-dropdown:hover .icon-btn,
+        .btn-with-dropdown:hover .dropdown-part {
+            background-color: #e5e5e5;
+        }
+        
+        .dropdown-part svg { width: 10px; height: 10px; }
+        
+        /* Combo buttons like Font Color */
+        .combo-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: var(--button-border-radius);
+        }
+        .combo-btn:hover { background-color: #e5e5e5; }
+        .combo-btn-main {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="word-window">
+        <!-- MAC OS TITLE BAR -->
+        <header class="title-bar">
+            <div class="window-controls">
+                <div class="window-control red"></div>
+                <div class="window-control yellow"></div>
+                <div class="window-control green"></div>
+            </div>
+            <div class="top-toolbar">
+                <div class="top-toolbar-left">
+                    <div class="autosave">
+                        <span>AutoSave</span>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="icon-btn-group">
+                        <button class="icon-btn home-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        </button>
+                        <button class="icon-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                        </button>
+                        <button class="icon-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                        <button class="icon-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"></path><path d="M3.5 12.5a9 9 0 1 0 2.13-6.23"></path></svg>
+                        </button>
+                        <button class="icon-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="document-title">
+                    Document1
+                    <span class="confidential">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"></path></svg>
+                        Confidential*
+                    </span>
+                </div>
+                <div class="top-toolbar-right">
+                    <div class="search-bar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" placeholder="Search (Cmd + Ctrl + U)">
+                    </div>
+                    <button class="text-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Comments</span></button>
+                    <button class="text-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke="currentColor"><path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"></path></svg>
+                        <span>Editing</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px;"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button class="text-btn btn-share">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        <span>Share</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="width:16px; height:16px;"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="ribbon-container">
+             <!-- RIBBON TABS -->
+            <nav class="ribbon-menu">
+                <div class="ribbon-tab active">Home</div>
+                <div class="ribbon-tab">Insert</div>
+                <div class="ribbon-tab">Draw</div>
+                <div class="ribbon-tab">Design</div>
+                <div class="ribbon-tab">Layout</div>
+                <div class="ribbon-tab">References</div>
+                <div class="ribbon-tab">Mailings</div>
+                <div class="ribbon-tab">Review</div>
+                <div class="ribbon-tab">View</div>
+            </nav>
+
+            <!-- RIBBON TOOLBAR -->
+            <div class="ribbon-toolbar">
+                <div class="ribbon-group">
+                    <div class="group-content">
+                        <button class="large-btn">
+                            <span class="large-btn-icon-wrapper">
+                                <svg class="main-icon" viewBox="0 0 32 32" fill="#4a4a4a"><path d="M22.667 4h-16c-1.1 0-2 .9-2 2v20c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM8.667 22.667H7.333V9.333h1.334v13.334zm7.333 0h-6v-1.334h6v1.334zm0-3.334h-6v-1.333h6v1.333zm4-7.333c-.92 0-1.667.747-1.667 1.667s.747 1.667 1.667 1.667 1.667-.747 1.667-1.667-.747-1.667-1.667-1.667z"></path></svg>
+                                <svg class="dropdown-arrow" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path></svg>
+                            </span>
+                            <span>Paste</span>
+                        </button>
+                        <div class="clipboard-stack">
+                           <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6h2m4 0h2m-4 4h4m-8 4h3m-3 4h4.5M4 20h16a2 2 0 002-2V6a2 2 0 00-2-2H4a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 3h5v5M4 20L20 4M21 16v5h-5M15 4h5M4 9v-5M9 20H4"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="group-label"></div>
+                </div>
+
+                <div class="ribbon-group">
+                    <div class="group-content font-section">
+                        <div class="font-controls-top">
+                            <select class="font-family"><option>Calibri (Body)</option></select>
+                            <select class="font-size"><option>12</option></select>
+                            <div class="btn-stack">
+                                 <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M5,15.5L12,8.5L19,15.5H5Z"></path></svg></button>
+                                 <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19,8.5L12,15.5L5,8.5H19Z"></path></svg></button>
+                            </div>
+                            <div class="btn-with-dropdown" style="margin-left: 5px;">
+                                <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.43,5.5H19V7.5H15.34L11.7,16.5H14.5V18.5H6.5V16.5H10.16L13.8,7.5H9.43V5.5M2,2V5H5V2H2M3,3H4V4H3V3M2,7V10H5V7H2M3,8H4V9H3V8M2,12V15H5V12H2M3,13H4V14H3V13Z"></path></svg></button>
+                                <div class="dropdown-part"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"></path></svg></div>
+                            </div>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M10.13,20.06L11.54,18.65L7.09,14.2L2.65,18.65L4.06,20.06L7.09,17.03L10.13,20.06M7.09,12.72L12.5,7.31L17.91,12.72L19.33,11.31L12.5,4.47L5.67,11.31L7.09,12.72M20.27,16.24L18.86,14.83L17.15,16.54L18.56,17.95L17.86,18.65L16.45,17.24L15.03,18.65L15.74,19.36L14.33,20.77L13.62,20.06L15.03,18.65L13.62,17.24L14.33,16.54L15.74,17.95L17.15,16.54L17.86,15.83L19.27,17.24L20.68,15.83L20.27,16.24Z"></path></svg></button>
+                        </div>
+                        <div class="font-controls-bottom">
+                            <button class="icon-btn active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6zM6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M10 4v16m4-16l-4 16"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M5 21h14v-2H5v2zM9.54 5.32L6.34 16h2.24l.64-1.87h4.52l.66 1.87h2.24L13.46 5.32h-3.92zm-1.12 7.17l1.96-5.46 1.96 5.46h-3.92z"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path stroke="currentColor" fill="none" stroke-width="1.5" d="M4 12h16m-4-6l-4 6-4-6"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M11 21h2V8.81l5 4.5V11L12 8l-6 3.3v2.31l5-4.5V21z"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path d="M11 3h2v12.19l5-4.5v2.31L12 16l-6-3.3v-2.31l5 4.5V3z"></path></svg></button>
+                            <div class="combo-btn">
+                                <div class="combo-btn-main">
+                                    <svg viewBox="0 0 24 24" style="width:20px; height:20px;"><path d="M12.94 13.94l-1.63-4.48h-2.6L7.07 13.94h2.1l.46-1.28h2.79l.47 1.28h2.05m-3.92-2.3h-1.06l.53-1.46.53 1.46M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm8 10c0 4.41-3.59 8-8 8s-8-3.59-8-8 3.59-8 8-8 8 3.59 8 8z"></path></svg>
+                                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"></path></svg>
+                                </div>
+                            </div>
+                            <div class="combo-btn">
+                                <div class="combo-btn-main">
+                                    <svg viewBox="0 0 24 24" style="width:20px; height:20px;" fill="currentColor"><path d="M16.5,13.25V11.75H12V10.25H16.5V8.75L19.5,11L16.5,13.25M9.16,11.23L8.6,12.7H5.68L4.62,15.53C6.47,16.5 8.65,17 11,17C11.36,17 11.72,16.97 12.08,16.91L13.12,14H9.91L10.33,12.7H13.88L15.3,8H12.63L12.2,9.3H8.75L9.16,11.23Z"></path></svg>
+                                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"></path></svg>
+                                </div>
+                            </div>
+                            <div class="combo-btn">
+                                <div class="combo-btn-main font-color-btn">
+                                    <svg viewBox="0 0 24 24" style="width:20px; height:20px;"><path d="M9.62,12L12,5.67L14.37,12M11,3L5.5,17H7.75L8.87,14H15.12L16.25,17H18.5L13,3H11Z"></path><rect x="5" y="18" width="14" height="2"></rect></svg>
+                                    <div class="font-color-bar"></div>
+                                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-label">Font</div>
+                </div>
+
+                 <div class="ribbon-group">
+                    <div class="group-content paragraph-section">
+                        <div class="paragraph-controls-top">
+                             <div class="btn-with-dropdown">
+                                <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,5H21V7H7V5M7,13V11H21V13H7M7,19V17H21V19H7M4,6A1,1 0 0,1 5,5A1,1 0 0,1 6,6A1,1 0 0,1 5,7A1,1 0 0,1 4,6M4,12A1,1 0 0,1 5,11A1,1 0 0,1 6,12A1,1 0 0,1 5,13A1,1 0 0,1 4,12M4,18A1,1 0 0,1 5,17A1,1 0 0,1 6,18A1,1 0 0,1 5,19A1,1 0 0,1 4,18Z"></path></svg></button>
+                                <div class="dropdown-part"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21c.58-.62 1.54-.64 2.14-.04l2.5 2.522L13.58 6.5a1.5 1.5 0 012.12.04l2.5 2.5a1.5 1.5 0 01-.04 2.12l-6.5 6.5a1.5 1.5 0 01-2.12 0L2.5 9.176a1.5 1.5 0 01-.04-2.12z" clip-rule="evenodd" transform="rotate(-90 10 10)"></path></svg></div>
+                            </div>
+                             <div class="btn-with-dropdown">
+                                <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,5H21V7H7V5M7,13V11H21V13H7M7,19V17H21V19H7M3,8V5H5V8H3M3,19V11H5V19H3Z"></path></svg></button>
+                                <div class="dropdown-part"><svg viewBox="0 0 20 20" fill="currentColor"><path d="m5.23 7.21c.58-.62 1.54-.64 2.14-.04l2.5 2.522 3.71-3.938a1.5 1.5 0 012.12.04l2.5 2.5a1.5 1.5 0 01-.04 2.12l-6.5 6.5a1.5 1.5 0 01-2.12 0L2.5 9.176a1.5 1.5 0 01-.04-2.12z" clip-rule="evenodd" transform="rotate(-90 10 10)"></path></svg></div>
+                            </div>
+                             <div class="btn-with-dropdown">
+                                <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,5H21V7H7V5M7,13V11H21V13H7M7,19V17H21V19H7M3,5H5V7H3V5M3,11H5V13H3V11M3,17H5V19H3V17Z"></path></svg></button>
+                                <div class="dropdown-part"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"></path></svg></div>
+                            </div>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M3,8H15V10H3V8M3,14H15V12H3V14M11,18V16H3V18H11M21,14.5L17,10.5V13H11V16H17V18.5L21,14.5Z"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M9,8H21V10H9V8M9,14H21V12H9V14M3,18V16H9V18H3M3,14.5L7,10.5V13H9V16H7V18.5L3,14.5Z"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,9H7L12,4V14H15V20H13V16H11L5.8,22H3.6L9,16V11L3,9M17,14V11.5L15,13.5L17,15.5V14M17,8V4H19V8H17M17,10H19V9H17V10Z"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M11,12H13V15H11V12M11,6H13V9H11V6M7,18H9V15H7V18M7,6H9V9H7V6M3,18H5V15H3V18M3,6H5V9H3V6M15,18H17V15H15V18M15,6H17V9H15V6M19,18H21V15H19V18M19,6H21V9H19V6M3,22H21V20H3V22M3,4V2H21V4H3Z"></path></svg></button>
+                        </div>
+                        <div class="paragraph-controls-bottom">
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M3,8H21V10H3V8M3,12H21V14H3V12M3,16H21V18H3V16M3,20H21V22H3V20Z"></path></svg></button>
+                            <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M7,8H21V10H7V8M7,12H21V14H7V12M7,16H21V18H7V16M3,20H21V22H3V20Z"></path></svg></button>
+                             <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M3,8H21V10H3V8M3,12H21V14H3V12M15,16H21V18H15V16M3,20H21V22H3V20Z"></path></svg></button>
+                           <button class="icon-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,4H21V6H3V4M3,8H21V10H

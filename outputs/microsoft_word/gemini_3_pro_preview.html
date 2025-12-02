@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document1 - Word</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --word-blue: #2b579a;
+            --bg-gray: #f3f3f3;
+            --border-color: #e1e1e1;
+            --hover-gray: #e6e6e6;
+            --text-color: #252525;
+            --ribbon-bg: #fff;
+            --canvas-bg: #f0f0f0;
+            --status-bar-bg: #f3f3f3; /* Matches macOS styling in image */
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none; /* UI not selectable */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--canvas-bg);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        /* --- Title Bar --- */
+        .title-bar {
+            height: 40px;
+            background-color: var(--bg-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 1px solid transparent; /* Seamless blend */
+        }
+
+        .tb-left, .tb-center, .tb-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tb-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #444;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Mac Traffic Lights */
+        .traffic-lights {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ff5f56; border: 1px solid #e0443e; }
+        .dot.yellow { background: #ffbd2e; border: 1px solid #dea123; }
+        .dot.green { background: #27c93f; border: 1px solid #1aab29; }
+
+        .autosave-switch {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .switch {
+            width: 30px; height: 16px; background: #ccc; border-radius: 10px; position: relative;
+        }
+        .switch::after {
+            content: ''; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; background: white; border-radius: 50%;
+        }
+
+        .quick-actions i {
+            padding: 5px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .search-bar {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px 10px;
+            width: 250px;
+            display: flex;
+            align-items: center;
+            color: #666;
+        }
+        .search-bar span { margin-left: 10px; opacity: 0.7; }
+
+        .top-btn {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .share-btn {
+            background: var(--word-blue);
+            color: white;
+            border: none;
+        }
+
+        /* --- Ribbon Tabs --- */
+        .ribbon-nav {
+            background-color: var(--bg-gray);
+            padding: 0 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 20px;
+        }
+
+        .tab {
+            padding: 8px 5px;
+            cursor: pointer;
+            color: #444;
+            position: relative;
+        }
+        
+        .tab.active {
+            color: var(--word-blue);
+            font-weight: 600;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--word-blue);
+        }
+
+        /* --- Ribbon Toolbar --- */
+        .ribbon-toolbar {
+            background-color: var(--ribbon-bg);
+            height: 100px;
+            display: flex;
+            padding: 5px 15px;
+            border-bottom: 1px solid #dcdcdc;
+            align-items: flex-start;
+            overflow-x: auto;
+        }
+
+        .tool-group {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            padding: 0 10px;
+            border-right: 1px solid #e0e0e0;
+            gap: 5px;
+        }
+
+        .tool-group:last-child { border-right: none; }
+
+        /* Vertical layout for small buttons, Horizontal for big ones */
+        .col-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly; /* Distribute vertically */
+            height: 100%;
+        }
+        
+        .row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .big-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            min-width: 50px;
+            cursor: pointer;
+            border-radius: 3px;
+            color: #444;
+        }
+        .big-btn:hover { background: var(--hover-gray); }
+        .big-btn i { font-size: 24px; margin-bottom: 5px; color: var(--word-blue); } /* Default to brand color for main icons */
+        .big-btn span { font-size: 11px; }
+
+        .small-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #555;
+        }
+        .small-btn:hover { background: var(--hover-gray); }
+        
+        .small-btn.active { background: #d0d0d0; }
+
+        /* Inputs */
+        .font-select {
+            border: 1px solid transparent;
+            padding: 2px;
+            font-family: inherit;
+            font-size: 12px;
+            width: 110px;
+        }
+        .font-select:hover { border: 1px solid #ccc; background: white; }
+        
+        .size-select {
+            border: 1px solid transparent;
+            width: 40px;
+            text-align: center;
+        }
+        .size-select:hover { border: 1px solid #ccc; background: white; }
+
+        /* Specific Styling for Colored Icons */
+        .icon-blue { color: var(--word-blue) !important; }
+        .icon-red { color: #c00000 !important; }
+        .icon-highlight { color: #ff0; background: #555; padding: 2px; }
+
+        /* --- Workspace --- */
+        .workspace {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .paper {
+            width: 816px; /* Approx A4 at 96dpi */
+            min-height: 1056px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 96px; /* 1 inch margins */
+            outline: none;
+            font-size: 16px; /* 12pt visual approx */
+            user-select: text; /* Content editable */
+            color: black;
+            transform-origin: top center;
+        }
+
+        /* Scrollbar Styling */
+        .workspace::-webkit-scrollbar { width: 14px; }
+        .workspace::-webkit-scrollbar-track { background: #f1f1f1; }
+        .workspace::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 7px; border: 3px solid #f1f1f1; }
+        .workspace::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* --- Status Bar --- */
+        .status-bar {
+            height: 28px;
+            background-color: var(--status-bar-bg);
+            border-top: 1px solid #dcdcdc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #555;
+            z-index: 10;
+        }
+
+        .sb-left, .sb-right { display: flex; gap: 15px; align-items: center; }
+        .sb-item { cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .sb-item:hover { background: #e6e6e6; border-radius: 2px; }
+
+        .zoom-slider-container { display: flex; align-items: center; gap: 10px; }
+        input[type=range] {
+            width: 100px;
+            height: 4px;
+            background: #ccc;
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 2px;
+            height: 14px;
+            background: #555;
+            cursor: pointer;
+        }
+
+        .focus-badge {
+            border: 1px solid #ccc; padding: 2px 8px; border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Window Bar -->
+    <header class="title-bar">
+        <div class="tb-left">
+            <div class="traffic-lights">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="autosave-switch">
+                <span>AutoSave</span>
+                <div class="switch"></div>
+            </div>
+            <div class="quick-actions">
+                <i class="fa-solid fa-house"></i>
+                <i class="fa-regular fa-floppy-disk"></i>
+                <i class="fa-solid fa-rotate-left"></i>
+                <i class="fa-solid fa-rotate-right"></i>
+                <i class="fa-solid fa-print"></i>
+            </div>
+        </div>
+
+        <div class="tb-center">
+            Document1 <i class="fa-solid fa-shield-halved" style="font-size: 10px; margin: 0 5px;"></i> Confidential*
+        </div>
+
+        <div class="tb-right">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>Search (Cmd + Ctrl + U)</span>
+            </div>
+            <button class="top-btn"><i class="fa-regular fa-comment"></i> Comments</button>
+            <button class="top-btn"><i class="fa-solid fa-pen"></i> Editing <i class="fa-solid fa-chevron-down"></i></button>
+            <button class="top-btn share-btn"><i class="fa-solid fa-share-from-square"></i> Share <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="ribbon-nav">
+        <div class="tab active">Home</div>
+        <div class="tab">Insert</div>
+        <div class="tab">Draw</div>
+        <div class="tab">Design</div>
+        <div class="tab">Layout</div>
+        <div class="tab">References</div>
+        <div class="tab">Mailings</div>
+        <div class="tab">Review</div>
+        <div class="tab">View</div>
+    </nav>
+
+    <!-- Main Toolbar (Ribbon) -->
+    <div class="ribbon-toolbar">
+        
+        <!-- Clipboard Group -->
+        <div class="tool-group">
+            <div class="big-btn" onclick="simpleCmd('paste')">
+                <i class="fa-regular fa-paste" style="color:#333"></i>
+                <span>Paste</span>
+            </div>
+            <div class="col-wrapper">
+                 <!-- Using simple icons to mimic Cut/Copy scissors and paper -->
+                 <div class="row"><div class="small-btn"><i class="fa-solid fa-scissors"></i></div></div>
+                 <div class="row"><div class="small-btn"><i class="fa-regular fa-copy"></i></div></div>
+                 <div class="row"><div class="small-btn"><i class="fa-solid fa-paintbrush"></i></div></div>
+            </div>
+        </div>
+
+        <!-- Font Group -->
+        <div class="tool-group">
+            <div class="col-wrapper">
+                <div class="row">
+                    <select class="font-select" id="fontFace">
+                        <option>Calibri (Body)</option>
+                        <option>Arial</option>
+                        <option>Times New Roman</option>
+                    </select>
+                    <select class="size-select" id="fontSize">
+                        <option>11</option>
+                        <option selected>12</option>
+                        <option>14</option>
+                        <option>18</option>
+                    </select>
+                    <div class="small-btn"><i class="fa-solid fa-caret-up"></i></div> <!-- Grow Font -->
+                    <div class="small-btn"><i class="fa-solid fa-caret-down"></i></div> <!-- Shrink Font -->
+                    <div class="small-btn">A<span style="font-size:8px; vertical-align: super; color:var(--word-blue);">a</span></div> <!-- Case -->
+                    <div class="small-btn"><i class="fa-solid fa-eraser icon-red"></i></div> <!-- Clear Format -->
+                </div>
+                <div class="row">
+                    <div class="small-btn" onclick="format('bold')"><i class="fa-solid fa-bold"></i></div>
+                    <div class="small-btn" onclick="format('italic')"><i class="fa-solid fa-italic"></i></div>
+                    <div class="small-btn" onclick="format('underline')"><i class="fa-solid fa-underline"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-strikethrough"></i></div>
+                    <div class="small-btn">x<sub>2</sub></div>
+                    <div class="small-btn">x<sup>2</sup></div>
+                    <div class="small-btn icon-blue" style="text-shadow: 1px 1px 2px #ccc; font-weight:900">A</div> <!-- Text Effect -->
+                    <div class="small-btn"><i class="fa-solid fa-pen-fancy" style="color:gold; background:#444; padding:2px; border-radius:2px;"></i></div> <!-- Highlight -->
+                    <div class="small-btn" style="color: #c00000; font-weight:bold; border-bottom: 3px solid #c00000">A</div> <!-- Font Color -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Paragraph Group -->
+        <div class="tool-group">
+            <div class="col-wrapper">
+                <div class="row">
+                    <div class="small-btn"><i class="fa-solid fa-list-ul"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-list-ol"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-indent"></i></div> <!-- Multilevel -->
+                    <div class="small-btn"><i class="fa-solid fa-outdent"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-indent"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-arrow-down-a-z"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-paragraph"></i></div>
+                </div>
+                <div class="row">
+                    <div class="small-btn" onclick="format('justifyLeft')"><i class="fa-solid fa-align-left"></i></div>
+                    <div class="small-btn" onclick="format('justifyCenter')"><i class="fa-solid fa-align-center"></i></div>
+                    <div class="small-btn" onclick="format('justifyRight')"><i class="fa-solid fa-align-right"></i></div>
+                    <div class="small-btn" onclick="format('justifyFull')"><i class="fa-solid fa-align-justify"></i></div>
+                    <div class="small-btn"><i class="fa-solid fa-arrows-left-right-to-line" style="transform: rotate(90deg);"></i></div> <!-- Spacing -->
+                    <div class="small-btn"><i class="fa-solid fa-fill-drip"></i></div> <!-- Shading -->
+                    <div class="small-btn"><i class="fa-regular fa-square"></i></div> <!-- Borders -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Styles -->
+        <div class="tool-group">
+             <div class="big-btn">
+                <span style="font-family: serif; font-size: 20px; color: #2b579a;">Aa</span>
+                <span>Styles</span>
+            </div>
+             <div class="big-btn">
+                <i class="fa-regular fa-window-maximize icon-blue"></i>
+                <span style="text-align:center; line-height:1;">Styles<br>Pane</span>
+            </div>
+        </div>
+
+        <!-- Voice -->
+        <div class="tool-group">
+            <div class="big-btn">
+                <i class="fa-solid fa-microphone icon-blue"></i>
+                <span>Dictate</span>
+            </div>
+        </div>
+
+         <!-- Sensitivity -->
+         <div class="tool-group">
+            <div class="big-btn">
+                <i class="fa-solid fa-shield-halved icon-blue"></i>
+                <span>Sensitivity</span>
+            </div>
+        </div>
+
+         <!-- Add-ins -->
+         <div class="tool-group">
+            <div class="big-btn">
+                <i class="fa-solid fa-table-cells-large" style="color:#d05e2f"></i>
+                <span>Add-ins</span>
+            </div>
+            <div class="big-btn">
+                <i class="fa-solid fa-pen-to-square icon-blue"></i>
+                <span>Editor</span>
+            </div>
+        </div>
+
+         <!-- Custom (Amazon demo) -->
+         <div class="tool-group">
+            <div class="big-btn">
+                <div style="width:24px; height:24px; background: linear-gradient(45deg, #8e24aa, #d81b60); color:white; border-radius:4px; display:flex; align-items:center; justify-content:center; margin-bottom:5px;">
+                    <i class="fa-solid fa-bolt" style="color:white; font-size:14px;"></i>
+                </div>
+                <span style="text-align:center; line-height:1;">Amazon<br>Quick Suite</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Working Area -->
+    <main class="workspace" id="workspace">
+        <!-- ContentEditable div acts as the document -->
+        <div class="paper" id="paper" contenteditable="true">
+            
+        </div>
+    </main>
+
+    <!-- Status Bar -->
+    <footer class="status-bar">
+        <div class="sb-left">
+            <div class="sb-item">Page 1 of 1</div>
+            <div class="sb-item" id="wordCount">0 words</div>
+            <div class="sb-item"><i class="fa-solid fa-book-open"></i></div>
+            <div class="sb-item">English (United States)</div>
+            <div class="sb-item"><i class="fa-solid fa-person-circle-check"></i> Accessibility: Good to go</div>
+        </div>
+        
+        <div class="sb-right">
+            <div class="sb-item">
+                <span class="focus-badge"><i class="fa-solid fa-expand"></i> Focus</span>
+            </div>
+            <div class="sb-item" title="Read Mode"><i class="fa-solid fa-book"></i></div>
+            <div class="sb-item" title="Print Layout"><i class="fa-solid fa-file-lines"></i></div> <!-- Active view -->
+            <div class="sb-item" title="Web Layout"><i class="fa-solid fa-globe"></i></div>
+            
+            <div class="zoom-slider-container">
+                <div class="sb-item" onclick="zoomOut()">-</div>
+                <input type="range" min="50" max="200" value="100" id="zoomSlider">
+                <div class="sb-item" onclick="zoomIn()">+</div>
+            </div>
+            <div class="sb-item" id="zoomLabel">100%</div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Basic Formatting Logic ---
+        // Note: 'execCommand' is officially deprecated but is the simplest way 
+        // to implement a basic rich text editor in a single file without huge libraries.
+        function format(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('paper').focus();
+        }
+
+        // --- Zoom Logic ---
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomLabel = document.getElementById('zoomLabel');
+        const paper = document.getElementById('paper');
+
+        function updateZoom() {
+            const val = zoomSlider.value;
+            zoomLabel.innerText = val + "%";
+            // Use CSS transform to scale the paper, standard way web word processors handle view zoom
+            paper.style.transform = `scale(${val / 100})`; 
+            // Adjust margin to prevent paper overlapping scrollbars at high zoom
+            if(val > 100) {
+                paper.style.marginTop = (val - 100) + "px";
+                paper.style.marginBottom = (val - 100) + "px";
+            } else {
+                paper.style.marginTop = "0";
+                paper.style.marginBottom = "0";
+            }
+        }
+
+        zoomSlider.addEventListener('input', updateZoom);
+
+        function zoomIn() {
+            zoomSlider.value = Math.min(parseInt(zoomSlider.value) + 10, 200);
+            updateZoom();
+        }
+
+        function zoomOut() {
+            zoomSlider.value = Math.max(parseInt(zoomSlider.value) - 10, 50);
+            updateZoom();
+        }
+        
+        // --- Word Count Logic ---
+        const wordCountLabel = document.getElementById('wordCount');
+        
+        paper.addEventListener('input', () => {
+            const text = paper.innerText || "";
+            const count = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            wordCountLabel.innerText = count + " words";
+        });
+
+        // --- UI Interactions (Tabs) ---
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        // --- Focus paper on load ---
+        window.onload = () => paper.focus();
+
+    </script>
+</body>
+</html>
