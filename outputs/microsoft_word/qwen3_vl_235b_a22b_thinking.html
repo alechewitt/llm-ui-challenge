@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Microsoft Word - Document1</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Microsoft Word Interface</title>
     <style>
         * {
             margin: 0;
@@ -13,287 +12,333 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        :root {
-            --primary: #2b579a;
-            --secondary: #e8e8e8;
-            --tertiary: #f0f0f0;
-            --text: #333;
-            --border: #d0d0d0;
-            --accent: #0078d4;
-            --success: #107c10;
-            --warning: #f2c800;
-            --danger: #d13438;
-        }
-
         body {
-            background-color: #f3f3f3;
-            color: var(--text);
-            line-height: 1.4;
+            background-color: #f0f0f0;
+            color: #333;
+            overflow: hidden;
         }
 
-        .window {
+        .word-app {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 1600px;
-            margin: 0 auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            background-color: white;
-        }
-
-        /* Top Bar - macOS style */
-        .top-bar {
-            display: flex;
-            align-items: center;
-            padding: 5px 15px;
-            background-color: #f0f0f0;
-            border-bottom: 1px solid var(--border);
-            height: 30px;
-        }
-
-        .window-controls {
-            display: flex;
-            gap: 8px;
-            margin-right: 10px;
-        }
-
-        .window-btn {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #e8e8e8;
-        }
-
-        .close-btn { background-color: #ff5f56; }
-        .minimize-btn { background-color: #ffbd2e; }
-        .maximize-btn { background-color: #28c940; }
-
-        .top-bar-icons {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .top-bar-icons i {
-            font-size: 14px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .top-bar-icons i:hover {
-            color: var(--primary);
+            width: 100%;
+            overflow: hidden;
+            background-color: #f5f5f5;
         }
 
         /* Title Bar */
         .title-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3px 0;
-            background-color: #fafafa;
-            border-bottom: 1px solid var(--border);
-            height: 28px;
-        }
-
-        .document-title {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .confidential {
-            color: #e00;
-            margin-left: 5px;
-            font-weight: 500;
-        }
-
-        .search-container {
+            background-color: #1464b4;
+            color: white;
+            height: 32px;
             display: flex;
             align-items: center;
-            background-color: #f1f1f1;
-            border-radius: 3px;
-            padding: 3px 8px;
-            margin-left: auto;
-            margin-right: 15px;
+            padding: 0 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #0d4a8b;
         }
 
-        .search-container i {
-            color: #666;
+        .window-controls {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
             margin-right: 5px;
         }
 
-        .search-container input {
-            border: none;
-            background: transparent;
+        .close { background-color: #ff5f57; }
+        .minimize { background-color: #ffbd2e; }
+        .maximize { background-color: #28c940; }
+
+        .app-controls {
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+        }
+
+        .app-control {
+            width: 18px;
+            height: 18px;
+            margin: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .app-control:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .document-title {
+            flex-grow: 1;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .confidential {
+            background-color: #1464b4;
+            padding: 0 5px;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 3px 8px;
+            margin-right: 10px;
             font-size: 12px;
-            width: 180px;
-            outline: none;
+        }
+
+        .search-icon {
+            margin-right: 5px;
+            font-size: 14px;
         }
 
         /* Ribbon */
         .ribbon {
-            background-color: white;
-            border-bottom: 1px solid var(--border);
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
             padding: 5px 0;
-            min-height: 110px;
+            height: 130px;
+            overflow: hidden;
         }
 
-        .ribbon-tabs {
+        .tab-bar {
             display: flex;
-            padding: 0 15px;
-            margin-bottom: 8px;
+            height: 22px;
+            padding: 0 10px;
+            margin-bottom: 5px;
         }
 
-        .ribbon-tab {
-            padding: 5px 12px;
+        .tab {
+            padding: 0 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
             cursor: pointer;
-            border-radius: 2px;
-            margin-right: 8px;
             font-weight: 500;
-            font-size: 13px;
-            transition: all 0.2s;
+            font-size: 12px;
+            margin-right: 10px;
+            border-bottom: 2px solid transparent;
         }
 
-        .ribbon-tab.active {
-            background-color: var(--accent);
-            color: white;
+        .tab.active {
+            border-bottom: 2px solid #1464b4;
+            color: #1464b4;
         }
 
-        .ribbon-tab:hover:not(.active) {
-            background-color: #e8e8e8;
+        .tab:hover {
+            background-color: #e9e9e9;
         }
 
-        .ribbon-groups {
+        .tab-content {
+            display: none;
+            padding: 5px 10px;
+            height: calc(100% - 27px);
+        }
+
+        .tab-content.active {
             display: flex;
-            padding: 0 15px;
-            overflow-x: auto;
         }
 
-        .ribbon-group {
-            display: flex;
-            flex-direction: column;
-            margin-right: 12px;
-            min-width: 80px;
+        .group {
+            display: inline-block;
+            border-right: 1px solid #e0e0e0;
+            padding: 0 8px;
+            margin-right: 8px;
+            height: 80px;
+            vertical-align: top;
+        }
+
+        .group:last-child {
+            border-right: none;
         }
 
         .group-title {
-            font-size: 11px;
+            font-size: 9px;
+            text-transform: uppercase;
             color: #666;
+            margin-bottom: 3px;
             text-align: center;
-            margin-bottom: 5px;
-            font-weight: 500;
         }
 
-        .group-items {
+        /* Toolbar controls */
+        .toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 2px;
+            gap: 3px;
         }
 
-        .ribbon-button {
-            width: 28px;
-            height: 28px;
-            display: flex;
+        .toolbar-item {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            width: 24px;
+            height: 24px;
             border-radius: 3px;
             cursor: pointer;
-            transition: all 0.15s;
-            position: relative;
         }
 
-        .ribbon-button:hover {
-            background-color: #e8e8e8;
+        .toolbar-item:hover {
+            background-color: #e9e9e9;
         }
 
-        .ribbon-button:active {
+        .toolbar-item:active {
             background-color: #d0d0d0;
         }
 
-        .ribbon-button i {
-            font-size: 16px;
-            color: #333;
+        .toolbar-item.selected {
+            background-color: #d0e5f8;
+            border: 1px solid #1464b4;
         }
 
-        .dropdown-btn {
+        .toolbar-item.split {
+            width: 40px;
             position: relative;
-            display: inline-block;
         }
 
-        .dropdown-btn i {
-            font-size: 10px;
-            margin-left: 2px;
+        .split-main {
+            width: 24px;
+            border-right: 1px solid #c0c0c0;
         }
 
-        .ribbon-separator {
-            width: 1px;
-            height: 40px;
-            background-color: var(--border);
-            margin: 0 8px;
+        .split-arrow {
+            width: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .font-size {
-            width: 45px;
-            padding: 2px 5px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            text-align: center;
-            font-size: 13px;
-            background-color: #f8f8f8;
-        }
-
-        .font-selector {
-            width: 100px;
-            padding: 2px 5px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            background-color: #f8f8f8;
+        .toolbar-group {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
+            margin-right: 8px;
+        }
+
+        .dropdown {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 5px;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            background-color: white;
+            height: 22px;
+            font-size: 12px;
+        }
+
+        .dropdown:hover {
+            border-color: #808080;
+        }
+
+        .dropdown-arrow {
+            margin-left: 3px;
+            font-size: 10px;
         }
 
         .color-picker {
             display: flex;
             align-items: center;
-            gap: 5px;
         }
 
         .color-box {
             width: 16px;
             height: 16px;
-            border: 1px solid var(--border);
+            border: 1px solid #c0c0c0;
+            margin-right: 3px;
+        }
+
+        .button {
+            padding: 2px 6px;
+            border: 1px solid #c0c0c0;
             border-radius: 3px;
-            background-color: #ff0;
+            background-color: white;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            border-color: #808080;
+            background-color: #f0f0f0;
+        }
+
+        .button:active {
+            background-color: #e0e0e0;
+        }
+
+        .icon {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Document Area */
         .document-area {
-            flex: 1;
+            flex-grow: 1;
+            background-color: white;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f3f3f3;
-            padding: 20px;
+            flex-direction: column;
             overflow: auto;
+            padding: 20px;
         }
 
-        .document {
-            width: 780px;
-            min-height: 1000px;
+        .page {
+            width: 595px;
+            min-height: 842px;
             background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0 auto;
             position: relative;
+        }
+
+        .page-content {
+            padding: 72px 90px;
+            height: 100%;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 1px;
+            height: 18px;
+            background-color: black;
+            animation: blink 1s infinite;
+            position: absolute;
+            top: 72px;
+            left: 90px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         /* Status Bar */
         .status-bar {
+            background-color: #f5f5f5;
+            border-top: 1px solid #e0e0e0;
+            height: 22px;
             display: flex;
             align-items: center;
-            padding: 3px 15px;
-            background-color: #f0f0f0;
-            border-top: 1px solid var(--border);
-            height: 25px;
+            padding: 0 10px;
             font-size: 11px;
             color: #666;
         }
@@ -304,367 +349,502 @@
         }
 
         .status-right {
-            display: flex;
-            align-items: center;
             margin-left: auto;
-            gap: 12px;
+            display: flex;
+            gap: 15px;
         }
 
-        .zoom-control {
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 3px;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: absolute;
+            background-color: #333;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            display: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .has-tooltip:hover .tooltip {
+            display: block;
+        }
+
+        /* Additional styling for specific elements */
+        .font-dropdown {
+            width: 120px;
+        }
+
+        .size-dropdown {
+            width: 45px;
+        }
+
+        .color-button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #c0c0c0;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .color-button:hover {
+            border-color: #808080;
+        }
+
+        .color-button.red {
+            background-color: #e67373;
+        }
+
+        .color-button.blue {
+            background-color: #5b9bd5;
+        }
+
+        .color-button.yellow {
+            background-color: #ffeb9c;
+        }
+
+        .icon-large {
+            font-size: 18px;
+        }
+
+        .ribbon-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ribbon-section:last-child {
+            margin-left: auto;
+        }
+
+        .button-primary {
+            background-color: #1464b4;
+            color: white;
+            border: 1px solid #1464b4;
+        }
+
+        .button-primary:hover {
+            background-color: #1a75d0;
+            border-color: #1a75d0;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background-color: #e0e0e0;
+            margin: 0 5px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .zoom-slider {
             width: 100px;
-            height: 8px;
+            height: 12px;
             background-color: #e0e0e0;
-            border-radius: 4px;
+            border-radius: 6px;
             position: relative;
-            cursor: pointer;
         }
 
         .zoom-slider-fill {
-            position: absolute;
-            left: 0;
-            top: 0;
             height: 100%;
-            background-color: var(--accent);
-            border-radius: 4px;
-            width: 85%;
+            width: 80%;
+            background-color: #1464b4;
+            border-radius: 6px;
+            position: absolute;
         }
 
         .zoom-slider-handle {
-            position: absolute;
-            top: -3px;
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background-color: white;
-            border: 1px solid #999;
+            border: 1px solid #c0c0c0;
             border-radius: 50%;
-            cursor: pointer;
-            left: 85%;
-        }
-
-        /* Special elements */
-        .highlight-btn {
-            position: relative;
-            padding: 0 5px;
-        }
-
-        .highlight-btn i {
-            color: #333;
-        }
-
-        .highlight-btn::after {
-            content: '';
             position: absolute;
-            bottom: 2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #ffd900;
-        }
-
-        .color-btn {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-            border: 1px solid var(--border);
+            right: 0;
+            top: 50%;
+            transform: translate(50%, -50%);
             cursor: pointer;
-        }
-
-        .red-color { background-color: #e81123; }
-        .blue-color { background-color: #0078d4; }
-
-        /* Button with icon and text */
-        .icon-text-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3px;
-            padding: 3px 0;
-        }
-
-        .icon-text-btn i {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .icon-text-btn span {
-            font-size: 11px;
-            text-align: center;
-        }
-
-        /* Toggle button */
-        .toggle-btn {
-            padding: 2px 8px;
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .toggle-btn:hover {
-            background-color: #e8e8e8;
-        }
-
-        .share-btn {
-            background-color: var(--accent);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .share-btn:hover {
-            background-color: #0066cc;
-        }
-
-        .comments-btn {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 3px 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .comments-btn:hover {
-            background-color: #e8e8e8;
-        }
-
-        .editing-btn {
-            border: 1px solid var(--border);
-            border-radius: 3px;
-            padding: 3px 10px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .editing-btn:hover {
-            background-color: #e8e8e8;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .ribbon-groups {
-                flex-wrap: wrap;
-            }
-            
-            .ribbon-group {
-                min-width: 60px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="window">
-        <!-- Top Bar (macOS) -->
-        <div class="top-bar">
-            <div class="window-controls">
-                <div class="window-btn close-btn"></div>
-                <div class="window-btn minimize-btn"></div>
-                <div class="window-btn maximize-btn"></div>
-            </div>
-            <div class="top-bar-icons">
-                <i class="fas fa-save"></i>
-                <i class="fas fa-undo"></i>
-                <i class="fas fa-redo"></i>
-                <i class="fas fa-print"></i>
-                <i class="fas fa-ellipsis-h"></i>
-            </div>
-        </div>
-
+    <div class="word-app">
         <!-- Title Bar -->
         <div class="title-bar">
-            <span class="document-title">Document1</span>
-            <span class="confidential">Confidential*</span>
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search (Cmd + Ctrl + U)">
-            </div>
-        </div>
-
-        <!-- Ribbon -->
-        <div class="ribbon">
-            <div class="ribbon-tabs">
-                <div class="ribbon-tab active">Home</div>
-                <div class="ribbon-tab">Insert</div>
-                <div class="ribbon-tab">Draw</div>
-                <div class="ribbon-tab">Design</div>
-                <div class="ribbon-tab">Layout</div>
-                <div class="ribbon-tab">References</div>
-                <div class="ribbon-tab">Mailings</div>
-                <div class="ribbon-tab">Review</div>
-                <div class="ribbon-tab">View</div>
+            <div class="window-controls">
+                <div class="window-control close"></div>
+                <div class="window-control minimize"></div>
+                <div class="window-control maximize"></div>
             </div>
             
-            <div class="ribbon-groups">
-                <!-- Paste Group -->
-                <div class="ribbon-group">
-                    <div class="group-title">Paste</div>
-                    <div class="group-items">
-                        <div class="ribbon-button">
-                            <i class="fas fa-clipboard"></i>
+            <div class="app-controls">
+                <div class="app-control" title="AutoSave">
+                    <span>AutoSave</span>
+                </div>
+                <div class="app-control">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/>
+                        <path d="M12 7V12L15 15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="app-control">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 11V20C21 21.1 20.1 22 19 22H5C3.9 22 3 21.1 3 20V11C3 9.9 3.9 9 5 9H7V6C7 3.24 9.24 1 12 1C14.76 1 17 3.24 17 6V9H19C20.1 9 21 9.9 21 11Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="app-control">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 8H5C3.9 8 3 8.9 3 10V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16V10C21 8.9 20.1 8 19 8Z" fill="white"/>
+                        <path d="M12 12C13.1 12 14 11.1 14 10C14 8.9 13.1 8 12 8C10.9 8 10 8.9 10 10C10 11.1 10.9 12 12 12Z" fill="white"/>
+                        <path d="M12 16C12.55 16 13 15.55 13 15C13 14.45 12.55 14 12 14C11.45 14 11 14.45 11 15C11 15.55 11.45 16 12 16Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="app-control">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20Z" fill="white"/>
+                        <path d="M11 7H13V13H11V7ZM11 15H13V17H11V15Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="app-control">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3C7.03 3 3 7.03 3 12C3 16.97 7.03 21 12 21C16.97 21 21 16.97 21 12C21 7.03 16.97 3 12 3ZM12 19C8.13 19 5 15.87 5 12C5 8.13 8.13 5 12 5C15.87 5 19 8.13 19 12C19 15.87 15.87 19 12 19Z" fill="white"/>
+                        <path d="M12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17ZM12 9C13.66 9 15 10.34 15 12C15 13.66 13.66 15 12 15C10.34 15 9 13.66 9 12C9 10.34 10.34 9 12 9Z" fill="white"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="document-title">
+                <span>Document3</span>
+                <div class="confidential">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1L3 5V11C3 16.55 7.15 21 12 21C16.85 21 21 16.55 21 11V5L12 1Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 10L15 13L9 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Confidential*
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <span>Search (Cmd + Ctrl + U)</span>
+            </div>
+        </div>
+        
+        <!-- Ribbon -->
+        <div class="ribbon">
+            <div class="tab-bar">
+                <div class="tab active">Home</div>
+                <div class="tab">Insert</div>
+                <div class="tab">Draw</div>
+                <div class="tab">Design</div>
+                <div class="tab">Layout</div>
+                <div class="tab">References</div>
+                <div class="tab">Mailings</div>
+                <div class="tab">Review</div>
+                <div class="tab">View</div>
+            </div>
+            
+            <div class="tab-content active">
+                <div class="group">
+                    <div class="group-title">Clipboard</div>
+                    <div class="toolbar">
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">📋</div>
+                            <div class="tooltip">Paste</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="far fa-clipboard"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">✂️</div>
+                            <div class="tooltip">Cut</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-paint-brush"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">📋</div>
+                            <div class="tooltip">Copy</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">📋</div>
+                            <div class="tooltip">Format Painter</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Font Group -->
-                <div class="ribbon-group">
+                <div class="group">
                     <div class="group-title">Font</div>
-                    <div class="group-items">
-                        <div class="font-selector">
-                            <span>Calibri (Bo...</span>
-                            <i class="fas fa-angle-down"></i>
+                    <div class="toolbar">
+                        <div class="toolbar-group">
+                            <div class="dropdown font-dropdown">
+                                <span>Calibri (Bo...</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
                         </div>
-                        <div class="font-size">
-                            <span>12</span>
-                            <i class="fas fa-angle-down"></i>
+                        <div class="toolbar-group">
+                            <div class="dropdown size-dropdown">
+                                <span>12</span>
+                                <span class="dropdown-arrow">▼</span>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-bold"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">A⁺</div>
+                                <div class="tooltip">Increase Font Size</div>
+                            </div>
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">A⁻</div>
+                                <div class="tooltip">Decrease Font Size</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-italic"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">Aa</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Change Case</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-underline"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">A</div>
+                                <div class="tooltip">Clear Formatting</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-superscript"></i>
+                    </div>
+                    <div class="toolbar" style="margin-top: 5px;">
+                        <div class="toolbar-item has-tooltip selected">
+                            <div class="icon">B</div>
+                            <div class="tooltip">Bold (Ctrl+B)</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-subscript"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">I</div>
+                            <div class="tooltip">Italic (Ctrl+I)</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-font"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">U</div>
+                            <span class="dropdown-arrow">▼</span>
+                            <div class="tooltip">Underline</div>
                         </div>
-                        <div class="highlight-btn">
-                            <i class="fas fa-highlighter"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">ab</div>
+                            <div class="tooltip">Strikethrough</div>
                         </div>
-                        <div class="color-btn red-color"></div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">x₂</div>
+                            <div class="tooltip">Subscript</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">x²</div>
+                            <div class="tooltip">Superscript</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="color-button blue"></div>
+                            <div class="tooltip">Font Color</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="color-button yellow"></div>
+                            <div class="tooltip">Highlight</div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Paragraph Group -->
-                <div class="ribbon-group">
+                <div class="group">
                     <div class="group-title">Paragraph</div>
-                    <div class="group-items">
-                        <div class="ribbon-button">
-                            <i class="fas fa-align-left"></i>
+                    <div class="toolbar">
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">☰</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Bullets</div>
+                            </div>
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">1.</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Numbering</div>
+                            </div>
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">1.a.i.</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Multilevel List</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-align-center"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">←</div>
+                                <div class="tooltip">Decrease Indent</div>
+                            </div>
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">→</div>
+                                <div class="tooltip">Increase Indent</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-align-right"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">↔</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Line and Paragraph Spacing</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-align-justify"></i>
+                        <div class="toolbar-group">
+                            <div class="toolbar-item has-tooltip">
+                                <div class="icon">✓</div>
+                                <span class="dropdown-arrow">▼</span>
+                                <div class="tooltip">Sort</div>
+                            </div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-list-ol"></i>
+                    </div>
+                    <div class="toolbar" style="margin-top: 5px;">
+                        <div class="toolbar-item has-tooltip selected">
+                            <div class="icon" style="font-size: 16px;">≡</div>
+                            <div class="tooltip">Align Left</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-list-ul"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon" style="font-size: 16px;">≡</div>
+                            <div class="tooltip">Center</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-indent"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon" style="font-size: 16px;">≡</div>
+                            <div class="tooltip">Align Right</div>
                         </div>
-                        <div class="ribbon-button">
-                            <i class="fas fa-outdent"></i>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon" style="font-size: 16px;">≡</div>
+                            <div class="tooltip">Justify</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">¶</div>
+                            <div class="tooltip">Show/Hide ¶</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Styles Group -->
-                <div class="ribbon-group">
+                <div class="group">
                     <div class="group-title">Styles</div>
-                    <div class="group-items">
-                        <div class="icon-text-btn">
-                            <i class="fas fa-text-height"></i>
-                            <span>Styles</span>
+                    <div class="toolbar">
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">A</div>
+                            <div class="tooltip">Change Styles</div>
                         </div>
-                        <div class="icon-text-btn">
-                            <i class="fas fa-palette"></i>
-                            <span>Styles Pane</span>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">🎨</div>
+                            <div class="tooltip">Styles Pane</div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Special Tools -->
-                <div class="ribbon-group">
-                    <div class="group-title"></div>
-                    <div class="group-items">
-                        <div class="icon-text-btn">
-                            <i class="fas fa-microphone"></i>
-                            <span>Dictate</span>
-                        </div>
-                        <div class="icon-text-btn">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Sensitivity</span>
-                        </div>
-                        <div class="icon-text-btn">
-                            <i class="fas fa-puzzle-piece"></i>
-                            <span>Add-ins</span>
-                        </div>
-                        <div class="icon-text-btn">
-                            <i class="fas fa-edit"></i>
-                            <span>Editor</span>
-                        </div>
-                        <div class="icon-text-btn">
-                            <div style="background: #7c00ff; color: white; padding: 2px; border-radius: 3px; font-weight: bold;">A</div>
-                            <span>Amazon Quick Suite</span>
+                <div class="group">
+                    <div class="group-title">Voice</div>
+                    <div class="toolbar">
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">🎤</div>
+                            <div class="tooltip">Dictate</div>
                         </div>
                     </div>
+                </div>
+                
+                <div class="group">
+                    <div class="group-title">Accessibility</div>
+                    <div class="toolbar">
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">🔍</div>
+                            <div class="tooltip">Sensitivity</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group">
+                    <div class="group-title">Customize</div>
+                    <div class="toolbar">
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">🧩</div>
+                            <div class="tooltip">Add-ins</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">✏️</div>
+                            <div class="tooltip">Editor</div>
+                        </div>
+                        <div class="toolbar-item has-tooltip">
+                            <div class="icon">📦</div>
+                            <div class="tooltip">Amazon Quick Suite</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ribbon-section">
+                    <div class="button" style="margin-right: 5px;">Comments</div>
+                    <div class="button" style="margin-right: 5px;">Editing ▼</div>
+                    <div class="button button-primary">Share ▼</div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Document Area -->
         <div class="document-area">
-            <div class="document">
-                <!-- Document content would go here -->
+            <div class="page">
+                <div class="page-content">
+                    <div class="cursor"></div>
+                </div>
             </div>
         </div>
-
+        
         <!-- Status Bar -->
         <div class="status-bar">
             <div class="status-left">
-                <span>Page 1 of 1</span>
-                <span>0 words</span>
-                <span>English (United States)</span>
-                <span>Accessibility: Good to go</span>
+                <div class="status-item">Page 1 of 1</div>
+                <div class="status-item">0 words</div>
+                <div class="status-item">English (United States)</div>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#4CAF50"/>
+                        <path d="M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
+                    </svg>
+                    Accessibility: Good to go
+                </div>
             </div>
+            
             <div class="status-right">
-                <span><i class="fas fa-arrows-alt"></i> Focus</span>
-                <i class="fas fa-file-alt"></i>
-                <i class="fas fa-globe"></i>
-                <i class="fas fa-ellipsis-h"></i>
-                <div class="zoom-control">
-                    <i class="fas fa-minus"></i>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z" fill="#666"/>
+                        <path d="M12 19C13.1 19 14 18.1 14 17C14 15.9 13.1 15 12 15C10.9 15 10 15.9 10 17C10 18.1 10.9 19 12 19Z" fill="#666"/>
+                        <path d="M12 21C13.1 21 14 20.1 14 19C14 17.9 13.1 17 12 17C10.9 17 10 17.9 10 19C10 20.1 10.9 21 12 21Z" fill="#666"/>
+                        <path d="M12 15C10.9 15 10 14.1 10 13C10 11.9 10.9 11 12 11C13.1 11 14 11.9 14 13C14 14.1 13.1 15 12 15Z" fill="#666"/>
+                        <path d="M12 9C8.13 9 5 12.13 5 16C5 19.87 8.13 23 12 23C15.87 23 19 19.87 19 16C19 12.13 15.87 9 12 9ZM12 21C9.24 21 7 18.76 7 16C7 13.24 9.24 11 12 11C14.76 11 17 13.24 17 16C17 18.76 14.76 21 12 21Z" fill="#666"/>
+                    </svg>
+                    Focus
+                </div>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM12 17.5C14.43 17.5 16.4 15.53 16.4 13C16.4 10.47 14.43 8.5 12 8.5C9.57 8.5 7.6 10.47 7.6 13C7.6 15.53 9.57 17.5 12 17.5ZM12 10C12.83 10 13.5 10.67 13.5 11.5C13.5 12.33 12.83 13 12 13C11.17 13 10.5 12.33 10.5 11.5C10.5 10.67 11.17 10 12 10Z" fill="#666"/>
+                    </svg>
+                </div>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17.5C14.43 17.5 16.4 15.53 16.4 13C16.4 10.47 14.43 8.5 12 8.5C9.57 8.5 7.6 10.47 7.6 13C7.6 15.53 9.57 17.5 12 17.5ZM12 10C12.83 10 13.5 10.67 13.5 11.5C13.5 12.33 12.83 13 12 13C11.17 13 10.5 12.33 10.5 11.5C10.5 10.67 11.17 10 12 10Z" fill="#666"/>
+                        <path d="M12 1C10.3 1 8.7 1.3 7.2 1.9L8.6 3.3C9.8 2.8 11.1 2.5 12.5 2.5C15.93 2.5 18.7 4.84 19.29 7.88L20.55 7.17C19.77 3.55 16.55 1 12.8 1H12M12 23C13.7 23 15.3 22.7 16.8 22.1L15.4 20.7C14.2 21.2 12.9 21.5 11.5 21.5C8.07 21.5 5.3 19.16 4.71 16.12L3.45 16.83C4.23 20.45 7.45 23 11.2 23H12M2 12C2 10.3 2.3 8.7 2.9 7.2L4.3 8.6C3.8 9.8 3.5 11.1 3.5 12.5C3.5 15.93 5.84 18.7 8.88 19.29L8.17 20.55C4.55 19.77 2 16.55 2 12.8V12M22 12C22 13.7 21.7 15.3 21.1 16.8L19.7 15.4C20.2 14.2 20.5 12.9 20.5 11.5C20.5 8.07 18.16 5.3 15.12 4.71L15.83 3.45C19.45 4.23 22 7.45 22 11.2V12M16.5 12C16.5 14.49 14.49 16.5 12 16.5C9.51 16.5 7.5 14.49 7.5 12C7.5 9.51 9.51 7.5 12 7.5C14.49 7.5 16.5 9.51 16.5 12Z" fill="#666"/>
+                    </svg>
+                </div>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17ZM12 15C10.34 15 9 13.66 9 12C9 10.34 10.34 9 12 9C13.66 9 15 10.34 15 12C15 13.66 13.66 15 12 15Z" fill="#666"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#666"/>
+                    </svg>
+                </div>
+                <div class="zoom-controls">
+                    <span>-</span>
                     <div class="zoom-slider">
                         <div class="zoom-slider-fill"></div>
                         <div class="zoom-slider-handle"></div>
                     </div>
-                    <i class="fas fa-plus"></i>
+                    <span>+</span>
                     <span>185%</span>
                 </div>
             </div>
@@ -672,69 +852,61 @@
     </div>
 
     <script>
-        // Make ribbon tabs interactive
-        document.querySelectorAll('.ribbon-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelector('.ribbon-tab.active').classList.remove('active');
-                this.classList.add('active');
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                // Show the corresponding tab content
+                const tabContent = document.querySelector('.tab-content');
+                tabContent.classList.add('active');
             });
         });
         
-        // Make zoom slider interactive
-        const slider = document.querySelector('.zoom-slider');
-        const handle = document.querySelector('.zoom-slider-handle');
-        const fill = document.querySelector('.zoom-slider-fill');
-        
-        slider.addEventListener('mousedown', (e) => {
-            const startX = e.clientX;
-            const startLeft = handle.offsetLeft;
+        // Simulate cursor movement
+        document.querySelector('.document-area').addEventListener('click', (e) => {
+            const cursor = document.querySelector('.cursor');
+            const rect = cursor.parentElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
             
-            function move(e) {
-                const diff = e.clientX - startX;
-                let newLeft = startLeft + diff;
-                
-                if (newLeft < 0) newLeft = 0;
-                if (newLeft > slider.offsetWidth - handle.offsetWidth) {
-                    newLeft = slider.offsetWidth - handle.offsetWidth;
-                }
-                
-                handle.style.left = newLeft + 'px';
-                fill.style.width = (newLeft + handle.offsetWidth/2) + 'px';
-                
-                // Calculate zoom percentage (100% at center)
-                const zoomPercent = 100 + (newLeft / slider.offsetWidth) * 200;
-                document.querySelector('.zoom-control span:last-child').textContent = 
-                    Math.round(zoomPercent) + '%';
-            }
-            
-            function stop() {
-                document.removeEventListener('mousemove', move);
-                document.removeEventListener('mouseup', stop);
-            }
-            
-            document.addEventListener('mousemove', move);
-            document.addEventListener('mouseup', stop);
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
         });
         
-        // Initialize zoom to 185%
-        window.addEventListener('load', () => {
-            const targetPercent = 85; // 85% of the slider width for 185% zoom
-            const sliderWidth = slider.offsetWidth;
-            const handlePos = (targetPercent / 100) * sliderWidth;
-            
-            handle.style.left = handlePos + 'px';
-            fill.style.width = handlePos + 'px';
+        // Handle window controls
+        document.querySelector('.close').addEventListener('click', () => {
+            // In a real app, this would close the window
+            console.log('Close window');
         });
         
-        // Add hover effects to buttons
-        document.querySelectorAll('.ribbon-button, .icon-text-btn, .toggle-btn, .share-btn, .comments-btn').forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = '#e8e8e8';
-            });
-            
-            button.addEventListener('mouseleave', function() {
-                if (!this.classList.contains('active')) {
-                    this.style.backgroundColor = 'transparent';
+        document.querySelector('.minimize').addEventListener('click', () => {
+            // In a real app, this would minimize the window
+            console.log('Minimize window');
+        });
+        
+        document.querySelector('.maximize').addEventListener('click', () => {
+            // In a real app, this would maximize/restore the window
+            console.log('Maximize/Restore window');
+        });
+        
+        // Add hover effect for toolbar items
+        document.querySelectorAll('.toolbar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Toggle selection for certain items
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                } else if (this.classList.contains('toggle')) {
+                    this.classList.add('selected');
                 }
             });
         });

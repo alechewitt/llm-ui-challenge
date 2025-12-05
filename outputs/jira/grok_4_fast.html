@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Board</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f5f7;
+            color: #172b4d;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #5e4dcc;
+            color: white;
+            padding: 20px 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav li.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left-color: white;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background-color: white;
+            border-bottom: 1px solid #dfe1e6;
+            box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+        }
+
+        .board-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            color: #172b4d;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .quick-filters {
+            font-size: 14px;
+            color: #5e6c84;
+            border: 1px solid #dfe1e6;
+            padding: 4px 8px;
+            border-radius: 3px;
+            background-color: white;
+        }
+
+        .column-counts {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+            color: #5e6c84;
+        }
+
+        .add-button {
+            background-color: #0052cc;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .release-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .release-button {
+            background-color: white;
+            border: 1px solid #dfe1e6;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #172b4d;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            padding: 24px;
+            gap: 24px;
+        }
+
+        .board-container {
+            display: flex;
+            flex: 1;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 8px 0;
+        }
+
+        .board-column {
+            background-color: white;
+            border: 1px solid #dfe1e6;
+            border-radius: 3px;
+            width: 280px;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-right: 8px;
+        }
+
+        .column-header {
+            padding: 12px;
+            border-bottom: 1px solid #dfe1e6;
+            font-weight: 600;
+            font-size: 14px;
+            color: #172b4d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-count {
+            background-color: #ebecf0;
+            color: #6b778c;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .column-cards {
+            flex: 1;
+            padding: 8px;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .card {
+            background-color: white;
+            border: 1px solid #dfe1e6;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            padding: 12px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 0 1px #0052cc;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 8px 0;
+            color: #172b4d;
+        }
+
+        .card-description {
+            font-size: 12px;
+            color: #5e6c84;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #5e6c84;
+        }
+
+        .flag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .flag.red { background-color: #ff5630; }
+        .flag.orange { background-color: #ffab00; }
+        .flag.yellow { background-color: #ff8b00; }
+        .flag.green { background-color: #00c851; }
+
+        .add-card-button {
+            border: 2px solid #dfe1e6;
+            background-color: white;
+            color: #5e6c84;
+            padding: 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .add-card-button:hover {
+            border-color: #0052cc;
+            color: #0052cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Teams in Space</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active">Board</li>
+                <li>Reports</li>
+                <li>Issues</li>
+                <li>Admin</li>
+                <li>Settings</li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="header">
+        <h1 class="board-title">Board</h1>
+        <div class="header-actions">
+            <span class="quick-filters">Quick filters</span>
+            <div class="column-counts">
+                <span>In Progress 3</span>
+                <button class="add-button">+</button>
+                <span>To Do</span>
+            </div>
+            <div class="release-dropdown">
+                <button class="release-button">Release &#9660;</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="board-container">
+            <div class="board-column">
+                <div class="column-header">
+                    <span>To Do</span>
+                    <span class="column-count">0</span>
+                </div>
+                <div class="column-cards">
+                    <button class="add-card-button">+ Add a card</button>
+                </div>
+            </div>
+
+            <div class="board-column">
+                <div class="column-header">
+                    <span>In Progress</span>
+                    <span class="column-count">3</span>
+                </div>
+                <div class="column-cards">
+                    <div class="card">
+                        <div class="flag red"></div>
+                        <h3 class="card-title">Outer Solar Express</h3>
+                        <p class="card-description">For requesting available flights with status</p>
+                        <div class="card-footer">
+                            <span>50 days ago</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flag red"></div>
+                        <h3 class="card-title">Engage Saturn Tours</h3>
+                        <p class="card-description">In double-check on Spacecraft</p>
+                        <div class="card-footer">
+                            <span>25 days ago</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Engage Saturn Tours</h3>
+                        <p class="card-description">For group tour lines</p>
+                        <div class="card-footer">
+                            <span>17 days ago</span>
+                            <span>Medium</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="board-column">
+                <div class="column-header">
+                    <span>Code Review</span>
+                    <span class="column-count">1</span>
+                </div>
+                <div class="column-cards">
+                    <div class="card">
+                        <div class="flag orange"></div>
+                        <h3 class="card-title">Minister of Mars</h3>
+                        <p class="card-description">Home page footer use a class</p>
+                        <div class="card-footer">
+                            <span>3 days ago</span>
+                            <span>Medium</span>
+                        </div>
+                    </div>
+                    <button class="add-card-button">+ Add a card</button>
+                </div>
+            </div>
+
+            <div class="board-column">
+                <div class="column-header">
+                    <span>Done</span>
+                    <span class="column-count">3</span>
+                </div>
+                <div class="column-cards">
+                    <div class="card">
+                        <div class="flag yellow"></div>
+                        <h3 class="card-title">Mars Travel Files</h3>
+                        <p class="card-description">Draft from Mars Travel</p>
+                        <div class="card-footer">
+                            <span>2 days ago</span>
+                            <span>Low</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flag green"></div>
+                        <h3 class="card-title">Engage Saturn Tours</h3>
+                        <p class="card-description">To establish catering</p>
+                        <div class="card-footer">
+                            <span>1 day ago</span>
+                            <span>Low</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Engage Saturn Tours</h3>
+                        <p class="card-description">To establish new menu</p>
+                        <div class="card-footer">
+                            <span>Today</span>
+                            <span>Low</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Basic interactivity: make sidebar items clickable
+        document.querySelectorAll('.sidebar-nav li').forEach(li => {
+            li.addEventListener('click', () => {
+                document.querySelector('.sidebar-nav li.active').classList.remove('active');
+                li.classList.add('active');
+            });
+        });
+
+        // Hover effects are handled in CSS
+        // No further JS needed for static interface
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VS Code Mock</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Fira Code',Menlo,Consolas,monospace}
+body{background:#111215;color:#d4d4d4;height:100vh;display:flex;justify-content:center;align-items:center}
+.window{width:1000px;height:620px;background:#1e1e1e;border-radius:12px;overflow:hidden;box-shadow:0 18px 60px rgba(0,0,0,.6);display:flex;flex-direction:column}
+.titlebar{height:32px;background:#161719;display:flex;align-items:center;padding:0 14px;gap:10px;border-bottom:1px solid #0d0d0d}
+.traffic{display:flex;gap:6px}
+.traffic span{width:12px;height:12px;border-radius:50%}
+.red{background:#ff6058}
+.yellow{background:#ffbf2f}
+.green{background:#29c941}
+.titletext{flex:1;text-align:center;font-size:13px;color:#c5c5c5}
+.frame{flex:1;display:flex}
+.iconbar{width:52px;background:#151619;border-right:1px solid #101010;display:flex;flex-direction:column;align-items:center;padding-top:20px;gap:18px}
+.icon{width:26px;height:26px;border-radius:6px;background:#232428;display:flex;align-items:center;justify-content:center;color:#6d6d6d;font-size:15px}
+.icon.active{background:#007acc;color:#fff}
+.sidebar{width:240px;background:#1b1c1f;border-right:1px solid #0d0d0d;display:flex;flex-direction:column}
+.side-header{padding:10px 14px;font-size:12px;color:#c5c5c5;letter-spacing:.08em}
+.tree{flex:1;overflow:auto;padding-bottom:20px}
+.tree ul{list-style:none;padding-left:14px}
+.tree li{line-height:26px;font-size:13px;color:#c5c5c5;display:flex;align-items:center}
+.folder{color:#c5c5c5}
+.folder.open>span::before{content:"▾";margin-right:6px;color:#7f7f7f}
+.folder.closed>span::before{content:"▸";margin-right:6px;color:#7f7f7f}
+.folder .name{color:#e4e4e4;font-weight:600}
+.file{padding-left:16px;color:#8ec8ff}
+.badge{background:#3e3e3e;border-radius:8px;padding:0 6px;margin-left:auto;font-size:11px;color:#8ec8ff}
+.editor-area{flex:1;display:flex;flex-direction:column;background:#1e1e1e}
+.tabbar{height:36px;background:#1b1c1f;border-bottom:1px solid #0f0f0f;display:flex;align-items:flex-end;padding:0 2px}
+.tab{height:34px;padding:0 18px;background:#252526;color:#c5c5c5;border-top-left-radius:6px;border-top-right-radius:6px;display:flex;align-items:center;font-size:13px;margin-right:2px;gap:6px}
+.tab.active{background:#1e1e1e;border-bottom:2px solid transparent;color:#fff}
+.tab .dot{width:6px;height:6px;border-radius:50%;background:#f4c430}
+.editor{flex:1;padding:18px 28px;font-size:14px;line-height:1.7;position:relative;overflow:auto}
+.linenumbers{position:absolute;top:18px;left:0;width:40px;text-align:right;color:#666;font-size:13px}
+.code{margin-left:42px;color:#e4e4e4}
+.keyword{color:#c586c0}
+.string{color:#ce9178}
+.func{color:#dcdcaa}
+.tag{color:#569cd6}
+.attr{color:#9cdcfe}
+footer{height:28px;background:#191919;border-top:1px solid #0d0d0d;font-size:12px;display:flex;align-items:center}
+footer span{padding:0 12px;color:#a3a3a3}
+footer span.active{color:#8ec8ff}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <div class="traffic">
+      <span class="red"></span><span class="yellow"></span><span class="green"></span>
+    </div>
+    <div class="titletext">claude-code-sdk-demos - Visual Studio Code</div>
+  </div>
+  <div class="frame">
+    <div class="iconbar">
+      <div class="icon active">📁</div>
+      <div class="icon">⚙️</div>
+      <div class="icon">🐙</div>
+      <div class="icon">🔍</div>
+      <div class="icon">▶️</div>
+    </div>
+    <div class="sidebar">
+      <div class="side-header">EXPLORER</div>
+      <div class="tree">
+        <ul>
+          <li class="folder open"><span><span class="name">CLAUDE-CODE-SDK-DEMOS</span></span></li>
+          <ul>
+            <li class="folder open"><span>email-agent</span></li>
+            <ul>
+              <li class="folder open"><span>excel-demo</span></li>
+              <ul>
+                <li class="folder closed"><span>.erb</span></li>
+                <li class="folder closed"><span>agent</span></li>
+                <li class="folder open"><span>assets</span></li>
+                <li class="folder closed"><span>node_modules</span></li>
+                <li class="folder closed"><span>release</span></li>
+                <li class="folder open"><span>src</span></li>
+                <ul>
+                  <li class="folder closed"><span>__tests__</span></li>
+                  <li class="folder open"><span>main</span></li>
+                  <ul>
+                    <li class="file">main.ts</li>
+                    <li class="file">menu.ts</li>
+                    <li class="file">preload.ts</li>
+                    <li class="file">util.ts</li>
+                  </ul>
+                  <li class="folder closed"><span>renderer</span></li>
+                </ul>
+              </ul>
+            </ul>
+          </ul>
+        </ul>
+      </div>
+    </div>
+    <div class="editor-area">
+      <div class="tabbar">
+        <div class="tab">email-db.ts</div>
+        <div class="tab active">App.tsx<span class="dot"></span></div>
+        <div class="tab">App.css</div>
+        <div class="tab">util.ts</div>
+      </div>
+      <div class="editor">
+        <div class="linenumbers">
+          1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14
+        </div>
+        <pre class="code"><span class="keyword">import</span> { MemoryRouter <span class="keyword">as</span> Router, Routes, Route } from <span class="string">'react-router-dom'</span>;
+<span class="keyword">import</span> ChatInterface from <span class="string">'./components/ChatInterface'</span>;
+<span class="keyword">import</span> <span class="string">'./App.css'</span>;
+
+<span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="func">App</span>() {
+  <span class="keyword">return</span> (
+    &lt;<span class="tag">Router</span>&gt;
+      &lt;<span class="tag">Routes</span>&gt;
+        &lt;<span class="tag">Route</span> <span class="attr">path</span>=<span class="string">"/"</span> <span class="attr">element</span>=<span class="string">{&lt;ChatInterface /&gt;}</span> /&gt;
+      &lt;/<span class="tag">Routes</span>&gt;
+    &lt;/<span class="tag">Router</span>&gt;
+  );
+}</pre>
+      </div>
+      <footer>
+        <span>main*</span>
+        <span>Amazon Q</span>
+        <span class="active">-- INSERT --</span>
+        <span>Ln 14, Col 1</span>
+        <span>Spaces: 2</span>
+        <span>UTF-8</span>
+        <span>LF</span>
+        <span>{} TypeScript JSX</span>
+        <span>🔔</span>
+      </footer>
+    </div>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.folder > span').forEach(span=>{
+  span.addEventListener('click',()=>{
+    span.parentElement.classList.toggle('open');
+    span.parentElement.classList.toggle('closed');
+  });
+});
+</script>
+</body>
+</html>

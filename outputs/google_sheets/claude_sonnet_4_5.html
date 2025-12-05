@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled spreadsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid #dadce0;
+            background: #f9fafa;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: #0f9d58;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .logo::before {
+            content: "📊";
+            font-size: 20px;
+        }
+
+        .title-section {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+
+        .title {
+            font-size: 18px;
+            color: #202124;
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #202124;
+        }
+
+        .menu-item {
+            cursor: pointer;
+        }
+
+        .icons-left {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .icon-btn:hover {
+            background: #e8eaed;
+        }
+
+        .share-btn {
+            background: #c2e7ff;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4285f4;
+            margin-left: 12px;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid #dadce0;
+            background: #f9fafa;
+            gap: 8px;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 2px;
+            border: none;
+            background: none;
+            font-size: 14px;
+        }
+
+        .toolbar-btn:hover {
+            background: #e8eaed;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: #dadce0;
+            margin: 0 4px;
+        }
+
+        .zoom-select {
+            padding: 4px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .font-select {
+            padding: 4px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            background: white;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .font-size-input {
+            width: 50px;
+            padding: 4px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            text-align: center;
+        }
+
+        .formula-bar {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid #dadce0;
+            background: white;
+        }
+
+        .cell-reference {
+            padding: 4px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            background: white;
+            min-width: 80px;
+            font-size: 14px;
+        }
+
+        .formula-input {
+            flex: 1;
+            padding: 4px 8px;
+            border: 1px solid #dadce0;
+            border-radius: 2px;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+
+        .spreadsheet-container {
+            overflow: auto;
+            height: calc(100vh - 200px);
+            position: relative;
+        }
+
+        .spreadsheet {
+            display: grid;
+            grid-template-columns: 50px repeat(11, 130px);
+            position: relative;
+        }
+
+        .cell {
+            border: 1px solid #dadce0;
+            border-top: none;
+            border-left: none;
+            min-height: 30px;
+            background: white;
+            position: relative;
+        }
+
+        .row-header {
+            background: #f9fafa;
+            border: 1px solid #dadce0;
+            border-top: none;
+            border-left: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #202124;
+            font-weight: 500;
+            min-height: 30px;
+        }
+
+        .col-header {
+            background: #f9fafa;
+            border: 1px solid #dadce0;
+            border-top: none;
+            border-left: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #202124;
+            font-weight: 500;
+            min-height: 30px;
+        }
+
+        .cell:focus {
+            outline: 2px solid #1a73e8;
+            z-index: 1;
+        }
+
+        .cell.selected {
+            background: #e8f0fe;
+            border: 2px solid #1a73e8;
+        }
+
+        .corner-cell {
+            background: #f9fafa;
+            border: 1px solid #dadce0;
+            border-top: none;
+            border-left: none;
+        }
+
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: white;
+            border-top: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 16px;
+        }
+
+        .sheet-tab {
+            background: white;
+            border: none;
+            padding: 8px 16px;
+            color: #1a73e8;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .sheet-tab:hover {
+            background: #f1f3f4;
+        }
+
+        .add-sheet-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-sheet-btn:hover {
+            background: #f1f3f4;
+        }
+
+        .menu-icon {
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 100%;
+            padding: 4px;
+            font-size: 13px;
+        }
+
+        .fill-handle {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 6px;
+            height: 6px;
+            background: #1a73e8;
+            cursor: crosshair;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"></div>
+        <div class="title-section">
+            <div class="title">Untitled spreadsheet</div>
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Insert</span>
+                <span class="menu-item">Format</span>
+                <span class="menu-item">Data</span>
+                <span class="menu-item">Tools</span>
+                <span class="menu-item">Extensions</span>
+                <span class="menu-item">Help</span>
+            </div>
+        </div>
+        <div class="icons-left">
+            <div class="icon-btn">🕐</div>
+            <div class="icon-btn">💬</div>
+            <div class="icon-btn">📹</div>
+            <button class="share-btn">🔒 Share</button>
+            <div class="profile-pic"></div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button class="toolbar-btn">🔍</button>
+        <button class="toolbar-btn">↶</button>
+        <button class="toolbar-btn">↷</button>
+        <button class="toolbar-btn">🖨</button>
+        <button class="toolbar-btn">🎨</button>
+        <div class="divider"></div>
+        <select class="zoom-select">
+            <option>100%</option>
+        </select>
+        <div class="divider"></div>
+        <button class="toolbar-btn">£</button>
+        <button class="toolbar-btn">%</button>
+        <button class="toolbar-btn">.0</button>
+        <button class="toolbar-btn">.00</button>
+        <button class="toolbar-btn">123</button>
+        <div class="divider"></div>
+        <select class="font-select">
+            <option>Arial</option>
+        </select>
+        <div class="divider"></div>
+        <button class="toolbar-btn">-</button>
+        <input type="text" class="font-size-input" value="10">
+        <button class="toolbar-btn">+</button>
+        <div class="divider"></div>
+        <button class="toolbar-btn"><b>B</b></button>
+        <button class="toolbar-btn"><i>I</i></button>
+        <button class="toolbar-btn">S</button>
+        <button class="toolbar-btn">A</button>
+        <div class="divider"></div>
+        <button class="toolbar-btn">🎨</button>
+        <button class="toolbar-btn">⊞</button>
+        <button class="toolbar-btn">⋮</button>
+        <button class="toolbar-btn">⋯</button>
+    </div>
+
+    <div class="formula-bar">
+        <input type="text" class="cell-reference" value="A1" readonly>
+        <span style="margin: 0 8px;">ƒₓ</span>
+        <input type="text" class="formula-input" id="formulaInput">
+    </div>
+
+    <div class="spreadsheet-container">
+        <div class="spreadsheet" id="spreadsheet">
+            <div class="corner-cell"></div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <button class="add-sheet-btn">+</button>
+        <span class="menu-icon">☰</span>
+        <button class="sheet-tab">Sheet1 ▼</button>
+    </div>
+
+    <script>
+        const cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
+        const rows = 17;
+        const spreadsheet = document.getElementById('spreadsheet');
+
+        for (let i = 0; i < cols.length; i++) {
+            const colHeader = document.createElement('div');
+            colHeader.className = 'col-header';
+            colHeader.textContent = cols[i];
+            spreadsheet.appendChild(colHeader);
+        }
+
+        for (let row = 1; row <= rows; row++) {
+            const rowHeader = document.createElement('div');
+            rowHeader.className = 'row-header';
+            rowHeader.textContent = row;
+            spreadsheet.appendChild(rowHeader);
+
+            for (let col = 0; col < cols.length; col++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.contentEditable = true;
+                cell.dataset.row = row;
+                cell.dataset.col = cols[col];
+
+                if (row === 1 && col === 0) {
+                    cell.classList.add('selected');
+                    const fillHandle = document.createElement('div');
+                    fillHandle.className = 'fill-handle';
+                    cell.appendChild(fillHandle);
+                }
+
+                cell.addEventListener('focus', function() {
+                    document.querySelectorAll('.cell').forEach(c => {
+                        c.classList.remove('selected');
+                        const handle = c.querySelector('.fill-handle');
+                        if (handle) handle.remove();
+                    });
+                    this.classList.add('selected');
+                    const fillHandle = document.createElement('div');
+                    fillHandle.className = 'fill-handle';
+                    this.appendChild(fillHandle);
+                    
+                    const cellRef = this.dataset.col + this.dataset.row;
+                    document.querySelector('.cell-reference').value = cellRef;
+                    document.getElementById('formulaInput').value = this.textContent;
+                });
+
+                cell.addEventListener('input', function() {
+                    document.getElementById('formulaInput').value = this.textContent;
+                });
+
+                spreadsheet.appendChild(cell);
+            }
+        }
+
+        document.getElementById('formulaInput').addEventListener('input', function() {
+            const selectedCell = document.querySelector('.cell.selected');
+            if (selectedCell) {
+                selectedCell.textContent = this.value;
+            }
+        });
+    </script>
+</body>
+</html>

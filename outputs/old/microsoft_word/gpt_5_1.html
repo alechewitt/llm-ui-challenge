@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Microsoft Word UI Mock</title>
+  <style>
+    :root {
+      --window-bg: #e7e7e7;
+      --titlebar-bg: #f5f5f7;
+      --ribbon-bg: #f3f3f3;
+      --ribbon-border: #d0d0d0;
+      --status-bg: #f5f5f5;
+      --accent-blue: #2563eb;
+      --accent-blue-light: #e1ebff;
+      --text-main: #222;
+      --text-muted: #555;
+      --icon-muted: #7a7a7a;
+      --border-light: #dcdcdc;
+      --page-bg: #fff;
+      --page-shadow: rgba(0, 0, 0, 0.08);
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--window-bg);
+      font-family: var(--font-ui);
+      color: var(--text-main);
+    }
+
+    body {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .window {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      border-left: 1px solid #cfcfcf;
+      border-right: 1px solid #cfcfcf;
+      background: #f8f8f8;
+    }
+
+    /********** TITLE BAR **********/
+    .titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px 4px;
+      background: var(--titlebar-bg);
+      border-bottom: 1px solid #d6d6d6;
+      font-size: 12px;
+    }
+
+    .title-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .traffic-lights {
+      display: flex;
+      gap: 6px;
+      padding-right: 8px;
+    }
+
+    .traffic-light {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    .red   { background: #ff5f57; }
+    .yellow{ background: #febc2e; }
+    .green { background: #28c840; }
+
+    .autosave {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+    }
+    .autosave-toggle {
+      width: 34px;
+      height: 18px;
+      border-radius: 9px;
+      background: #d0d0d0;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .autosave-toggle::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.35);
+      transition: transform 0.15s ease;
+    }
+    .autosave-toggle.on {
+      background: var(--accent-blue);
+    }
+    .autosave-toggle.on::after {
+      transform: translateX(16px);
+    }
+
+    .title-center {
+      flex: 1;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      pointer-events: none;
+    }
+
+    .title-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 320px;
+      justify-content: flex-end;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box input {
+      width: 190px;
+      padding: 5px 8px 5px 22px;
+      border-radius: 40px;
+      border: 1px solid #d3d3d3;
+      font-size: 11px;
+      background: #ffffff;
+    }
+    .search-icon {
+      position: absolute;
+      left: 7px;
+      font-size: 11px;
+      color: var(--icon-muted);
+    }
+
+    .title-button {
+      border-radius: 4px;
+      border: 1px solid transparent;
+      padding: 4px 8px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .title-button:hover {
+      background: #e9e9e9;
+      border-color: #d0d0d0;
+    }
+
+    .title-button.primary {
+      background: var(--accent-blue);
+      border-color: #1d4ed8;
+      color: #fff;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 16px;
+    }
+    .title-button.primary:hover {
+      background: #1d4ed8;
+    }
+
+    .mode-pill {
+      border-radius: 16px;
+      padding: 4px 10px;
+      border: 1px solid #dadada;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      background: #ffffff;
+    }
+
+    /********** TAB BAR (Home, Insert...) **********/
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 16px;
+      background: #f6f6f6;
+      border-bottom: 1px solid var(--ribbon-border);
+      font-size: 12px;
+    }
+
+    .tab {
+      padding: 4px 8px 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab.active {
+      color: var(--accent-blue);
+      font-weight: 500;
+      border-bottom: 2px solid var(--accent-blue);
+      margin-bottom: -1px;
+    }
+
+    /********** RIBBON **********/
+    .ribbon {
+      display: flex;
+      align-items: stretch;
+      padding: 6px 10px;
+      background: var(--ribbon-bg);
+      border-bottom: 1px solid var(--ribbon-border);
+      font-size: 11px;
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .ribbon-group {
+      border-right: 1px solid var(--border-light);
+      padding: 0 6px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 110px;
+    }
+    .ribbon-group:last-child {
+      border-right: none;
+    }
+
+    .group-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .group-title {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .big-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+    }
+    .big-button:hover {
+      background: #e6f0ff;
+      border-color: #c3d5ff;
+    }
+    .big-button span {
+      font-size: 12px;
+      color: var(--icon-muted);
+    }
+
+    .small-button {
+      border-radius: 3px;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 2px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--text-main);
+      min-width: 20px;
+    }
+    .small-button.toggled {
+      background: var(--accent-blue-light);
+      border-color: var(--accent-blue);
+      color: #1e3a8a;
+    }
+    .small-button:hover {
+      background: #e9e9e9;
+      border-color: #d0d0d0;
+    }
+
+    select.ribbon-select {
+      font-size: 11px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      border: 1px solid #cfcfcf;
+      background: #ffffff;
+    }
+
+    .separator-vert {
+      width: 1px;
+      align-self: stretch;
+      background: var(--border-light);
+      margin: 0 4px;
+    }
+
+    /********** WORKSPACE & PAGE **********/
+    .workspace {
+      flex: 1;
+      overflow: auto;
+      background: var(--window-bg);
+      padding: 16px 0 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .page-wrapper {
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+
+    .page {
+      width: 816px; /* ~8.5" @ 96dpi */
+      min-height: 1056px; /* ~11" */
+      background: var(--page-bg);
+      box-shadow: 0 0 0 1px #d7d7d7, 0 6px 16px var(--page-shadow);
+      margin: 0 auto;
+      padding: 72px 72px 96px;
+      transform-origin: top center;
+      position: relative;
+    }
+
+    .page[contenteditable="true"]:focus {
+      outline: none;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      top: 54px;
+      left: 56px;
+      right: 56px;
+      border-top: 1px dashed rgba(0,0,0,0.05);
+    }
+
+    /********** STATUS BAR **********/
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 10px;
+      background: var(--status-bg);
+      border-top: 1px solid #d7d7d7;
+      font-size: 11px;
+      color: var(--text-muted);
+      gap: 10px;
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .status-icon {
+      font-size: 12px;
+      color: var(--icon-muted);
+    }
+
+    .view-buttons span {
+      padding: 2px 4px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .view-buttons span.active {
+      background: #e1ebff;
+      color: var(--accent-blue);
+    }
+
+    .zoom-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 140px;
+    }
+
+    .zoom-range {
+      width: 90px;
+    }
+
+    /********** UTIL **********/
+    button {
+      font-family: inherit;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        width: 680px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div class="window">
+  <!-- TITLE BAR -->
+  <div class="titlebar">
+    <div class="title-left">
+      <div class="traffic-lights">
+        <div class="traffic-light red"></div>
+        <div class="traffic-light yellow"></div>
+        <div class="traffic-light green"></div>
+      </div>
+      <div class="autosave">
+        <span>AutoSave</span>
+        <div id="autosaveToggle" class="autosave-toggle on"></div>
+      </div>
+    </div>
+    <div class="title-center">
+      Document1 • Confidential*
+    </div>
+    <div class="title-right">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Search (Cmd + Ctrl + U)" />
+      </div>
+      <button class="title-button" type="button">
+        💬 <span>Comments</span>
+      </button>
+      <div class="mode-pill">
+        <span>Editing</span> ▼
+      </div>
+      <button class="title-button primary" type="button">
+        Share
+      </button>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab active">Home</div>
+    <div class="tab">Insert</div>
+    <div class="tab">Draw</div>
+    <div class="tab">Design</div>
+    <div class="tab">Layout</div>
+    <div class="tab">References</div>
+    <div class="tab">Mailings</div>
+    <div class="tab">Review</div>
+    <div class="tab">View</div>
+  </div>
+
+  <!-- RIBBON -->
+  <div class="ribbon">
+    <!-- Clipboard -->
+    <div class="ribbon-group" style="min-width:80px;">
+      <div class="group-row">
+        <button class="big-button" type="button">
+          <span>📋</span>
+        </button>
+      </div>
+      <div class="group-row" style="flex-direction:column;align-items:flex-start;margin-top:2px;">
+        <button class="small-button" type="button" style="font-size:10px;">Cut</button>
+        <button class="small-button" type="button" style="font-size:10px;">Copy</button>
+        <button class="small-button" type="button" style="font-size:10px;">Format Painter</button>
+      </div>
+      <div class="group-title">Clipboard</div>
+    </div>
+
+    <!-- Font -->
+    <div class="ribbon-group" style="min-width:230px;">
+      <div class="group-row">
+        <select id="fontFamily" class="ribbon-select" style="min-width:120px;">
+          <option selected>Calibri (Body)</option>
+          <option>Arial</option>
+          <option>Times New Roman</option>
+          <option>Verdana</option>
+          <option>Georgia</option>
+        </select>
+        <select id="fontSize" class="ribbon-select" style="width:52px;">
+          <option>10</option>
+          <option selected>12</option>
+          <option>14</option>
+          <option>18</option>
+          <option>24</option>
+          <option>36</option>
+        </select>
+        <button class="small-button" type="button" title="Increase Font Size">A▲</button>
+        <button class="small-button" type="button" title="Decrease Font Size">A▼</button>
+      </div>
+      <div class="group-row">
+        <button class="small-button format-btn" data-command="bold" type="button"><b>B</b></button>
+        <button class="small-button format-btn" data-command="italic" type="button"><i>I</i></button>
+        <button class="small-button format-btn" data-command="underline" type="button"><u>U</u></button>
+        <button class="small-button" type="button">X₂</button>
+        <button class="small-button" type="button">X²</button>
+        <div class="separator-vert"></div>
+        <button class="small-button" type="button">A▼</button>
+        <button class="small-button" type="button" style="color:#b91c1c;">A</button>
+        <button class="small-button" type="button" style="color:#1d4ed8;">A</button>
+      </div>
+      <div class="group-title">Font</div>
+    </div>
+
+    <!-- Paragraph -->
+    <div class="ribbon-group" style="min-width:210px;">
+      <div class="group-row">
+        <button class="small-button" type="button">•</button>
+        <button class="small-button" type="button">1.</button>
+        <button class="small-button" type="button">▶</button>
+        <div class="separator-vert"></div>
+        <button class="small-button" type="button">⟱</button>
+        <button class="small-button" type="button">⟰</button>
+        <button class="small-button" type="button">¶</button>
+      </div>
+      <div class="group-row">
+        <button class="small-button" type="button">☰</button>
+        <button class="small-button" type="button">≡</button>
+        <button class="small-button" type="button">☷</button>
+        <button class="small-button" type="button">⇤</button>
+        <button class="small-button" type="button">⇥</button>
+        <button class="small-button" type="button">▤</button>
+      </div>
+      <div class="group-title">Paragraph</div>
+    </div>
+
+    <!-- Styles / Dictate / etc (right side icons) -->
+    <div class="ribbon-group" style="min-width:260px;">
+      <div class="group-row">
+        <button class="small-button" type="button">Styles ▾</button>
+        <button class="small-button" type="button">Styles Pane</button>
+        <button class="small-button" type="button">🎙 Dictate</button>
+      </div>
+      <div class="group-row">
+        <button class="small-button" type="button">Sensitivity</button>
+        <button class="small-button" type="button">Add-ins</button>
+        <button class="small-button" type="button">Editor</button>
+        <button class="small-button" type="button">Amazon</button>
+      </div>
+      <div class="group-title">Tools</div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div class="workspace">
+    <div class="page-wrapper">
+      <div id="page" class="page" contenteditable="true">
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-left">
+      <div class="status-item">
+        <span>Page 1 of 1</span>
+      </div>
+      <div class="status-item">
+        <span id="wordCount">0 words</span>
+      </div>
+      <div class="status-item">
+        <span>English (United States)</span>
+      </div>
+      <div class="status-item">
+        <span class="status-icon">♿</span>
+        <span>Accessibility: Good to go</span>
+      </div>
+    </div>
+    <div class="status-right">
+      <div class="status-item view-buttons">
+        <span class="active">Focus</span>
+        <span>Print</span>
+        <span>Web</span>
+      </div>
+      <div class="zoom-wrapper">
+        <span class="status-icon">🔍</span>
+        <input id="zoomRange" class="zoom-range" type="range" min="50" max="200" value="185" />
+        <span id="zoomLabel">185%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Autosave toggle visual
+  document.getElementById('autosaveToggle').addEventListener('click', function () {
+    this.classList.toggle('on');
+  });
+
+  // Tab active state (purely visual)
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Simple zoom implementation
+  const zoomRange = document.getElementById('zoomRange');
+  const zoomLabel = document.getElementById('zoomLabel');
+  const page = document.getElementById('page');
+
+  function updateZoom() {
+    const val = parseInt(zoomRange.value, 10);
+    zoomLabel.textContent = val + '%';
+    const scale = val / 100;
+    page.style.transform = 'scale(' + scale + ')';
+  }
+  zoomRange.addEventListener('input', updateZoom);
+  updateZoom();
+
+  // Word count
+  const wordCountEl = document.getElementById('wordCount');
+  function updateWordCount() {
+    const text = page.innerText || '';
+    const words = text
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    wordCountEl.textContent = (words.length || 0) + ' word' + (words.length === 1 ? '' : 's');
+  }
+  page.addEventListener('input', updateWordCount);
+  updateWordCount();
+
+  // Basic formatting buttons using execCommand (works in most browsers; deprecated but fine for demo).
+  document.querySelectorAll('.format-btn').forEach(btn => {
+    const cmd = btn.dataset.command;
+    btn.addEventListener('click', () => {
+      document.execCommand(cmd, false, null);
+      btn.classList.toggle('toggled');
+      page.focus();
+    });
+  });
+
+  // Font family & size applied to whole page for simplicity (not selection-based)
+  document.getElementById('fontFamily').addEventListener('change', function () {
+    page.style.fontFamily = this.value + ', ' + getComputedStyle(document.body).fontFamily;
+    page.focus();
+  });
+
+  document.getElementById('fontSize').addEventListener('change', function () {
+    const size = this.value;
+    page.style.fontSize = size + 'px';
+    page.focus();
+  });
+
+  // Give page a default text style
+  page.style.fontSize = '12px';
+  page.style.fontFamily = '"Calibri", ' + getComputedStyle(document.body).fontFamily;
+</script>
+</body>
+</html>

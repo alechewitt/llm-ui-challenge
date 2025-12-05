@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #cccccc;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #323233;
+            height: 38px;
+            padding: 0 10px;
+            -webkit-app-region: drag;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-close { background-color: #ff5f56; }
+        .btn-minimize { background-color: #ffbd2e; }
+        .btn-maximize { background-color: #27ca41; }
+
+        .title-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-arrows {
+            display: flex;
+            gap: 5px;
+            color: #858585;
+        }
+
+        .nav-arrows span {
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #3c3c3c;
+            border-radius: 6px;
+            padding: 4px 12px;
+            width: 350px;
+        }
+
+        .search-bar svg {
+            width: 14px;
+            height: 14px;
+            fill: #858585;
+            margin-right: 8px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            outline: none;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .title-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-right svg {
+            width: 16px;
+            height: 16px;
+            fill: #858585;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Activity Bar */
+        .activity-bar {
+            width: 48px;
+            background-color: #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            color: #858585;
+        }
+
+        .activity-icon:hover {
+            color: #ffffff;
+        }
+
+        .activity-icon.active {
+            color: #ffffff;
+            border-left: 2px solid #ffffff;
+        }
+
+        .activity-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .activity-icon .badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #0078d4;
+            color: white;
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: 10px;
+        }
+
+        .activity-spacer {
+            flex: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 350px;
+            background-color: #252526;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #bbbbbb;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .sidebar-actions span {
+            cursor: pointer;
+            color: #858585;
+        }
+
+        .explorer-section {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .section-header:hover {
+            background-color: #2a2d2e;
+        }
+
+        .section-header .arrow {
+            margin-right: 5px;
+            font-size: 10px;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 3px 10px;
+            padding-left: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tree-item:hover {
+            background-color: #2a2d2e;
+        }
+
+        .tree-item.selected {
+            background-color: #094771;
+        }
+
+        .tree-item .icon {
+            margin-right: 6px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .tree-item .folder-icon { color: #dcb67a; }
+        .tree-item .ts-icon { color: #519aba; }
+        .tree-item .css-icon { color: #519aba; }
+        .tree-item .erb-icon { color: #e34c26; }
+        .tree-item .react-icon { color: #61dafb; }
+
+        .indent-1 { padding-left: 30px; }
+        .indent-2 { padding-left: 45px; }
+        .indent-3 { padding-left: 60px; }
+
+        .outline-section {
+            border-top: 1px solid #3c3c3c;
+            padding: 5px 0;
+        }
+
+        /* Editor Area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #1e1e1e;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            background-color: #252526;
+            height: 35px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            height: 100%;
+            background-color: #2d2d2d;
+            border-right: 1px solid #1e1e1e;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background-color: #1e1e1e;
+            border-top: 1px solid #0078d4;
+        }
+
+        .tab .icon {
+            margin-right: 6px;
+            font-size: 14px;
+        }
+
+        .tab .close-btn {
+            margin-left: 8px;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .tab:hover .close-btn {
+            opacity: 1;
+        }
+
+        .tab .modified {
+            margin-left: 5px;
+            color: #cccccc;
+        }
+
+        .tabs-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+        }
+
+        .tabs-right svg {
+            width: 16px;
+            height: 16px;
+            fill: #858585;
+            cursor: pointer;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            padding: 5px 15px;
+            font-size: 13px;
+            color: #858585;
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #3c3c3c;
+        }
+
+        .breadcrumb span {
+            cursor: pointer;
+        }
+
+        .breadcrumb .separator {
+            margin: 0 5px;
+        }
+
+        .breadcrumb .react-icon {
+            color: #61dafb;
+            margin-right: 5px;
+        }
+
+        /* Git Info */
+        .git-info {
+            padding: 5px 15px;
+            font-size: 12px;
+            color: #858585;
+            background-color: #1e1e1e;
+        }
+
+        /* Code Editor */
+        .code-editor {
+            flex: 1;
+            display: flex;
+            overflow: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 21px;
+        }
+
+        .line-numbers {
+            display: flex;
+            flex-direction: column;
+            padding: 0 15px;
+            text-align: right;
+            color: #858585;
+            user-select: none;
+            background-color: #1e1e1e;
+        }
+
+        .line-number {
+            height: 21px;
+        }
+
+        .code-content {
+            flex: 1;
+            padding-left: 10px;
+            overflow-x: auto;
+        }
+
+        .code-line {
+            height: 21px;
+            white-space: pre;
+        }
+
+        .code-line.active {
+            background-color: #282828;
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: #c586c0; }
+        .import-keyword { color: #c586c0; }
+        .from-keyword { color: #c586c0; }
+        .function-keyword { color: #569cd6; }
+        .export-keyword { color: #c586c0; }
+        .default-keyword { color: #c586c0; }
+        .return-keyword { color: #c586c0; }
+        .string { color: #ce9178; }
+        .component { color: #4ec9b0; }
+        .function-name { color: #dcdcaa; }
+        .bracket { color: #ffd700; }
+        .tag { color: #808080; }
+        .tag-name { color: #569cd6; }
+        .attribute { color: #9cdcfe; }
+        .punctuation { color: #cccccc; }
+        .variable { color: #9cdcfe; }
+        .comment { color: #6a9955; }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #007acc;
+            height: 22px;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #ffffff;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .status-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-item svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e4e;
+        }
+
+        .minimap {
+            width: 60px;
+            background-color: #1e1e1e;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div class="window-controls">
+                <button class="window-btn btn-close"></button>
+                <button class="window-btn btn-minimize"></button>
+                <button class="window-btn btn-maximize"></button>
+            </div>
+            <div class="title-center">
+                <div class="nav-arrows">
+                    <span>←</span>
+                    <span>→</span>
+                </div>
+                <div class="search-bar">
+                    <svg viewBox="0 0 16 16"><path d="M15.7 14.3l-4-4c1-1.2 1.6-2.7 1.6-4.3 0-3.9-3.1-7-7-7s-7 3.1-7 7 3.1 7 7 7c1.6 0 3.1-.5 4.3-1.5l4 4c.2.2.5.3.7.3s.5-.1.7-.3c.4-.4.4-1 0-1.4zM2 6c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5z"/></svg>
+                    <input type="text" value="claude-code-sdk-demos">
+                </div>
+            </div>
+            <div class="title-right">
+                <svg viewBox="0 0 16 16"><path d="M8 1v2h7v7h-2v2h2v3h-3v-2H9v2H7v-2H4v2H1v-3h2v-2H1V3h2V1h4v2h2V1h4zM4 12h3v-2H4v2zm0-4h3V5H4v3zm5 4h3v-2H9v2zm0-4h3V5H9v3z"/></svg>
+                <svg viewBox="0 0 16 16"><path d="M14 1H2L1 2v12l1 1h12l1-1V2l-1-1zM2 13V2h12v11H2z"/></svg>
+                <svg viewBox="0 0 16 16"><path d="M14 1H2L1 2v12l1 1h12l1-1V2l-1-1zM2 13V2h12v11H2z"/></svg>
+                <svg viewBox="0 0 16 16"><path d="M14 1H2L1 2v12l1 1h12l1-1V2l-1-1zM2 13V2h12v11H2z"/></svg>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Activity Bar -->
+            <div class="activity-bar">
+                <div class="activity-icon active">
+                    <svg viewBox="0 0 24 24"><path d="M17.5 0h-9L7 1.5V6H2.5L1 7.5v15.07L2.5 24h12.07L16 22.57V18h4.7l1.3-1.43V4.5L17.5 0zm0 2.12l2.38 2.38H17.5V2.12zM14 22.5H2.5V7.5H7v12.07L8.5 21H14v1.5zm4.5-4.5H8.5V1.5H16v5h4.5v11.5z"/></svg>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M15.25 0a8.25 8.25 0 0 0-6.18 13.72L1 22.88l1.12 1.12 8.05-9.12A8.251 8.251 0 1 0 15.25 0zm0 15a6.75 6.75 0 1 1 0-13.5 6.75 6.75 0 0 1 0 13.5z"/></svg>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M21 3.03V1H9v2.03H3v20h18V3.03h-6zm-9-1h6v1h-6v-1zm9 20H5V5h16v17z"/><path d="M7 7h10v2H7z"/><path d="M7 11h10v2H7z"/><path d="M7 15h6v2H7z"/></svg>
+                    <span class="badge">3</span>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 0L1.75 6v12L12 24l10.25-6V6L12 0zm-1 21.5l-8.25-4.83V7.33L11 12.17v9.33zm1-10.67L3.74 6 12 1.17 20.26 6 12 10.83zm9 5.84L12.75 21.5v-9.33l8.25-4.84v9.34z"/></svg>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M17 12h-5V7h5v5zm0-6H7v11h10V6z"/></svg>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12z"/><circle cx="8" cy="8" r="1.5"/></svg>
+                </div>
+                <div class="activity-spacer"></div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="activity-icon">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    <span class="badge" style="background-color: #0078d4;">1</span>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    EXPLORER
+                    <div class="sidebar-actions">
+                        <span>···</span>
+                    </div>
+                </div>
+                <div class="explorer-section">
+                    <div class="section-header">
+                        <span class="arrow">▼</span>
+                        CLAUDE-CODE-SDK-DEMOS
+                    </div>
+                    <div class="tree-view">
+                        <div class="tree-item indent-1">
+                            <span class="arrow">▶</span>
+                            <span class="icon folder-icon">📁</span>
+                            email-agent
+                        </div>
+                        <div class="tree-item indent-1">
+                            <span class="arrow">▼</span>
+                            <span class="icon folder-icon">📁</span>
+                            excel-demo
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="icon erb-icon">📄</span>
+                            .erb
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="arrow">▶</span>
+                            <span class="icon folder-icon">📁</span>
+                            agent
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="arrow">▶</span>
+                            <span class="icon folder-icon" style="color: #e8ab53;">📁</span>
+                            assets
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="arrow">▶</span>
+                            <span class="icon folder-icon" style="color: #8bc34a;">📁</span>
+                            node_modules
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="arrow">▶</span>
+                            <span class="icon folder-icon">📁</span>
+                            release
+                        </div>
+                        <div class="tree-item indent-2">
+                            <span class="arrow">▼</span>
+                            <span class="icon" style="color: #42a5f5;">📁</span>
+                            src
+                        </div>
+                        <div class="tree-item indent-3">
+                            <span class="arrow">▶</span>
+                            <span class="icon" style="color: #ab47bc;">📁</span>
+                            __tests__
+                        </div>
+                        <div class="tree-item indent-3">
+                            <span class="arrow">▼</span>
+                            <span class="icon" style="color: #ef5350;">📁</span>
+                            main
+                        </div>
+                        <div class="tree-item indent-3" style="padding-left: 75px;">
+                            <span class="icon ts-icon">TS</span>
+                            main.ts
+                        </div>
+                        <div class="tree-item indent-3" style="padding-left: 75px;">
+                            <span class="icon ts-icon">TS</span>
+                            menu.ts
+                        </div>
+                        <div class="tree-item indent-3" style="padding-left: 75px;">
+                            <span class="icon ts-icon">TS</span>
+                            preload.ts
+                        </div>
+                        <div class="tree-item indent-3" style="padding-left: 75px;">
+                            <span class="icon ts-icon">TS</span>
+                            util.ts
+                        </div>
+                        <div class="tree-item indent-3">
+                            <span class="arrow">▼</span>
+                            <span class="icon" style="color: #ef5350;">📁</span>
+                            renderer
+                        </div>
+                        <div class="tree-item indent-3" style="padding-left: 75px;">
+                            <span class="arrow">▶</span>
+                            <span class="icon" style="color: #ab47bc;">📁</span>
+                            components
+                        </div>
+                    </div>
+                </div>
+                <div class="outline-section">
+                    <div class="section-header">
+                        <span class="arrow">▶</span>
+                        OUTLINE
+                    </div>
+                </div>
+                <div class="outline-section">
+                    <div class="section-header">
+                        <span class="arrow">▶</span>
+                        TIMELINE
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <div class="tab">
+                        <span class="icon" style="color: #519aba;">TS</span>
+                        email-db.ts
+                        <span class="modified">M</span>
+                        <span class="close-btn">×</span>
+                    </div>
+                    <div class="tab active">
+                        <span class="icon" style="color: #61dafb;">⚛</span>
+                        App.tsx
+                        <span class="close-btn">×</span>
+                    </div>
+                    <div class="tab">
+                        <span class="icon" style="color: #519aba;">⬡</span>
+                        App.css
+                        <span class="close-btn">×</span>
+                    </div>
+                    <div class="tab">
+                        <span class="icon" style="color: #519aba;">TS</span>
+                        util.ts
+                        <span class="close-btn">×</span>
+                    </div>
+                    <div class="tabs-right">
+                        <svg viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" fill="#ffa500"/></svg>
+                        <span style="color: #858585;">○</span>
+                        <span style="color: #858585;">—</span>
+                        <span style="color: #858585;">○</span>
+                        <span style="color: #858585;">⋯</span>
+                    </div>
+                </div>
+
+                <!-- Breadcrumb -->
+                <div class="breadcrumb">
+                    <span>excel-demo</span>
+                    <span class="separator">›</span>
+                    <span>src</span>
+                    <span class="separator">›</span>
+                    <span>renderer</span>
+                    <span class="separator">›</span>
+                    <span class="react-icon">⚛</span>
+                    <span>App.tsx</span>
+                    <span class="separator">›</span>
+                    <span>...</span>
+                </div>
+
+                <!-- Git Info -->
+                <div class="git-info">
+                    Thariq Shihipar, last month | 1 author (Thariq Shihipar)
+                </div>
+
+                <!-- Code Editor -->
+                <div class="code-editor">
+                    <div class="line-numbers">
+                        <div class="line-number">1</div>
+                        <div class="line-number">2</div>
+                        <div class="line-number">3</div>
+                        <div class="line-number">4</div>
+                        <div class="line-number">5</div>
+                        <div class="line-number">6</div>
+                        <div class="line-number">7</div>
+                        <div class="line-number">8</div>
+                        <div class="line-number">9</div>
+                        <div class="line-number">10</div>
+                        <div class="line-number">11</div>
+                        <div class="line-number">12</div>
+                        <div class="line-number">13</div>
+                        <div class="line-number">14</div>
+                    </div>
+                    <div class="code-content">
+                        <div class="code-line"><span class="keyword">import</span> <span class="punctuation">{</span> <span class="component">MemoryRouter</span> <span class="keyword">as</span> <span class="component">Router</span><span class="punctuation">,</span> <span class="component">Routes</span><span class="punctuation">,</span> <span class="component">Route</span> <span class="punctuation">}</span> <span class="keyword">from</span> <span class="string">'react-router-dom'</span><span class="punctuation">;</span></div>
+                        <div class="code-line"><span class="keyword">import</span> <span class="component">ChatInterface</span> <span class="keyword">from</span> <span class="string">'./components/ChatInterface'</span><span class="punctuation">;</span></div>
+                        <div class="code-line"><span class="keyword">import</span> <span class="string">'./App.css'</span><span class="punctuation">;</span></div>
+                        <div class="code-line"></div>
+                        <div class="code-line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function-keyword">function</span> <span class="function-name">App</span><span class="punctuation">()</span> <span class="punctuation">{</span></div>
+                        <div class="code-line">  <span class="keyword">return</span> <span class="punctuation">(</span></div>
+                        <div class="code-line">    <span class="tag">&lt;</span><span class="tag-name">Router</span><span class="tag">&gt;</span></div>
+                        <div class="code-line">      <span class="tag">&lt;</span><span class="tag-name">Routes</span><span class="tag">&gt;</span></div>
+                        <div class="code-line">        <span class="tag">&lt;</span><span class="tag-name">Route</span> <span class="attribute">path</span><span class="punctuation">=</span><span class="string">"/"</span> <span class="attribute">element</span><span class="punctuation">=</span><span class="punctuation">{</span><span class="tag">&lt;</span><span class="component">ChatInterface</span> <span class="tag">/&gt;</span><span class="punctuation">}</span> <span class="tag">/&gt;</span></div>
+                        <div class="code-line">      <span class="tag">&lt;/</span><span class="tag-name">Routes</span><span class="tag">&gt;</span></div>
+                        <div class="code-line">    <span class="tag">&lt;/</span><span class="tag-name">Router</span><span class="tag">&gt;</span></div>
+                        <div class="code-line">  <span class="punctuation">)</span><span class="punctuation">;</span></div>
+                        <div class="code-line"><span class="punctuation">}</span></div>
+                        <div class="code-line active"></div>
+                    </div>
+                    <div class="minimap"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><path d="M15 6H9V0H7v6H1v2h6v6h2V8h6z" transform="rotate(45 8 8)"/></svg>
+                </div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><path d="M15 4H1l7 8z"/></svg>
+                    main*
+                </div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/></svg>
+                </div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 100 16A8 8 0 008 0z"/></svg>
+                    <svg viewBox="0 0 16 16"><path d="M15 5H1v2h14z"/></svg>
+                    Launchpad
+                </div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor"/><path d="M8 3v5l3 3"/></svg>
+                    0
+                    <svg viewBox="0 0 16 16"><path d="M8 1L1 15h14z"/></svg>
+                    0
+                </div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><path d="M8 1l7 14H1z" fill="#4caf50"/></svg>
+                    Amazon Q
+                </div>
+                <div class="status-item">
+                    -- INSERT --
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="4" fill="#ffc107"/></svg>
+                </div>
+                <div class="status-item">Ln 14, Col 1</div>
+                <div class="status-item">Spaces: 2</div>
+                <div class="status-item">UTF-8</div>
+                <div class="status-item">LF</div>
+                <div class="status-item">{} TypeScript JSX</div>
+                <div class="status-item">
+                    <svg viewBox="0 0 16 16"><path d="M8 4a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Tree item selection
+        document.querySelectorAll('.tree-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.tree-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Folder toggle functionality
+        document.querySelectorAll('.tree-item').forEach(item => {
+            const arrow = item.querySelector('.arrow');
+            if (arrow) {
+                item.addEventListener('dblclick', function() {
+                    if (arrow.textContent === '▶') {
+                        arrow.textContent = '▼';
+                    } else if (arrow.textContent === '▼') {
+                        arrow.textContent = '▶';
+                    }
+                });
+            }
+        });
+
+        // Section toggle
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const arrow = this.querySelector('.arrow');
+                if (arrow.textContent === '▶') {
+                    arrow.textContent = '▼';
+                } else {
+                    arrow.textContent = '▶';
+                }
+            });
+        });
+
+        // Activity bar icon selection
+        document.querySelectorAll('.activity-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.activity-icon').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Line click to set cursor position
+        document.querySelectorAll('.code-line').forEach((line, index) => {
+            line.addEventListener('click', function() {
+                document.querySelectorAll('.code-line').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update status bar line number
+                const lineNum = index + 1;
+                document.querySelector('.status-right .status-item:nth-child(2)').textContent = `Ln ${lineNum}, Col 1`;
+            });
+        });
+
+        // Tab close button functionality
+        document.querySelectorAll('.tab .close-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const tab = this.closest('.tab');
+                if (!tab.classList.contains('active')) {
+                    tab.remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

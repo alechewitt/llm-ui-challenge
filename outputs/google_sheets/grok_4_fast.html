@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spreadsheet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f3f4;
+            overflow: hidden;
+        }
+        .menu-bar {
+            background-color: #fff;
+            border-bottom: 1px solid #dadce0;
+            padding: 0 16px;
+            height: 41px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .menu-item {
+            padding: 0 16px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #5f6368;
+        }
+        .menu-item:hover {
+            background-color: #f8f9fa;
+        }
+        .toolbar {
+            background-color: #fff;
+            border-bottom: 1px solid #dadce0;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .toolbar button {
+            border: 1px solid #dadce0;
+            background: #fff;
+            height: 36px;
+            width: 36px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .toolbar button:hover {
+            border-color: #4285f4;
+        }
+        .toolbar select, .toolbar input {
+            height: 36px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 0 8px;
+            font-size: 14px;
+        }
+        .cell-ref {
+            width: 60px;
+            margin-right: 8px;
+        }
+        .formula-bar {
+            flex: 1;
+            min-width: 200px;
+            margin: 0 8px;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 40px repeat(26, 100px);
+            grid-template-rows: 25px repeat(100, 25px);
+            height: calc(100vh - 41px - 56px - 30px);
+            overflow: auto;
+            background-color: #fff;
+            border-bottom: 1px solid #dadce0;
+        }
+        .row-header {
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .col-header {
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: sticky;
+            left: 40px;
+            z-index: 1;
+        }
+        .corner-header {
+            background-color: #f8f9fa;
+            border: 1px solid #dadce0;
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+        .cell {
+            border: 1px solid #dadce0;
+            padding: 2px;
+            outline: none;
+            min-height: 23px;
+            resize: none;
+            overflow: hidden;
+        }
+        .cell:focus {
+            border-color: #4285f4;
+            background-color: #e8f0fe;
+        }
+        .cell.selected {
+            border-color: #1a73e8;
+            box-shadow: inset 0 0 0 1px #1a73e8;
+        }
+        .tabs {
+            background-color: #fff;
+            border-top: 1px solid #dadce0;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 8px;
+        }
+        .tab {
+            padding: 8px 16px;
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+        }
+        .add-tab {
+            border: 1px solid #dadce0;
+            background: #fff;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-bar">
+        <span class="menu-item">File</span>
+        <span class="menu-item">Edit</span>
+        <span class="menu-item">View</span>
+        <span class="menu-item">Insert</span>
+        <span class="menu-item">Format</span>
+        <span class="menu-item">Data</span>
+        <span class="menu-item">Tools</span>
+        <span class="menu-item">Extensions</span>
+        <span class="menu-item">Help</span>
+    </div>
+    <div class="toolbar">
+        <button title="Bold">B</button>
+        <button title="Italic">I</button>
+        <button title="Underline">U</button>
+        <select title="Font">
+            <option>Arial</option>
+            <option>Times New Roman</option>
+            <option>Courier New</option>
+        </select>
+        <select title="Font size">
+            <option>10</option>
+            <option>11</option>
+            <option>12</option>
+            <option>14</option>
+        </select>
+        <input type="text" class="cell-ref" id="cellRef" readonly placeholder="A1">
+        <input type="text" class="formula-bar" id="formulaBar" placeholder="Enter formula or value">
+    </div>
+    <div class="grid-container" id="grid">
+        <div class="corner-header"></div>
+    </div>
+    <div class="tabs">
+        <span class="tab">Sheet1</span>
+        <button class="add-tab" title="Add sheet">+</button>
+    </div>
+    <script>
+        const cols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const rows = 100;
+        const grid = document.getElementById('grid');
+        const cellRef = document.getElementById('cellRef');
+        const formulaBar = document.getElementById('formulaBar');
+        let currentCol = 0;
+        let currentRow = 0;
+        let cells = {};
+
+        // Generate column headers
+        for (let c = 0; c < cols.length; c++) {
+            const colHeader = document.createElement('div');
+            colHeader.className = 'col-header';
+            colHeader.textContent = cols[c];
+            grid.appendChild(colHeader);
+        }
+
+        // Generate row headers and cells
+        for (let r = 1; r <= rows; r++) {
+            // Row header
+            const rowHeader = document.createElement('div');
+            rowHeader.className = 'row-header';
+            rowHeader.textContent = r;
+            grid.appendChild(rowHeader);
+
+            // Cells for this row
+            for (let c = 0; c < cols.length; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.contentEditable = true;
+                cell.dataset.row = r;
+                cell.dataset.col = String.fromCharCode(65 + c);
+                cell.addEventListener('focus', () => selectCell(cell.dataset.col, cell.dataset.row));
+                cell.addEventListener('input', (e) => {
+                    cells[`${cell.dataset.col}${cell.dataset.row}`] = e.target.innerText;
+                    updateFormulaBar(cell.dataset.col, cell.dataset.row, e.target.innerText);
+                });
+                grid.appendChild(cell);
+            }
+        }
+
+        function selectCell(col, row) {
+            document.querySelectorAll('.cell').forEach(el => el.classList.remove('selected'));
+            currentCol = cols.indexOf(col) + 1;
+            currentRow = parseInt(row);
+            cellRef.value = `${col}${row}`;
+            const cell = grid.querySelector(`[data-col="${col}"][data-row="${row}"]`);
+            if (cell) {
+                cell.classList.add('selected');
+                formulaBar.value = cells[`${col}${row}`] || '';
+                formulaBar.focus();
+            }
+            // Scroll to cell
+            cell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+
+        function updateFormulaBar(col, row, value) {
+            formulaBar.value = value;
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.target === formulaBar || e.target.classList.contains('cell')) {
+                const selectedCell = document.querySelector('.selected');
+                let newCol = currentCol;
+                let newRow = currentRow;
+                switch (e.key) {
+                    case 'ArrowUp':
+                        newRow = Math.max(1, newRow - 1);
+                        e.preventDefault();
+                        break;
+                    case 'ArrowDown':
+                        newRow = Math.min(rows, newRow + 1);
+                        e.preventDefault();
+                        break;
+                    case 'ArrowLeft':
+                        newCol = Math.max(1, newCol - 1);
+                        e.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                        newCol = Math.min(cols.length, newCol + 1);
+                        e.preventDefault();
+                        break;
+                    case 'Enter':
+                        newRow = Math.min(rows, newRow + 1);
+                        e.preventDefault();
+                        break;
+                }
+                if (newCol !== currentCol || newRow !== currentRow) {
+                    selectCell(cols[newCol - 1], newRow);
+                    const newCell = grid.querySelector(`[data-col="${cols[newCol - 1]}"][data-row="${newRow}"]`);
+                    newCell.focus();
+                }
+            }
+        });
+
+        // Update cell on formula bar enter
+        formulaBar.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const col = cellRef.value.replace(/\d+/, '');
+                const row = cellRef.value.replace(/^[A-Z]+/, '');
+                const cell = grid.querySelector(`[data-col="${col}"][data-row="${row}"]`);
+                if (cell) {
+                    cell.innerText = formulaBar.value;
+                    cells[`${col}${row}`] = formulaBar.value;
+                }
+                e.preventDefault();
+            }
+        });
+
+        // Initial selection
+        selectCell('A', 1);
+    </script>
+</body>
+</html>

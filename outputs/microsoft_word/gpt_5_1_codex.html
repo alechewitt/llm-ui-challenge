@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Word UI Replica</title>
+<style>
+body{
+    margin:0;
+    background:#dfe4ea;
+    font-family:"Segoe UI",sans-serif;
+}
+.word-shell{
+    width:1200px;
+    margin:20px auto;
+    background:#f8f8f9;
+    border:1px solid #c7c7c7;
+    box-shadow:0 8px 18px rgba(0,0,0,0.15);
+    border-radius:12px;
+    overflow:hidden;
+}
+.titlebar{
+    background:#0f63c4;
+    color:#fff;
+    padding:6px 14px 8px;
+}
+.top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:13px;
+}
+.traffic{
+    display:flex;
+    gap:6px;
+    margin-right:14px;
+}
+.traffic span{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    display:inline-block;
+}
+.red{background:#ff5f57;}
+.yellow{background:#ffbd2e;}
+.green{background:#28c840;}
+.left-block,
+.right-block{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.toggle{
+    width:40px;
+    height:20px;
+    border-radius:10px;
+    background:#2a76d9;
+    position:relative;
+}
+.toggle:after{
+    content:"";
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:#fff;
+}
+.top-icons span{
+    width:20px;
+    height:20px;
+    border-radius:4px;
+    background:rgba(255,255,255,0.2);
+}
+.center-title{
+    text-align:center;
+}
+.center-title strong{
+    margin-right:10px;
+    font-size:15px;
+}
+.badge{
+    background:rgba(255,255,255,0.25);
+    padding:2px 8px;
+    border-radius:12px;
+    font-size:12px;
+}
+.search-box{
+    background:rgba(255,255,255,0.2);
+    border-radius:18px;
+    padding:4px 12px;
+    min-width:210px;
+}
+.ribbon-tabs{
+    background:#fff;
+    display:flex;
+    gap:20px;
+    padding:8px 20px 0;
+    box-shadow:0 1px 0 #ddd;
+    font-size:14px;
+}
+.ribbon-tabs span{
+    padding:6px 10px;
+    cursor:pointer;
+    color:#444;
+}
+.ribbon-tabs span.active{
+    border-bottom:3px solid #1676d1;
+    font-weight:600;
+}
+.ribbon{
+    background:#f5f5f6;
+    border-bottom:1px solid #d0d0d0;
+    padding:10px 14px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    font-size:12px;
+}
+.ribbon .group{
+    background:#fff;
+    border:1px solid #dedede;
+    border-radius:6px;
+    padding:8px;
+    width:calc(25% - 12px);
+    min-width:180px;
+    box-shadow:inset 0 0 0 1px #f3f3f3;
+}
+.group-title{
+    font-weight:600;
+    margin-bottom:6px;
+    color:#555;
+}
+.btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+}
+.button{
+    background:#f1f3f6;
+    border-radius:4px;
+    padding:4px 8px;
+}
+.select{
+    display:flex;
+    gap:6px;
+    align-items:center;
+}
+.toolbar{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+.toolbar span{
+    background:#fff;
+    border:1px solid #dcdcdc;
+    padding:6px 8px;
+    border-radius:4px;
+    min-width:28px;
+    text-align:center;
+}
+.workspace{
+    background:#e0e2e5;
+    padding:30px 0;
+}
+.paper{
+    width:960px;
+    min-height:520px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid #dedede;
+    box-shadow:0 0 0 1px #f5f5f5;
+    padding:80px;
+    position:relative;
+}
+.cursor{
+    width:2px;
+    height:30px;
+    background:#222;
+    animation:blink 1s infinite;
+}
+@keyframes blink{
+    0%,49%{opacity:1;}
+    50%,100%{opacity:0;}
+}
+.status-bar{
+    background:#f5f5f5;
+    border-top:1px solid #d0d0d0;
+    padding:6px 14px;
+    font-size:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.status-left,
+.status-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    color:#444;
+}
+.zoom{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.zoom input{
+    width:80px;
+}
+</style>
+</head>
+<body>
+<div class="word-shell">
+    <div class="titlebar">
+        <div class="top-row">
+            <div class="left-block">
+                <div class="traffic">
+                    <span class="red"></span>
+                    <span class="yellow"></span>
+                    <span class="green"></span>
+                </div>
+                <div class="top-row top-icons">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="toggle"></div>
+                <strong>AutoSave</strong>
+            </div>
+            <div class="center-title">
+                <strong>Document3</strong>
+                <span class="badge">Confidential*</span>
+            </div>
+            <div class="right-block">
+                <div class="search-box">Search (Cmd + Ctrl + U)</div>
+                <div class="button">Comments</div>
+                <div class="button">Editing ▼</div>
+                <div class="button" style="background:#0d63c9;color:#fff;">Share</div>
+            </div>
+        </div>
+    </div>
+    <div class="ribbon-tabs">
+        <span class="active">Home</span>
+        <span>Insert</span>
+        <span>Draw</span>
+        <span>Design</span>
+        <span>Layout</span>
+        <span>References</span>
+        <span>Mailings</span>
+        <span>Review</span>
+        <span>View</span>
+    </div>
+    <div class="ribbon">
+        <div class="group">
+            <div class="group-title">Clipboard</div>
+            <div class="btn-row">
+                <div class="button">Paste</div>
+                <div class="button">Cut</div>
+                <div class="button">Copy</div>
+            </div>
+        </div>
+        <div class="group">
+            <div class="group-title">Font</div>
+            <div class="select">
+                <div class="button">Calibri (Body)</div>
+                <div class="button">12 ▼</div>
+            </div>
+            <div class="toolbar">
+                <span>B</span><span>I</span><span>U</span><span>A⁺</span><span>A⁻</span><span>x₂</span><span>x²</span><span>⚫</span><span>🔁</span>
+            </div>
+        </div>
+        <div class="group">
+            <div class="group-title">Paragraph</div>
+            <div class="toolbar">
+                <span>☰</span><span>≡</span><span>⇅</span><span>↕</span><span>↔</span><span>A→Z</span><span>Z→A</span>
+            </div>
+        </div>
+        <div class="group">
+            <div class="group-title">Editing</div>
+            <div class="btn-row">
+                <div class="button">Styles</div>
+                <div class="button">Dictate</div>
+                <div class="button">Sensitivity</div>
+                <div class="button">Editor</div>
+                <div class="button">Add-ins</div>
+            </div>
+        </div>
+    </div>
+    <div class="workspace">
+        <div class="paper">
+            <div class="cursor"></div>
+        </div>
+    </div>
+    <div class="status-bar">
+        <div class="status-left">
+            <span>Page 1 of 1</span>
+            <span>0 words</span>
+            <span>English (United States)</span>
+            <span>Accessibility: Good to go</span>
+        </div>
+        <div class="status-right">
+            <span>Focus</span>
+            <span>🌐</span>
+            <span>✎</span>
+            <div class="zoom">
+                <button>-</button>
+                <input type="range" min="50" max="300" value="185">
+                <button>+</button>
+                <span>185%</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

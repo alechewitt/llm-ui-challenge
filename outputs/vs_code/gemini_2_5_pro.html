@@ -1,0 +1,520 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code UI Clone</title>
+    <style>
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            --font-family-monospace: "Menlo", "Consolas", "Courier New", monospace;
+            --bg-color: #1e1e1e;
+            --sidebar-bg: #252526;
+            --activity-bar-bg: #333333;
+            --title-bar-bg: #3c3c3c;
+            --status-bar-bg: #333333;
+            --tab-active-bg: #1e1e1e;
+            --tab-inactive-bg: #2d2d2d;
+            --editor-line-highlight-bg: #2a2d2e;
+            --text-color: #cccccc;
+            --text-color-dim: #888888;
+            --border-color: #444444;
+            --accent-color: #007acc;
+            --syntax-keyword: #c586c0;
+            --syntax-function: #dcdcaa;
+            --syntax-variable: #9cdcfe;
+            --syntax-string: #ce9178;
+            --syntax-tag: #569cd6;
+            --syntax-attr: #9cdcfe;
+            --syntax-comment: #6a9955;
+            --file-modified-color: #e5c07b;
+            --git-added-color: #81b88b;
+            --error-color: #f48771;
+        }
+
+        body {
+            margin: 0;
+            padding: 2.5rem;
+            background-color: #555;
+            font-family: var(--font-family);
+            font-size: 13px;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .vscode-window {
+            width: 1280px;
+            height: 800px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid #555;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            background-color: var(--title-bar-bg);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            flex-shrink: 0;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+        }
+
+        .window-controls .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background-color: #fc605c; }
+        .dot.yellow { background-color: #fdbc40; }
+        .dot.green { background-color: #34c749; }
+
+        .nav-controls, .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-controls svg, .right-controls svg {
+            fill: #cccccc;
+        }
+        .nav-controls svg:first-child { fill: #666; }
+
+        .search-bar {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            margin: 0 20px;
+        }
+
+        .search-input {
+            width: 400px;
+            background-color: #252526;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: var(--text-color);
+            padding: 3px 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .search-input input {
+            background: none;
+            border: none;
+            color: inherit;
+            outline: none;
+            width: 100%;
+        }
+        .search-input svg { fill: #888; }
+        .title-bar-right-icons { display: flex; align-items: center; gap: 15px; margin-left: auto; }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Activity Bar */
+        .activity-bar {
+            width: 50px;
+            background-color: var(--activity-bar-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .activity-bar-top svg, .activity-bar-bottom svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-color-dim);
+            padding: 8px;
+            cursor: pointer;
+        }
+        .activity-bar-top svg:hover, .activity-bar-bottom svg:hover {
+            fill: var(--text-color);
+        }
+
+        .activity-bar-top .icon-container {
+            position: relative;
+        }
+
+        .activity-bar-top .active {
+            fill: var(--text-color);
+            border-left: 2px solid var(--text-color);
+            padding-left: 6px;
+        }
+        .notification-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border: 1px solid var(--activity-bar-bg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-color-dim);
+            text-transform: uppercase;
+        }
+        .sidebar-header svg { fill: var(--text-color-dim); }
+
+        .file-explorer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .file-explorer li {
+            padding: 2px 0 2px 15px;
+            position: relative;
+            cursor: pointer;
+            align-items: center;
+        }
+        .file-explorer > ul > li {
+            padding-left: 0;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .file-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .file-item svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .caret {
+            position: absolute;
+            left: 0;
+            top: 5px;
+            transition: transform 0.1s;
+        }
+        
+        .file-explorer li.collapsed > .file-item > .caret { transform: rotate(-90deg); }
+        .file-explorer li.collapsed > ul { display: none; }
+        
+        .section-header {
+            font-weight: bold;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .section-header .caret { position: static; }
+        
+        .git-status {
+            margin-left: auto;
+            color: var(--file-modified-color);
+            font-weight: normal;
+        }
+
+        .git-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--file-modified-color);
+            border-radius: 50%;
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+
+        .icon-ts { fill: #2b7489; }
+        .icon-css { fill: #563d7c; }
+        .icon-react { fill: #61dafb; }
+        .icon-folder { fill: #a9a9a9; }
+        .icon-folder-erb { fill: #e0b484; }
+        .icon-folder-agent { fill: #7fdbca; }
+        .icon-folder-assets { fill: #e0b484; }
+        .icon-folder-modules { fill: #81b88b; }
+        .icon-folder-release { fill: #f17c67; }
+        .icon-folder-src { fill: #81b88b; }
+        .icon-folder-tests { fill: #bde07f; }
+        .icon-folder-main { fill: #f17c67; }
+        .icon-folder-renderer { fill: #a9a9a9; }
+
+        /* Editor Group */
+        .editor-group {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tabs-bar {
+            display: flex;
+            flex-shrink: 0;
+            background-color: #252526;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            padding: 7px 15px 7px 10px;
+            background-color: var(--tab-inactive-bg);
+            border-right: 1px solid #252526;
+            cursor: pointer;
+            gap: 6px;
+        }
+        
+        .tab.active {
+            background-color: var(--tab-active-bg);
+            color: var(--text-color);
+        }
+        .tab:not(.active) { color: var(--text-color-dim); }
+        .tab svg { width: 16px; height: 16px; }
+        .tab .close-icon { fill: var(--text-color-dim); width: 12px; height: 12px; margin-left: 10px; }
+        .tab .close-icon:hover { background-color: rgba(255,255,255,0.1); border-radius: 3px; }
+        .tab.active .close-icon { fill: var(--text-color); }
+
+        .editor-container {
+            flex-grow: 1;
+            background-color: var(--bg-color);
+            font-family: var(--font-family-monospace);
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .editor-header {
+            padding: 5px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .breadcrumbs {
+            color: var(--text-color-dim);
+            font-size: 13px;
+        }
+        .breadcrumbs svg { fill: var(--text-color-dim); width: 16px; height: 16px; vertical-align: middle; margin: 0 4px; }
+        
+        .git-info {
+            color: var(--text-color-dim);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .editor-content-wrapper {
+            flex-grow: 1;
+            display: flex;
+            overflow-y: scroll;
+        }
+        
+        .line-numbers {
+            padding: 10px 20px 10px 0;
+            text-align: right;
+            color: #858585;
+            flex-shrink: 0;
+        }
+        .line-numbers div {
+            padding-right: 20px;
+            height: 21px; 
+            line-height: 21px;
+        }
+
+        .code-area {
+            flex-grow: 1;
+            padding: 10px 0;
+        }
+
+        pre { margin: 0; }
+        code { white-space: pre; line-height: 21px; }
+
+        .syntax-keyword { color: var(--syntax-keyword); }
+        .syntax-string { color: var(--syntax-string); }
+        .syntax-variable { color: var(--syntax-variable); }
+        .syntax-punct { color: #d4d4d4; }
+        .syntax-tag { color: var(--syntax-tag); }
+        .syntax-attr-name { color: var(--syntax-attr); }
+        .syntax-attr-value { color: var(--syntax-string); }
+        .syntax-component { color: var(--syntax-tag); }
+
+        .editor-tabs-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            padding-right: 10px;
+            gap: 15px;
+        }
+        .editor-tabs-right svg { fill: var(--text-color); }
+        
+        /* Custom Scrollbar */
+        .editor-content-wrapper::-webkit-scrollbar { width: 10px; }
+        .editor-content-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .editor-content-wrapper::-webkit-scrollbar-thumb { background: #4e4e4e; }
+        .editor-content-wrapper::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
+
+        /* Status Bar */
+        .status-bar {
+            background-color: var(--status-bar-bg);
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .status-bar-left, .status-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .status-item:hover { background-color: rgba(255,255,255,0.1); }
+        .status-item svg { fill: #fff; width: 14px; height: 14px;}
+        .status-item .no-fill-svg { fill: none; stroke: #fff;}
+    </style>
+</head>
+<body>
+
+<div class="vscode-window">
+    <!-- Title Bar -->
+    <header class="title-bar">
+        <div class="window-controls">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+        </div>
+        <div class="nav-controls">
+            <svg viewBox="0 0 16 16"><path d="M7.976 2.524a.5.5 0 0 0-.952 0l-5.5 11a.5.5 0 0 0 .476.726h11a.5.5 0 0 0 .476-.726l-5.5-11z M8 4.25l4.33 8.66H3.67L8 4.25z"/></svg> <!-- Placeholder for Left Arrow -->
+            <svg viewBox="0 0 16 16"><path d="M7.976 2.524a.5.5 0 0 0-.952 0l-5.5 11a.5.5 0 0 0 .476.726h11a.5.5 0 0 0 .476-.726l-5.5-11z M8 4.25l4.33 8.66H3.67L8 4.25z"/></svg> <!-- Placeholder for Right Arrow -->
+        </div>
+        <div class="search-bar">
+            <div class="search-input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.68 11.74a6 6 0 0 1-7.922-8.568 6 6 0 0 1 8.568 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04zM9.47 10.36a4.5 4.5 0 1 1 .16-6.52 4.5 4.5 0 0 1-.16 6.52z"></path></svg>
+                <input type="text" value="claude-code-sdk-demos" readonly>
+            </div>
+        </div>
+        <div class="title-bar-right-icons">
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 1.5H5v1H1.5V6h-1V1.5a1 1 0 0 1 1-1h4v1H1.5zm11 0a1 1 0 0 1 1 1V6h-1V2.5H11v-1h4V6h1V1.5a1 1 0 0 0-1-1h-4zm-1 14v-1h3.5V10h1v4.5a1 1 0 0 1-1 1h-4v-1H12.5zM1.5 10v4.5H5v1H1.5a1 1 0 0 1-1-1V10h1zm9.293-6.293l1.93-1.929.707.707L9.5 8.414l-2.646 2.647-.708-.707L8.793 7.707l-1.93-1.929-.707.707L8.086 8.414l-2.647-2.647.708-.707L8.793 7l-1.93-1.929.707-.707L9.5 6.293l2.646-2.647.708.707L10.207 7z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="m11.133 2.544-.707-.707L8 4.293V1.5H7v2.793L4.574 1.837l-.707.707L6.293 5H3.5v1h2.793L3.837 8.426l.707.707L7 6.707V9.5H8V6.707l2.426 2.426.707-.707L8.707 6H11.5V5H8.707l2.426-2.456Z"/><path d="M4.574 14.163l.707.707L7.707 12.5H10.5v-1H7.707l2.456-2.426-.707-.707L7 11.293V8.5H6v2.793L3.574 8.837l-.707.707L5.293 12H2.5v1h2.793L2.837 15.426l.707.707L6 13.707V16.5h1v-2.793l2.426 2.456Z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M1 3.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10h-1v2.5H2V3.5h5V9h1V3.5h5v3h1v-3a.5.5 0 0 0-.5-.5H9v-1h5.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5H7v1H1.5a.5.5 0 0 0-.5.5z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M9.5 2.5h-3V1h3v1.5zm-5 0H1v1.5h3.5v-1.5zm10 0H11v1.5h3.5v-1.5zM1 13.5h3.5V15H1v-1.5zm5.5 0h3.5V15H6.5v-1.5zm5.5 0H15V15h-3.5v-1.5zM1 8h3.5V9.5H1V8zm5.5 0h3.5V9.5H6.5V8zm5.5 0H15V9.5h-3.5V8z"/></svg>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Activity Bar -->
+        <div class="activity-bar">
+            <div class="activity-bar-top">
+                <svg class="active" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 1.75C2 .784 2.784 0 3.75 0h6.5C11.216 0 12 .784 12 1.75v12.5c0 .966-.784 1.75-1.75 1.75h-6.5C2.784 16 2 15.216 2 14.25V1.75zM3.5 1.5a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h6.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-6.5zM8.25 4.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V5.25a.75.75 0 0 1 .75-.75zM5.25 6.5a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1a.75.75 0 0 1-.75-.75z"/></svg>
+                <svg viewBox="0 0 16 16" ><path fill-rule="evenodd" d="M10.68 11.74a6 6 0 0 1-7.922-8.568 6 6 0 0 1 8.568 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04zM9.47 10.36a4.5 4.5 0 1 1 .16-6.52 4.5 4.5 0 0 1-.16 6.52z"></path></svg>
+                <div class="icon-container">
+                    <svg viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 3.125a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 .5.5v3.319a.5.5 0 0 1-.156.368L11.5 9.75v2.368a.5.5 0 0 1-.266.447l-3.25 1.625a.5.5 0 0 1-.468 0L4.266 12.565a.5.5 0 0 1-.266-.447V9.75L1.156 6.812a.5.5 0 0 1-.156-.368V3.125zM11 9.022l2.5-2.794V3.125H2.5v3.103L5 9.022V12.1l2.75 1.375V9.382a.5.5 0 0 1 .156-.368L11 5.978v3.044z"></path></svg>
+                    <div class="notification-badge">3</div>
+                </div>
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v.17a3.001 3.001 0 0 0-2.22-1.013H4.22c-.93 0-1.74.553-2.148 1.375A3 3 0 0 0 1.5 2.67V2.5zm0 11V3.33a3 3 0 0 0 .572.648c.408.822 1.218 1.375 2.148 1.375h7.56a3.001 3.001 0 0 0 2.22-1.012V13.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5zm10.518-8.248a2 2 0 0 1-1.39 1.39A2 2 0 0 1 9.28 5.25h-2.56a2 2 0 1 1-1.39-1.39 2 2 0 0 1 1.39-1.39h2.56c.92 0 1.737.628 1.958 1.518z"/></svg>
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.5 4l-1.66 1.373a.75.75 0 0 1-1.033-.21L8.75 3.5 7.42 5.093a.75.75 0 0 1-1.06.03L4.5 3.328 2.5 5v8.5a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4zM1.5 4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V4z"/></svg>
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 1h10a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5zM3 14h9V2H3v12zm1-5.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm-6-4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/></svg>
+                <svg viewBox="0 0 16 16"><path d="M10.561 10.072c.074.18.11.373.11.578 0 .966-.784 1.75-1.75 1.75s-1.75-.784-1.75-1.75c0-.205.037-.399.11-.578A3.5 3.5 0 0 1 5.929 7.5c0-.967.783-1.75 1.75-1.75s1.75.783 1.75 1.75a3.5 3.5 0 0 1-1.368 2.572z M8.921 5.49a.53.53 0 0 0 .23-.42c0-.495-.403-.895-.895-.895a.896.896 0 0 0-.895.895c0 .16.043.31.12.441a2.5 2.5 0 0 0 1.44 1.44c.13.076.28.119.44.119.495 0 .895-.403.895-.895a.53.53 0 0 0-.199-.401l-.001-.001z M7.679 13.5a1.753 1.753 0 0 1-.951-3.235A3.493 3.493 0 0 1 5.001 7.5a3.493 3.493 0 0 1 1.727-2.765 1.753 1.753 0 0 1 3.234-.952A3.5 3.5 0 0 1 12.5 7.5a3.5 3.5 0 0 1-2.765 3.483 1.753 1.753 0 0 1-2.056 2.518v-.001zM1.5 7.5a6.5 6.5 0 0 1 10.02-5.714.5.5 0 0 0 .445-.863A7.5 7.5 0 1 0 15 7.5a.5.5 0 0 0-1 0 6.5 6.5 0 0 1-12.5 0z"/></svg>
+
+            </div>
+            <div class="activity-bar-bottom">
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12.25 9.75a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1 0-1.5h8.5zM14 12.25a.75.75 0 0 1-.75.75H2.75a.75.75 0 0 1 0-1.5h10.5a.75.75 0 0 1 .75.75z"/></svg>
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.981 4.965a.25.25 0 0 0-.236-.465H3.255a.25.25 0 0 0-.236.465L5.75 6.452v5.798l-1.5-1.5a.25.25 0 0 0-.354.354l2.25 2.25a.25.25 0 0 0 .354 0l2.25-2.25a.25.25 0 0 0-.354-.354l-1.5 1.5V6.452l2.731-1.487zM1.5 2.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-12a.5.5 0 0 1-.5-.5v-11z"/></svg>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>Explorer</span>
+                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+            </div>
+            <div class="file-explorer">
+                <ul>
+                    <li class="">
+                        <div class="file-item section-header">
+                            <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
+                            CLAUDE-CODE-SDK-DEMOS
+                        </div>
+                        <ul>
+                            <li class="collapsed">
+                                <div class="file-item">
+                                    <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
+                                    <svg viewBox="0 0 16 16" class="icon-folder"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg>
+                                    <span>email-agent</span>
+                                    <div class="git-dot"></div>
+                                </div>
+                            </li>
+                             <li class="">
+                                <div class="file-item">
+                                    <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
+                                    <svg viewBox="0 0 16 16" class="icon-folder"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg>
+                                    <span>excel-demo</span>
+                                </div>
+                                <ul style="padding-left:15px;">
+                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-erb"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>.erb</span></div></li>
+                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-agent"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>agent</span></div></li>
+                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-assets"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>assets</span></div></li>
+                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-modules"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>node_modules</span></div></li>
+                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-release"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>release</span></div></li>
+                                    <li class="">
+                                        <div class="file-item">
+                                            <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
+                                            <svg viewBox="0 0 1024 1024" fill="#81b88b"><path d="M480 320l85.333 170.667h170.667l-128 106.666 42.667 170.667-128-106.667-128 106.667 42.667-170.667-128-106.666h170.667z m298.667-170.667l-298.667-170.667-298.667 170.667 128 469.333 170.667 298.667 170.667-298.667 128-469.333z m-298.667-85.333l234.667 149.333-106.667 384-128-213.333h-213.333z"/></svg>
+                                            <span>src</span>
+                                        </div>
+                                        <ul style="padding-left:15px">
+                                             <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.

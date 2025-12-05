@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 13px;
+        }
+
+        body {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            overflow: hidden;
+        }
+
+        .vscode-window {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #1e1e1e;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            height: 35px;
+            background-color: #252526;
+            padding: 0 10px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 6px;
+            margin-right: 15px;
+        }
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .control-close { background-color: #ff5f56; }
+        .control-minimize { background-color: #ffbd2e; }
+        .control-maximize { background-color: #27c93f; }
+
+        .navigation {
+            display: flex;
+            gap: 10px;
+            margin-right: 10px;
+        }
+
+        .nav-button {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 3px;
+            padding: 2px 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            margin-right: 5px;
+            color: #999999;
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: #d4d4d4;
+            width: 100%;
+            outline: none;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 15px;
+            margin-left: auto;
+        }
+
+        .top-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999999;
+            cursor: pointer;
+        }
+
+        .content-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: #252526;
+            border-right: 1px solid #333333;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333333;
+            background-color: #2c2c2d;
+            font-weight: bold;
+            color: #d4d4d4;
+        }
+
+        .sidebar-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .activity-bar {
+            width: 35px;
+            background-color: #2d2d2d;
+            border-right: 1px solid #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .activity-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #999999;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #007acc;
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .explorer-content {
+            flex: 1;
+            overflow: auto;
+            padding: 10px 0;
+        }
+
+        .file-tree {
+            padding-left: 15px;
+        }
+
+        .tree-item {
+            padding: 3px 0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .tree-item:hover {
+            background-color: #2d2d2d;
+        }
+
+        .tree-item.active {
+            background-color: #373737;
+        }
+
+        .tree-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-icon {
+            color: #c8c8c8;
+        }
+
+        .file-icon {
+            color: #4e94ce;
+        }
+
+        .ts-icon {
+            color: #007acc;
+        }
+
+        .css-icon {
+            color: #ce9178;
+        }
+
+        .expand-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 3px;
+            color: #999999;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-tabs {
+            display: flex;
+            height: 35px;
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #333333;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 0 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-right: 1px solid #333333;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab:hover {
+            background-color: #333333;
+        }
+
+        .tab.active {
+            background-color: #252526;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #007acc;
+        }
+
+        .tab-label {
+            display: flex;
+            align-items: center;
+        }
+
+        .tab-label span {
+            margin-left: 5px;
+        }
+
+        .close-tab {
+            margin-left: 8px;
+            color: #999999;
+            cursor: pointer;
+        }
+
+        .tab-close:hover {
+            color: #d4d4d4;
+        }
+
+        .editor-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .breadcrumb {
+            padding: 5px 10px;
+            border-bottom: 1px solid #333333;
+            color: #999999;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb a {
+            color: #4e94ce;
+            text-decoration: none;
+            margin: 0 3px;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .code-editor {
+            flex: 1;
+            padding: 15px;
+            overflow: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #1e1e1e;
+        }
+
+        .line-numbers {
+            color: #6b6b6b;
+            text-align: right;
+            padding-right: 10px;
+            user-select: none;
+        }
+
+        .code-line {
+            display: flex;
+            margin: 0;
+        }
+
+        .status-bar {
+            height: 22px;
+            background-color: #2d2d2d;
+            border-top: 1px solid #333333;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #999999;
+            overflow: hidden;
+        }
+
+        .status-item {
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-icon {
+            margin-right: 3px;
+            color: #4e94ce;
+        }
+
+        .status-divider {
+            margin: 0 5px;
+            color: #444;
+        }
+
+        /* File icons and colors */
+        .folder-closed { color: #c8c8c8; }
+        .folder-open { color: #c8c8c8; }
+        .file-ts { color: #007acc; }
+        .file-css { color: #ce9178; }
+        .file-jsx { color: #4e94ce; }
+        .file-modified::after {
+            content: 'M';
+            margin-left: 8px;
+            color: #d4d4d4;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="vscode-window">
+        <div class="top-bar">
+            <div class="window-controls">
+                <div class="window-control control-close"></div>
+                <div class="window-control control-minimize"></div>
+                <div class="window-control control-maximize"></div>
+            </div>
+            <div class="navigation">
+                <div class="nav-button">←</div>
+                <div class="nav-button">→</div>
+            </div>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" value="claude-code-sdk-demos">
+            </div>
+            <div class="top-icons">
+                <div class="top-icon">💬</div>
+                <div class="top-icon">↓</div>
+                <div class="top-icon">◲</div>
+                <div class="top-icon">□</div>
+                <div class="top-icon">▤</div>
+                <div class="top-icon">□</div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="activity-bar">
+                <div class="activity-icon">
+                    <span>📄</span>
+                </div>
+                <div class="activity-icon">
+                    <span>🔍</span>
+                </div>
+                <div class="activity-icon">
+                    <span>🔗</span>
+                    <div class="badge">3</div>
+                </div>
+                <div class="activity-icon">
+                    <span>⚡</span>
+                </div>
+                <div class="activity-icon">
+                    <span>📱</span>
+                </div>
+                <div class="activity-icon">
+                    <span>...</span>
+                </div>
+                <div class="activity-icon" style="margin-top: auto; margin-bottom: 10px;">
+                    <span>👤</span>
+                </div>
+                <div class="activity-icon">
+                    <span>⚙️</span>
+                    <div class="badge">1</div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <span>EXPLORER</span>
+                    <div class="sidebar-actions">
+                        <span>...</span>
+                    </div>
+                </div>
+                <div class="explorer-content">
+                    <div class="file-tree">
+                        <div class="tree-item">
+                            <div class="expand-icon">▼</div>
+                            <div class="tree-icon folder-icon">📁</div>
+                            <span>CLAUDE-CODE-SDK-DEMOS</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 20px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon">📁</div>
+                            <span>email-agent</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 20px;">
+                            <div class="expand-icon">▼</div>
+                            <div class="tree-icon folder-icon">📁</div>
+                            <span>excel-demo</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon">📁</div>
+                            <span>.erb</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon">📁</div>
+                            <span>agent</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #c586c0;">📁</div>
+                            <span>assets</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #89d185;">📁</div>
+                            <span>node_modules</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #e51400;">📁</div>
+                            <span>release</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">▼</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>src</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 50px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>__tests__</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 50px;">
+                            <div class="expand-icon">▼</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">🏠</div>
+                            <span>main</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 65px;">
+                            <div class="tree-icon file-icon ts-icon">📄</div>
+                            <span>main.ts</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 65px;">
+                            <div class="tree-icon file-icon ts-icon">📄</div>
+                            <span>menu.ts</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 65px;">
+                            <div class="tree-icon file-icon ts-icon">📄</div>
+                            <span>preload.ts</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 65px;">
+                            <div class="tree-icon file-icon ts-icon">📄</div>
+                            <span>util.ts</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 50px;">
+                            <div class="expand-icon">▼</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>renderer</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 65px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>components</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>OUTLINE</span>
+                        </div>
+                        <div class="tree-item" style="padding-left: 35px;">
+                            <div class="expand-icon">►</div>
+                            <div class="tree-icon folder-icon" style="color: #79c0ff;">📁</div>
+                            <span>TIMELINE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-area">
+                <div class="editor-tabs">
+                    <div class="tab" data-tab="email-db">
+                        <div class="tab-label">
+                            <div class="file-icon ts-icon">📄</div>
+                            <span>email-db.ts</span>
+                            <span class="file-modified"></span>
+                        </div>
+                    </div>
+                    <div class="tab active" data-tab="app-tsx">
+                        <div class="tab-label">
+                            <div class="file-icon ts-icon">⚛️</div>
+                            <span>App.tsx</span>
+                        </div>
+                        <div class="close-tab">×</div>
+                    </div>
+                    <div class="tab" data-tab="app-css">
+                        <div class="tab-label">
+                            <div class="file-icon css-icon">📄</div>
+                            <span>App.css</span>
+                        </div>
+                        <div class="close-tab">×</div>
+                    </div>
+                    <div class="tab" data-tab="util-ts">
+                        <div class="tab-label">
+                            <div class="file-icon ts-icon">📄</div>
+                            <span>util.ts</span>
+                        </div>
+                        <div class="close-tab">×</div>
+                    </div>
+                </div>
+                <div class="breadcrumb">
+                    <span>excel-demo &gt; src &gt; renderer &gt; </span>
+                    <a>App.tsx</a>
+                    <span> &gt; ...</span>
+                </div>
+                <div class="editor-content">
+                    <div class="code-editor">
+                        <div class="code-line">
+                            <div class="line-numbers">1</div>
+                            <div>Thariq Shihipar, last month | 1 author (Thariq Shihipar)</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">2</div>
+                            <div><span style="color: #c586c0;">import</span> { <span style="color: #9cdcfe;">MemoryRouter</span> <span style="color: #d4d4d4;">as</span> <span style="color: #9cdcfe;">Router</span>, <span style="color: #9cdcfe;">Routes</span>, <span style="color: #9cdcfe;">Route</span> } <span style="color: #d4d4d4;">from</span> <span style="color: #ce9178;">'react-router-dom'</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">3</div>
+                            <div><span style="color: #c586c0;">import</span> <span style="color: #9cdcfe;">ChatInterface</span> <span style="color: #d4d4d4;">from</span> <span style="color: #ce9178;">'./components/ChatInterface'</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">4</div>
+                            <div><span style="color: #c586c0;">import</span> <span style="color: #ce9178;">'./App.css'</span>;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">5</div>
+                            <div></div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">6</div>
+                            <div><span style="color: #c586c0;">export</span> <span style="color: #c586c0;">default</span> <span style="color: #569cd6;">function</span> <span style="color: #dcdcaa;">App</span>() {</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">7</div>
+                            <div>    <span style="color: #d4d4d4;">return</span> (</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">8</div>
+                            <div>        &lt;<span style="color: #4ec9b0;">Router</span>&gt;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">9</div>
+                            <div>            &lt;<span style="color: #4ec9b0;">Routes</span>&gt;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">10</div>
+                            <div>                &lt;<span style="color: #4ec9b0;">Route</span> <span style="color: #9cdcfe;">path</span>=<span style="color: #ce9178;">"/"</span> <span style="color: #9cdcfe;">element</span>={&lt;<span style="color: #4ec9b0;">ChatInterface</span> /&gt;} /&gt;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">11</div>
+                            <div>            &lt;/<span style="color: #4ec9b0;">Routes</span>&gt;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">12</div>
+                            <div>        &lt;/<span style="color: #4ec9b0;">Router</span>&gt;</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">13</div>
+                            <div>    );</div>
+                        </div>
+                        <div class="code-line">
+                            <div class="line-numbers">14</div>
+                            <div>}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item"><span>main*</span></div>
+            <div class="status-item"><span>0</span> <span>⚠️</span> <span>0</span></div>
+            <div class="status-item"><span>Launchpad</span></div>
+            <div class="status-item"><span>Amazon Q</span></div>
+            <div class="status-item"><span>-- INSERT --</span></div>
+            <div class="status-divider">|</div>
+            <div class="status-item"><span>Ln 14, Col 1</span></div>
+            <div class="status-item"><span>Spaces: 2</span></div>
+            <div class="status-item"><span>UTF-8</span></div>
+            <div class="status-item"><span>LF</span></div>
+            <div class="status-item"><span>{ }</span> <span>TypeScript JSX</span></div>
+            <div class="status-item" style="margin-left: auto;"><span>🔔</span></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                });
+            });
+            
+            // Close tab functionality
+            document.querySelectorAll('.close-tab').forEach(closeBtn => {
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const tab = closeBtn.parentElement;
+                    if (tab.classList.contains('active')) {
+                        // Find next tab to activate
+                        const nextTab = tab.nextElementSibling || tab.previousElementSibling;
+                        if (nextTab) {
+                            nextTab.click();
+                        }
+                    }
+                    tab.remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

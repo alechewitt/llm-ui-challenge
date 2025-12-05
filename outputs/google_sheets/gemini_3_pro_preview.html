@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Clone</title>
+    <style>
+        :root {
+            --primary-green: #0F9D58;
+            --google-blue: #1a73e8;
+            --border-color: #dadce0;
+            --header-bg: #f8f9fa;
+            --hover-bg: #f1f3f4;
+            --text-color: #202124;
+            --icon-color: #444746;
+            --cell-border: #e2e3e3;
+            --selection-border: #1a73e8;
+            --selection-bg: rgba(26, 115, 232, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Roboto, sans-serif;
+            font-size: 13px;
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        #header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 16px;
+        }
+
+        .logo-container svg {
+            width: 38px;
+            height: 38px;
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .file-title {
+            font-size: 18px;
+            color: #444746;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-title input {
+            border: none;
+            font-size: 18px;
+            color: #444746;
+            padding: 2px 6px;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        .file-title input:focus {
+            outline: 2px solid var(--google-blue);
+        }
+
+        .star-icon, .cloud-icon {
+            fill: #5f6368;
+            cursor: pointer;
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 4px;
+        }
+
+        .menu-item {
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .menu-item:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .header-right {
+           margin-left: auto; 
+           display: flex;
+           align-items: center;
+           gap: 20px;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .share-btn {
+            background-color: #c2e7ff;
+            color: #001d35;
+            border: none;
+            padding: 10px 24px 10px 16px;
+            border-radius: 24px;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .share-btn:hover {
+            background-color: #b3d7ef;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: orangered;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- Toolbar --- */
+        #toolbar {
+            background-color: #edf2fa;
+            border-radius: 24px;
+            margin: 6px 14px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 6px;
+        }
+
+        .tool-separator {
+            width: 1px;
+            height: 20px;
+            background-color: #c7c7c7;
+            margin: 0 4px;
+        }
+
+        .tool-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--icon-color);
+        }
+
+        .tool-btn:hover {
+            background-color: #dde3ea;
+        }
+
+        .tool-btn.active {
+            background-color: #d3e3fd;
+            color: #0b57d0;
+        }
+
+        .tool-select {
+            display: flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .tool-select:hover { background-color: #dde3ea; }
+        .tool-select span { margin-right: 4px; }
+
+        /* --- Formula Bar --- */
+        #formula-bar {
+            display: flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-top: 1px solid var(--border-color);
+            background-color: #fff;
+            height: 28px;
+        }
+
+        #name-box {
+            width: 60px;
+            height: 24px;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 12px;
+            color: #444746;
+            border-radius: 4px;
+        }
+        #name-box:focus-within {
+            border-color: var(--google-blue);
+            background: #fff;
+        }
+        
+        .formula-fx {
+            padding: 0 12px;
+            border-left: 1px solid #dadce0;
+            color: #9aa0a6;
+            margin-left: 6px;
+            display: flex;
+            align-items: center;
+            font-style: italic;
+            font-family: serif;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: default;
+        }
+
+        #formula-input {
+            flex-grow: 1;
+            height: 24px;
+            border: none;
+            padding: 4px 8px;
+            font-size: 13px;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* --- Main Layout --- */
+        #main-container {
+            display: flex;
+            flex-grow: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Grid --- */
+        #spreadsheet-wrapper {
+            flex-grow: 1;
+            overflow: auto;
+            position: relative;
+            background-color: #fff;
+            display:flex; 
+            flex-direction: column;
+        }
+
+        #grid-container {
+            display: grid;
+            /* Defined in JS: grid-template-columns */
+            position: relative;
+        }
+
+        /* Headers */
+        .header-col-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: contents;
+        }
+
+        .header-row-wrapper {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            display: contents;
+        }
+
+        .header-corner {
+            background-color: var(--header-bg);
+            border-right: 1px solid #c0c0c0;
+            border-bottom: 1px solid #c0c0c0;
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 30;
+            width: 46px;
+            height: 25px;
+        }
+
+        .col-header {
+            background-color: var(--header-bg);
+            border-right: 1px solid #c0c0c0;
+            border-bottom: 1px solid #c0c0c0;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            user-select: none;
+            position: relative;
+        }
+        .col-header.active-header {
+            background-color: #d1d5db; /* Darker gray for active */
+            color: var(--google-blue);
+            border-bottom: 2px solid var(--google-blue);
+        }
+        
+        .row-header {
+            background-color: var(--header-bg);
+            border-right: 1px solid #c0c0c0;
+            border-bottom: 1px solid var(--cell-border);
+            width: 46px; /* Row header width */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            user-select: none;
+        }
+        .row-header.active-header {
+            background-color: #d1d5db;
+            color: var(--google-blue);
+        }
+
+        /* Cells */
+        .cell {
+            border-right: 1px solid var(--cell-border);
+            border-bottom: 1px solid var(--cell-border);
+            padding: 2px 4px;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            outline: none;
+            cursor: cell;
+        }
+
+        /* Selection Overlay */
+        #selection-overlay {
+            position: absolute;
+            border: 2px solid var(--google-blue);
+            background-color: rgba(26, 115, 232, 0.05); /* very faint blue fill */
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+        }
+
+        #selection-handle {
+            width: 7px;
+            height: 7px;
+            background-color: var(--google-blue);
+            border: 1px solid white;
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            cursor: crosshair;
+            pointer-events: auto;
+        }
+
+        /* --- Right Sidebar --- */
+        #right-sidebar {
+            width: 56px;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 12px;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .side-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .side-icon svg { width: 24px; height: 24px; }
+        .side-icon:hover { background-color: var(--hover-bg); }
+
+        .side-separator {
+            width: 20px;
+            height: 1px;
+            background-color: #dadce0;
+            margin-bottom: 16px;
+        }
+
+        /* --- Footer --- */
+        #footer {
+            height: 38px;
+            background-color: #fff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+        }
+
+        .sheet-add-btn {
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sheet-add-btn:hover { background-color: var(--hover-bg); }
+
+        .sheet-tab {
+            display: flex;
+            align-items: center;
+            padding: 4px 12px;
+            margin-left: 8px;
+            border-radius: 4px 4px 0 0;
+            background-color: #e8f0fe;
+            color: #174ea6;
+            font-weight: 500;
+            height: 30px;
+            margin-top: 8px;
+            border-bottom: 2px solid #174ea6;
+            cursor: pointer;
+        }
+        .sheet-tab svg {
+            margin-left: 4px;
+            width: 12px;
+        }
+        
+        .footer-menu {
+            padding: 8px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div id="header">
+        <div class="logo-container">
+            <!-- Google Sheets SVG Logo -->
+            <svg viewBox="0 0 87.3 115" preserveAspectRatio="xMidYMid">
+                <path d="M56.4 0H8.3C3.7 0 0 3.7 0 8.3v98.4c0 4.6 3.7 8.3 8.3 8.3h70.7c4.6 0 8.3-3.7 8.3-8.3V29L56.4 0z" fill="#0F9D58"/>
+                <path d="M56.4 0v24.9h24.9L56.4 0z" fill="#Dcedc8"/> <!-- light fold -->
+                <path d="M56.4 0v24.9h24.9" fill="none" opacity=".2"/>
+                <path d="M60.6 24.9H81.3V8.3L60.6 24.9z" fill="#000" opacity=".1"/>
+                <path d="M16.7 87.5h54.1v8.3H16.7v-8.3zm0-16.6h54.1v8.3H16.7v-8.3zm0-16.7h54.1v8.3H16.7v-8.3zm0-16.6h54.1v8.3H16.7v-8.3z" fill="#F1F1F1"/>
+                <path d="M25 37.5h37.5" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="file-info">
+            <div class="file-title">
+                <input type="text" value="Untitled spreadsheet">
+                <svg class="star-icon" width="18" height="18" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.01 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></svg> 
+            </div>
+            <div class="menu-bar">
+                <div class="menu-item">File</div>
+                <div class="menu-item">Edit</div>
+                <div class="menu-item">View</div>
+                <div class="menu-item">Insert</div>
+                <div class="menu-item">Format</div>
+                <div class="menu-item">Data</div>
+                <div class="menu-item">Tools</div>
+                <div class="menu-item">Extensions</div>
+                <div class="menu-item">Help</div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="header-icons">
+                <button class="icon-btn" title="Last edit was seconds ago">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#444746"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                </button>
+                <button class="icon-btn" title="Open comment history">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#444746"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                </button>
+                <button class="icon-btn" title="Join a call here">
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="#444746"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                </button>
+            </div>
+            
+            <button class="share-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#001d35"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                Share
+                <svg width="10" height="10" viewBox="0 0 24 24" style="margin-left:4px; fill:#001d35"><path d="M7 10l5 5 5-5z"/></svg>
+            </button>
+
+            <div class="avatar">J</div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+        <button class="tool-btn"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 11H6.83l3.58-3.59L9 6l-6 6 6 6 1.41-1.41L6.83 13H21z" fill="currentColor"/></svg></button>
+        <button class="tool-btn"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M22 6l-6 6 6 6 1.41-1.41L3 11V13h15.17l-3.58 3.59L22 6z" transform="scale(-1,1) translate(-24,0)" fill="currentColor"/></svg></button>
+        <button class="tool-btn"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" fill="currentColor"/></svg></button>
+        <button class="tool-btn"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" fill="currentColor"/></svg></button>
+        
+        <div class="tool-separator"></div>
+
+        <div class="tool-select"><span>100%</span><svg width="10" height="10" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+        
+        <div class="tool-separator"></div>
+
+        <button class="tool-btn">£</button>
+        <button class="tool-btn">%</button>
+        <button class="tool-btn">.0<small>0</small></button>
+        <button class="tool-btn">.00</button>
+        <button class="tool-btn">123</button>
+        
+        <div class="tool-separator"></div>
+
+        <div class="tool-select" style="min-width: 80px; justify-content:space-between;"><span>Arial</span><svg width="10" height="10" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+        <div class="tool-separator"></div>
+        <div class="tool-select"><span>10</span><svg width="10" height="10" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg></div>
+        
+        <div class="tool-separator"></div>
+
+        <button class="tool-btn" style="font-weight:bold;">B</button>
+        <button class="tool-btn" style="font-style:italic; font-family: serif;">I</button>
+        <button class="tool-btn" style="text-decoration: line-through;">S</button>
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm0-10h4v6h6v-6h4l-7-7-7 7z" fill="currentColor" fill-opacity="0.3"/><path d="M0 0h24v24H0z" fill="none"/></svg></button> <!-- Fake text color -->
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z" fill="currentColor"/><path d="M0 20h24v4H0z" fill="currentColor"/></svg></button> 
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm8 8H5v6h6v-6zm0-8H5v6h6V3zm8 8h-6v6h6v-6zm0-8h-6v6h6V3z" fill="currentColor"/></svg></button>
+        
+        <div class="tool-separator"></div>
+        
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z" fill="currentColor"/></svg></button>
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z" fill="currentColor"/></svg></button>
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="currentColor"/></svg></button>
+        
+        <div style="flex-grow:1;"></div>
+        <button class="tool-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" fill="currentColor"/></svg></button>
+    </div>
+
+    <!-- Formula Bar -->
+    <div id="formula-bar">
+        <div id="name-box">A1</div>
+        <div style="width: 1px; height: 16px; background: #dadce0; margin: 0 8px;"></div>
+        <div class="formula-fx">fx</div>
+        <div id="formula-input" contenteditable="true"></div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div id="main-container">
+        <div id="spreadsheet-wrapper">
+            <div id="grid-container">
+                <!-- Selection Overlay -->
+                <div id="selection-overlay">
+                    <div id="selection-handle"></div>
+                </div>
+                <!-- Top Corner (frozen) -->
+                <div class="header-corner"></div>
+                
+                <!-- Headers and Cells generated via JS -->
+            </div>
+        </div>
+
+        <!-- Right Side Icons -->
+        <div id="right-sidebar">
+            <div class="side-icon" title="Calendar">
+                <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z" fill="#1a73e8"/></svg>
+            </div>
+            <div class="side-icon" title="Keep">
+                <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z" fill="#f4b400"/></svg>
+            </div>
+            <div class="side-icon" title="Tasks">
+                <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2zm4.3 7.61l-5.89 5.89a.23.23 0 0 1-.33 0l-2.69-2.69a.23.23 0 0 1 0-.33l.94-.94c.09-.09.24-.09.33 0l1.58 1.58 4.79-4.79c.09-.09.24-.09.33 0l.94.94c.09.09.09.25 0 .34z" fill="#1a73e8"/></svg>
+            </div>
+            <div class="side-icon" title="Contacts">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#1a73e8"/></svg>
+            </div>
+            <div class="side-separator"></div>
+            <div class="side-icon" title="Get Add-ons">
+                 <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#444746"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+         <div class="sheet-add-btn">
+             <svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="#444746"/></svg>
+         </div>
+         <div class="footer-menu">
+             <svg width="20" height="20" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="#444746"/></svg>
+         </div>
+         <div class="sheet-tab" title="Sheet1">
+             Sheet1 <svg viewBox="0 0 10 6" fill="#174ea6"><path d="M0 0h10L5 6z"/></svg>
+         </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        const gridContainer = document.getElementById('grid-container');
+        const selectionOverlay = document.getElementById('selection-overlay');
+        const nameBox = document.getElementById('name-box');
+        const formulaInput = document.getElementById('formula-input');
+
+        const COLS = 26; // A-Z
+        const ROWS = 50; 
+        const COL_LETTERS = Array.from({ length: COLS }, (_, i) => String.fromCharCode(65 + i));
+        
+        // Dimensions
+        const ROW_HEADER_WIDTH = 46;
+        const COL_HEADER_HEIGHT = 25;
+        const CELL_WIDTH = 100;
+        const CELL_HEIGHT = 21;
+
+        let activeCell = null;
+
+        // --- Grid Generation ---
+        
+        // 1. Set styles for grid cols
+        // First col is 46px, rest are 100px
+        let gridTemplate = `${ROW_HEADER_WIDTH}px `;
+        for(let i=0; i<COLS; i++) {
+            gridTemplate += `${CELL_WIDTH}px `;
+        }
+        gridContainer.style.gridTemplateColumns = gridTemplate;
+
+        // 2. Generate Column Headers (The A, B, C...)
+        // We wrap them in a container to keep DOM cleaner if needed, but grid needs direct children
+        // Use document fragment for perf
+        const fragment = document.createDocumentFragment();
+
+        // The "sticky" column headers need to be added to the grid first (Row 1)
+        // Note: The top-left corner is already in HTML (.header-corner)
+        
+        let colHeaders = [];
+        let rowHeaders = [];
+
+        COL_LETTERS.forEach((char, index) => {
+            const el = document.createElement('div');
+            el.className = 'col-header';
+            el.textContent = char;
+            el.dataset.col = index + 1; // 1-based index matching grid column
+            fragment.appendChild(el);
+            colHeaders.push(el);
+        });
+
+        // 3. Generate Rows
+        for (let r = 1; r <= ROWS; r++) {
+            // Row Header (1, 2, 3...)
+            const rowHead = document.createElement('div');
+            rowHead.className = 'row-header';
+            rowHead.textContent = r;
+            rowHead.id = `row-header-${r}`;
+            rowHead.style.gridColumn = '1'; 
+            // We use grid for layout. Row headers are grid items too.
+            // Since we have sticky positioning, we don't strictly need structured rows container
+            fragment.appendChild(rowHead);
+            rowHeaders.push(rowHead);
+
+            // Cells for this row
+            for (let c = 0; c < COLS; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.contentEditable = true;
+                cell.spellcheck = false;
+                cell.dataset.r = r;
+                cell.dataset.c = c; // 0-based index for logic
+                cell.dataset.colChar = COL_LETTERS[c];
+                
+                // Add click listener
+                cell.addEventListener('mousedown', (e) => {
+                    selectCell(cell, r, c);
+                });
+
+                // Input sync
+                cell.addEventListener('input', (e) => {
+                    if (activeCell === cell) {
+                        formulaInput.textContent = cell.textContent;
+                    }
+                });
+                
+                // Simple keyboard navigation prevent default enter behaviour
+                cell.addEventListener('keydown', (e) => {
+                   if(e.key === 'Enter') {
+                       e.preventDefault();
+                       // Move down? For now just blur or insert newline if shift
+                       if(!e.shiftKey) {
+                           // Try moving focus to next row
+                           const nextRow = r + 1;
+                           if(nextRow <= ROWS) {
+                               const nextCell = document.querySelector(`.cell[data-r="${nextRow}"][data-c="${c}"]`);
+                               if(nextCell) selectCell(nextCell, nextRow, c);
+                           }
+                       }
+                   }
+                });
+
+                fragment.appendChild(cell);
+            }
+        }
+
+        gridContainer.appendChild(fragment);
+
+
+        // --- Interaction Logic ---
+
+        function selectCell(cell, r, c) {
+            activeCell = cell;
+
+            // Update Name Box
+            const colChar = COL_LETTERS[c];
+            nameBox.textContent = `${colChar}${r}`;
+            formulaInput.textContent = cell.textContent;
+
+            // Calculate Position for Overlay
+            // top = colHeaderHeight + (r-1)*cellHeight
+            // left = rowHeaderWidth + c*cellWidth
+            // Correction: gridContainer has padding or borders? No.
+            // Since elements are in grid flow, offsetTop/Left works relative to parent if parent is positioned
+            
+            const cellRect = cell.getBoundingClientRect();
+            const containerRect = gridContainer.getBoundingClientRect();
+            
+            // We calculate relative positions to the container (which scrolls)
+            // But sticky headers complicate offsetTop.
+            // Let's use cell.offsetLeft and Top directly
+            
+            const left = cell.offsetLeft;
+            const top = cell.offsetTop;
+            const width = cell.offsetWidth;
+            const height = cell.offsetHeight;
+
+            selectionOverlay.style.display = 'block';
+            selectionOverlay.style.width = (width - 1) + 'px'; // -1 for border overlap overlap
+            selectionOverlay.style.height = (height - 1) + 'px';
+            selectionOverlay.style.transform = `translate(${left}px, ${top}px)`;
+
+            // Highlights Headers
+            // Reset old
+            document.querySelectorAll('.active-header').forEach(el => el.classList.remove('active-header'));
+            
+            // Set new
+            const colHead = colHeaders[c];
+            const rowHead = rowHeaders[r-1];
+            
+            if(colHead) colHead.classList.add('active-header');
+            if(rowHead) rowHead.classList.add('active-header');
+            
+            cell.focus();
+        }
+
+        // Formula Bar Input Sync
+        formulaInput.addEventListener('input', (e) => {
+            if (activeCell) {
+                activeCell.textContent = formulaInput.textContent;
+            }
+        });
+
+        // Initialize Selection
+        const firstCell = document.querySelector('.cell[data-r="1"][data-c="0"]');
+        if(firstCell) selectCell(firstCell, 1, 0);
+
+    </script>
+</body>
+</html>

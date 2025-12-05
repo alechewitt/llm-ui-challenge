@@ -1,9 +1,3 @@
-An excellent choice of project! Recreating a complex and polished interface like Spotify's is a great way to practice modern HTML and CSS.
-
-Here is the Spotify interface recreated in a single HTML file with embedded CSS and JavaScript. All icons are included as SVGs, and images are loaded from a placeholder service to keep the file self-contained and of a reasonable size.
-
-Double-click the downloaded HTML file to open it in your web browser.
-
 ```html
 <!DOCTYPE html>
 <html lang="en">
@@ -12,127 +6,95 @@ Double-click the downloaded HTML file to open it in your web browser.
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify</title>
     <style>
-        /* ------------------- */
-        /* Basic Setup & Fonts */
-        /* ------------------- */
         :root {
             --bg-color: #000000;
-            --sidebar-bg: #000000;
-            --main-bg: #121212;
-            --card-bg: #181818;
-            --card-hover-bg: #282828;
-            --pill-bg: #232323;
-            --pill-active-bg: #ffffff;
+            --panel-color: #121212;
+            --card-color: #181818;
+            --card-hover-color: #282828;
             --text-primary: #ffffff;
             --text-secondary: #b3b3b3;
             --icon-color: #b3b3b3;
-            --green: #1db954;
-            --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            --sidebar-width: 330px;
-            --player-height: 90px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --icon-hover-color: #ffffff;
+            --pill-bg: #282828;
+            --pill-active-bg: #ffffff;
+            --pill-active-text: #000000;
+            --play-button-green: #1db954;
+            --font-family: 'Helvetica Neue', Arial, sans-serif;
         }
 
         body {
-            font-family: var(--font-family);
             background-color: var(--bg-color);
             color: var(--text-primary);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
         }
 
-        /* ------------------- */
-        /*   Layout          */
-        /* ------------------- */
-        .spotify-app {
+        .spotify-container {
             display: grid;
-            grid-template-columns: var(--sidebar-width) 1fr;
-            grid-template-rows: 1fr var(--player-height);
-            height: 100%;
-            width: 100%;
+            grid-template-columns: 350px 1fr;
+            grid-template-rows: 1fr auto;
+            grid-template-areas:
+                "sidebar main"
+                "player player";
+            height: 100vh;
+            gap: 8px;
+            padding: 8px;
+            box-sizing: border-box;
         }
 
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 14px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 4px solid transparent;
+            background-clip: padding-box;
+            border-radius: 9999px;
+        }
+
+        /* --- Sidebar --- */
         .sidebar {
-            grid-column: 1 / 2;
-            grid-row: 1 / 2;
-            background-color: var(--sidebar-bg);
-            padding: 8px;
+            grid-area: sidebar;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .main-content {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
-            background-color: var(--main-bg);
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .playback-bar {
-            grid-column: 1 / 3;
-            grid-row: 2 / 3;
-            background-color: #181818;
-            border-top: 1px solid #282828;
-        }
-        
-        /* Custom Scrollbar */
-        .main-content::-webkit-scrollbar,
-        .library-scroll::-webkit-scrollbar {
-            width: 14px;
-        }
-
-        .main-content::-webkit-scrollbar-thumb,
-        .library-scroll::-webkit-scrollbar-thumb {
-            background-color: rgba(255,255,255,0.3);
-        }
-        
-        .main-content::-webkit-scrollbar-track,
-        .library-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* ------------------- */
-        /*     Sidebar         */
-        /* ------------------- */
-        .sidebar .nav-block,
-        .sidebar .library {
-            background-color: var(--card-bg);
+        .sidebar-section {
+            background-color: var(--panel-color);
             border-radius: 8px;
             padding: 8px 12px;
         }
 
-        .sidebar .nav-block ul {
+        .sidebar-nav ul {
             list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .sidebar .nav-block li a {
+        .sidebar-nav li a {
             display: flex;
             align-items: center;
             gap: 20px;
-            color: var(--text-secondary);
+            padding: 8px;
+            color: var(--icon-color);
             text-decoration: none;
             font-weight: bold;
-            padding: 8px 12px;
-            font-size: 1rem;
-            transition: color 0.2s ease;
+            font-size: 16px;
+            transition: color 0.2s;
         }
 
-        .sidebar .nav-block li a:hover,
-        .sidebar .nav-block li a.active {
-            color: var(--text-primary);
+        .sidebar-nav li a:hover, .sidebar-nav li a.active {
+            color: var(--icon-hover-color);
         }
 
-        .sidebar .nav-block li a svg {
+        .sidebar-nav li a svg {
             width: 24px;
             height: 24px;
             fill: currentColor;
@@ -147,395 +109,433 @@ Double-click the downloaded HTML file to open it in your web browser.
 
         .library-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
+            justify-content: space-between;
+            padding: 8px 4px;
+            margin-bottom: 8px;
         }
 
-        .library-button {
+        .library-title {
             display: flex;
             align-items: center;
-            gap: 16px;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
+            gap: 8px;
+            color: var(--icon-color);
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 16px;
+            transition: color 0.2s;
             cursor: pointer;
-            transition: color 0.2s ease;
         }
-
-        .library-button:hover {
+        
+        .library-title:hover {
             color: var(--text-primary);
         }
 
-        .library-button svg {
+        .library-title svg {
             width: 24px;
             height: 24px;
             fill: currentColor;
         }
 
-        .library-header .header-icons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .library-header .header-icons button {
+        .library-controls button {
             background: none;
             border: none;
             color: var(--icon-color);
             cursor: pointer;
             padding: 8px;
             border-radius: 50%;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.2s, color 0.2s;
         }
 
-        .library-header .header-icons button:hover {
-            background-color: var(--card-hover-bg);
+        .library-controls button:hover {
+            background-color: var(--card-color);
             color: var(--text-primary);
         }
 
-        .library-header .header-icons svg {
+        .library-controls button svg {
             width: 16px;
             height: 16px;
             fill: currentColor;
         }
 
-        .library-pills {
+        .filter-pills {
             display: flex;
             gap: 8px;
-            padding: 8px 12px;
+            margin-bottom: 16px;
         }
 
-        .library-pills .pill {
+        .filter-pills button {
             background-color: var(--pill-bg);
             color: var(--text-primary);
-            border-radius: 99px;
+            border: none;
+            border-radius: 9999px;
             padding: 6px 12px;
-            font-size: 0.875rem;
-            border: none;
+            font-size: 14px;
             cursor: pointer;
-            white-space: nowrap;
+            transition: background-color 0.2s;
         }
 
-        .library-pills .pill.active {
-            background-color: var(--text-primary);
-            color: var(--bg-color);
-        }
-
-        .library-scroll {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-
-        .library-search-filter {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-        }
-
-        .library-search-filter button {
-            background: none;
-            border: none;
-            color: var(--icon-color);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 50%;
-            transition: background-color 0.2s, color 0.2s;
-        }
-
-        .library-search-filter button:hover {
-             background-color: var(--card-hover-bg);
-            color: var(--text-primary);
-        }
-
-        .library-search-filter button svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .library-search-filter .filter {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-
-        .library-search-filter .filter:hover {
-            color: var(--text-primary);
-        }
-
-        .library-search-filter .filter svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
+        .filter-pills button:hover {
+            background-color: #3e3e3e;
         }
         
-        .playlist-item {
+        .library-content {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 8px;
+        }
+        
+        .library-item {
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 8px;
             border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s ease;
-            text-decoration: none;
+            transition: background-color 0.2s;
         }
 
-        .playlist-item:hover {
-            background-color: var(--card-hover-bg);
+        .library-item:hover {
+            background-color: var(--card-hover-color);
         }
 
-        .playlist-item img {
+        .library-item img, .library-item .item-icon {
             width: 48px;
             height: 48px;
             object-fit: cover;
-            border-radius: 4px;
         }
-        
-        .playlist-item .artist-img {
+        .library-item img.artist-image {
             border-radius: 50%;
         }
+        
+        .library-item .item-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+        }
 
-        .playlist-item .content .title {
-            color: var(--text-primary);
-            font-size: 1rem;
+        .library-item .item-icon svg {
+             width: 24px;
+             height: 24px;
+             fill: var(--icon-color);
+        }
+
+        .library-item .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+
+        .library-item .item-title {
+            font-size: 16px;
             font-weight: 500;
-            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .playlist-item .content .description {
+        .library-item .item-subtitle {
+            font-size: 14px;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* ------------------- */
-        /*    Main Content     */
-        /* ------------------- */
+
+        /* --- Main Content --- */
+        .main-content {
+            grid-area: main;
+            background: linear-gradient(to bottom, #222222, var(--panel-color) 20%);
+            border-radius: 8px;
+            overflow-y: auto;
+        }
+
         .main-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 16px 24px;
-            background: rgba(18, 18, 18, 0.7);
-            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            background-color: #222222;
+            z-index: 10;
         }
-
-        .main-header .nav-buttons {
-            display: flex;
-            gap: 16px;
-        }
-
-        .main-header .nav-buttons button {
-            background-color: rgba(0,0,0,0.5);
+        
+        .header-nav button, .header-user-profile button {
+            background-color: rgba(0, 0, 0, 0.5);
             border: none;
-            border-radius: 50%;
             width: 32px;
             height: 32px;
-            color: #fff;
+            border-radius: 50%;
+            color: var(--text-primary);
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
 
-        .main-header .nav-buttons svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-        
-        .main-header .header-content-center {
+        .header-nav {
             display: flex;
             gap: 8px;
         }
-        
-        .main-header .header-content-center .pill {
-            background-color: var(--pill-bg);
-            color: var(--text-primary);
-            border-radius: 99px;
-            padding: 8px 16px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        .main-header .header-content-center .pill.active {
-            background-color: var(--text-primary);
-            color: var(--bg-color);
-        }
 
-
-        .main-header .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .main-header .user-profile button {
-            background-color: rgba(0,0,0,0.7);
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            color: #fff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .main-header .user-profile .avatar {
-            background-color: #f573a0;
-             font-weight: bold;
-        }
-
-        .main-header .user-profile svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-        
-        .main-view {
-            padding: 0 24px;
-        }
-        
-        /* Quick Links Grid */
-        .quick-links-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-            margin-bottom: 32px;
-        }
-
-        .quick-link-card {
-            display: flex;
-            align-items: center;
-            background-color: var(--card-hover-bg);
-            border-radius: 4px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .quick-link-card:hover {
-            background-color: rgba(255,255,255,0.2);
-        }
-
-        .quick-link-card img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-        }
-
-        .quick-link-card span {
-            margin-left: 16px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        
-        /* Shelf Section */
-        .shelf-section {
-            margin-bottom: 32px;
-        }
-
-        .shelf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .shelf-header h2 {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .shelf-header a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-        }
-
-        .shelf-header a:hover {
-            text-decoration: underline;
-        }
-        
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 24px;
-        }
-
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            padding: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        .header-search {
+            flex-grow: 1;
+            margin: 0 16px;
             position: relative;
         }
         
-        .content-card:hover {
-            background-color: var(--card-hover-bg);
-        }
-        
-        .content-card:hover .play-button {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .content-card .play-button {
-            position: absolute;
-            right: 24px;
-            bottom: 100px;
-            width: 48px;
-            height: 48px;
-            background-color: var(--green);
-            border-radius: 50%;
+        .header-search input {
+            width: 100%;
+            max-width: 360px;
+            background-color: var(--card-hover-color);
             border: none;
+            border-radius: 9999px;
+            padding: 12px 16px 12px 48px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .header-search input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .header-search .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .header-user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .header-user-profile .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #535353;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.3, 0, 0, 1);
-            box-shadow: 0 8px 8px rgba(0,0,0,.3);
-        }
-
-        .content-card .play-button svg {
-            width: 24px;
-            height: 24px;
-            fill: #000;
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #e13300;
         }
         
-        .content-card img {
-            width: 100%;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        .header-user-profile .notification-dot {
+            position: absolute;
+            top: 3px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #3d91f4;
+            border: 2px solid #000;
+        }
+        
+
+        .main-view {
+            padding: 0 24px 24px;
+        }
+        
+        .main-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
-        .content-card .card-title {
-            font-size: 1rem;
+        .main-filters .filter-pill {
+            background-color: var(--pill-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 9999px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .main-filters .filter-pill.active {
+            background-color: var(--pill-active-bg);
+            color: var(--pill-active-text);
+        }
+
+        .greeting-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .greeting-card {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            height: 64px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .greeting-card:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .greeting-card img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.5);
+        }
+
+        .greeting-card span {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 0 16px;
+            flex-grow: 1;
+        }
+        
+        .greeting-card .blue-dot {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #3d91f4;
+        }
+
+        .content-section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .section-header a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .section-header a:hover {
+            text-decoration: underline;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background-color: var(--card-hover-color);
+        }
+        
+        .card:hover .play-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-image-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        
+        .card-image.circle {
+             border-radius: 50%;
+        }
+
+        .card .beta-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #0d72ea;
+            color: var(--text-primary);
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .card .spotify-logo-small {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card .spotify-logo-small svg {
+            width: 12px;
+            height: 12px;
+            fill: var(--text-primary);
+        }
+        
+        .play-button {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 48px;
+            height: 48px;
+            background-color: var(--play-button-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        
+        .card-title {
+            font-size: 16px;
             font-weight: bold;
             margin-bottom: 4px;
             white-space: nowrap;
@@ -543,412 +543,379 @@ Double-click the downloaded HTML file to open it in your web browser.
             text-overflow: ellipsis;
         }
 
-        .content-card .card-description {
-            font-size: 0.875rem;
+        .card-description {
+            font-size: 14px;
             color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .content-card .beta-tag {
-            position: absolute;
-            top: 24px;
-            right: 24px;
-            background-color: #0d72ea;
-            color: white;
-            font-size: 0.7rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
         }
 
-
-        /* ------------------- */
-        /*    Playback Bar     */
-        /* ------------------- */
-        .playback-bar {
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
+        /* --- Player Bar --- */
+        .player-bar {
+            grid-area: player;
+            background-color: var(--card-color);
+            display: flex;
             align-items: center;
-            padding: 0 16px;
-            gap: 32px;
+            justify-content: space-between;
+            padding: 12px 16px;
+            height: 65px;
         }
 
-        /* Now Playing */
-        .now-playing {
+        .player-song-info {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 180px;
+            width: 30%;
         }
 
-        .now-playing img {
+        .player-song-info img {
             width: 56px;
             height: 56px;
             border-radius: 4px;
         }
 
-        .now-playing .song-info .title {
-            font-size: 0.875rem;
-            font-weight: 500;
+        .player-song-info .song-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .now-playing .song-info .artist {
-            font-size: 0.75rem;
+        .player-song-info .song-title {
+            font-size: 14px;
+        }
+
+        .player-song-info .song-artist {
+            font-size: 12px;
             color: var(--text-secondary);
         }
-
-        .now-playing .like-button {
+        
+        .player-song-info button {
             background: none;
             border: none;
             color: var(--icon-color);
             cursor: pointer;
-            margin-left: 16px;
+            padding: 4px;
         }
-        .now-playing .like-button:hover {
-            color: white;
+        .player-song-info button:hover {
+            color: var(--text-primary);
         }
         
-         .now-playing .like-button svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
-
-        /* Player Controls */
         .player-controls {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
+            width: 40%;
+            max-width: 722px;
         }
 
-        .player-controls .buttons {
+        .player-buttons {
             display: flex;
             align-items: center;
             gap: 16px;
-            margin-bottom: 8px;
         }
 
-        .player-controls .buttons button {
+        .player-buttons button {
             background: none;
             border: none;
             color: var(--icon-color);
             cursor: pointer;
         }
 
-        .player-controls .buttons button:hover {
+        .player-buttons button:hover {
             color: var(--text-primary);
         }
 
-        .player-controls .buttons svg {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .player-controls .play-pause-btn {
-            background-color: var(--text-primary);
+        .player-buttons .play-pause-btn {
             width: 32px;
             height: 32px;
+            background-color: var(--text-primary);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: #000;
-            transition: transform 0.1s ease;
+            transition: transform 0.1s;
         }
         
-        .player-controls .play-pause-btn:hover {
+        .player-buttons .play-pause-btn:hover {
             transform: scale(1.05);
-            color: #000;
         }
 
-        .player-controls .play-pause-btn svg {
-            width: 16px;
-            height: 16px;
-            fill: #000;
-        }
-
-        .progress-bar-container {
+        .player-progress {
             display: flex;
             align-items: center;
             gap: 8px;
             width: 100%;
         }
-
-        .progress-bar-container .time {
-            font-size: 0.75rem;
+        
+        .player-progress span {
+            font-size: 12px;
             color: var(--text-secondary);
             min-width: 40px;
             text-align: center;
         }
 
-        .progress-bar {
+        .progress-bar-container {
             flex-grow: 1;
             height: 4px;
             background-color: #4d4d4d;
             border-radius: 2px;
             cursor: pointer;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 63%; /* Static example */
-            background-color: var(--text-secondary);
-            border-radius: 2px;
-        }
-
-        .progress-bar:hover .progress-bar-fill {
-            background-color: var(--green);
-        }
-
-        /* Other Controls */
-        .other-controls {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
+            
         }
         
-        .other-controls button {
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--text-primary);
+            border-radius: 2px;
+            width: 25%;
+        }
+        .progress-bar-container:hover .progress-bar-fill {
+            background-color: var(--play-button-green);
+        }
+
+        .player-extra-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            width: 30%;
+            min-width: 180px;
+        }
+        
+        .player-extra-controls button {
             background: none;
             border: none;
             color: var(--icon-color);
             cursor: pointer;
         }
-
-        .other-controls button:hover {
+        .player-extra-controls button:hover {
             color: var(--text-primary);
         }
-
-        .other-controls svg {
-             width: 18px;
-            height: 18px;
-            fill: currentColor;
-        }
         
-        .other-controls .volume-bar-container {
+        .volume-control {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
-        .other-controls .volume-bar {
-            width: 100px;
-            height: 4px;
-            background-color: #4d4d4d;
-            border-radius: 2px;
-            cursor: pointer;
-        }
 
-        .other-controls .volume-bar-fill{
-            width: 80%;
-            height: 100%;
-            background-color: var(--text-secondary);
-            border-radius: 2px;
-        }
-
-        .other-controls .volume-bar:hover .volume-bar-fill {
-            background-color: var(--green);
-        }
 
     </style>
 </head>
 <body>
-    <div class="spotify-app">
+
+    <div class="spotify-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="nav-block">
+            <div class="sidebar-section sidebar-nav">
                 <ul>
                     <li>
                         <a href="#" class="active">
-                            <svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5V12h7v8H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 0 1 3 0l7.5 4.33a2 2 0 0 1 1 1.732V21a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7.577a2 2 0 0 1 1-1.732l7.5-4.33z"></path></svg>
+                            <svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5v-6a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 0 1 3 0l7.5 4.33a2 2 0 0 1 1 1.732V21a1 1 0 0 1-1 1h-6.5a1 1 0 0 1-1-1v-6h-3v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.577a2 2 0 0 1 1-1.732l7.5-4.33z"></path></svg>
                             <span>Home</span>
                         </a>
                     </li>
                 </ul>
             </div>
-            <div class="library">
+
+            <div class="sidebar-section library">
                 <div class="library-header">
-                    <button class="library-button">
-                        <svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M14.5 2.134a1 1 0 0 1 1 0l6 3.464a1 1 0 0 1 .5.866V21a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V3a1 1 0 0 1 .5-.866zM16 4.732V20h4V7.024l-4-2.292zM3 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1zm6 0a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1z"></path></svg>
+                    <div class="library-title">
+                        <svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M14.5 2.134a1 1 0 0 1 1 0l6 3.464a1 1 0 0 1 .5.866V21a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1V3a1 1 0 0 1 .5-.866zM16 4.732V20h4V7.028l-4-2.296zM3 21.5a1.5 1.5 0 0 1-1.5-1.5V3.5A1.5 1.5 0 0 1 3 2h1.5v17a1.5 1.5 0 0 0 1.5 1.5h5V22H3z"></path></svg>
                         <span>Your Library</span>
-                    </button>
-                    <div class="header-icons">
-                        <button aria-label="Create playlist or folder">
+                    </div>
+                    <div class="library-controls">
+                        <button title="Create playlist or folder">
                             <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M14 7H9V2H7v5H2v2h5v5h2V9h5z"></path></svg>
                         </button>
-                    </div>
-                </div>
-                <div class="library-pills">
-                    <button class="pill">Playlists</button>
-                    <button class="pill">Podcasts</button>
-                    <button class="pill">Albums</button>
-                </div>
-                <div class="library-scroll">
-                    <div class="library-search-filter">
-                        <button aria-label="Search in Your Library">
-                            <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M7 1.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5zM.25 7a6.75 6.75 0 1 1 12.096 4.12l3.184 3.185a.75.75 0 1 1-1.06 1.06L11.304 12.2a6.75 6.75 0 0 1-11.054-5.2z"></path></svg>
-                        </button>
-                        <button class="filter">
-                            <span>Recents</span>
-                            <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M15 3H1v2h14V3zm0 4H1v2h14V7zm0 4H1v2h14v-2z"></path></svg>
+                        <button title="Show more">
+                            <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8zm7-5.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zM6 8l4-3.5v7L6 8z"></path></svg>
                         </button>
                     </div>
+                </div>
 
-                    <a href="#" class="playlist-item">
-                        <img src="https://misc.scdn.co/liked-songs/liked-songs-640.png" alt="Liked Songs">
-                        <div class="content">
-                            <div class="title">Liked Songs</div>
-                            <div class="description">Playlist • 51 songs</div>
+                <div class="filter-pills">
+                    <button>Playlists</button>
+                    <button>Podcasts</button>
+                    <button>Albums</button>
+                </div>
+
+                <div class="library-content">
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706c0000da845cf14323604b9b32e65d21af" alt="Man of Steel!">
+                        <div class="item-details">
+                            <span class="item-title">Man of Steel!</span>
+                            <span class="item-subtitle">Playlist • 31t73z5sngxqxhd7vxsk712...</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://i.scdn.co/image/ab67706f000000028822080723a31c5b8b9487c5" alt="Spanish baby boom">
-                        <div class="content">
-                            <div class="title">Spanish baby boom</div>
-                            <div class="description">Playlist • alechewitt99</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706c0000da84a91fbe1315b3990886c23e87" alt="We are the champions!">
+                        <div class="item-details">
+                            <span class="item-title">We are the champions!</span>
+                            <span class="item-subtitle">Playlist • 31t73z5sngxqxhd7vxsk712...</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://i.scdn.co/image/ab67706c0000da84f22ae34f66a7b3c2992167f5" alt="Baby C Major EarAnchor">
-                        <div class="content">
-                            <div class="title">Baby C Major EarAnchor</div>
-                            <div class="description">Playlist • alechewitt99</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706c0000da84ff5f531393f9ad8a7350cb4a" alt="Duo">
+                        <div class="item-details">
+                            <span class="item-title">Duo</span>
+                            <span class="item-subtitle">Playlist • 31t73z5sngxqxhd7vxsk712...</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://i.scdn.co/image/ab67706f00000002f543163ea111036cf022420f" alt="Discover Weekly">
-                        <div class="content">
-                            <div class="title">Discover Weekly</div>
-                            <div class="description">Playlist • Spotify</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706c0000da841d7c48f23789b533a1e47990" alt="I'll cover you!">
+                        <div class="item-details">
+                            <span class="item-title">I'll cover you!</span>
+                            <span class="item-subtitle">Playlist • 31t73z5sngxqxhd7vxsk712...</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://seeded-session-images.scdn.co/v2/img/50/r/0187b5a51a8d0526e0be0e515af412141505373a/en" alt="Piano Ideas">
-                        <div class="content">
-                            <div class="title">Piano Ideas</div>
-                            <div class="description">Playlist • alechewitt99</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706f00000002bc0a294d137f766946006f19" alt="Morning Motivation">
+                        <div class="item-details">
+                            <span class="item-title">Morning Motivation</span>
+                            <span class="item-subtitle">Playlist • Spotify</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://i.scdn.co/image/ab67706c0000da8470530bbe2e334543b35522f7" alt="Blueberry debut">
-                        <div class="content">
-                            <div class="title">Blueberry debut</div>
-                            <div class="description">Playlist • Simrita Shaheed</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706f00000002b8b0e8b2c4c4b4a1c5b8b8d9" alt="80's">
+                        <div class="item-details">
+                            <span class="item-title">80's</span>
+                            <span class="item-subtitle">Playlist • 31t73z5sngxqxhd7vxsk712...</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img class="artist-img" src="https://i.scdn.co/image/ab6761610000f1784f131155aa5278783e74052f" alt="Malpica">
-                        <div class="content">
-                            <div class="title">Malpica</div>
-                            <div class="description">Artist</div>
+                    </div>
+                     <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706c0000da84ffc06639c339589f811cab68" alt="jazz band">
+                        <div class="item-details">
+                            <span class="item-title">jazz band, club jazz, and jazz tr...</span>
+                            <span class="item-subtitle">Playlist • Spotify</span>
                         </div>
-                    </a>
-                    <a href="#" class="playlist-item">
-                        <img src="https://i.scdn.co/image/ab67706c0000da84cce3933c62180556da6fbe14" alt="Alec + Simi">
-                        <div class="content">
-                            <div class="title">Alec + Simi</div>
-                            <div class="description">Playlist • livvyhewitt</div>
+                    </div>
+                    <div class="library-item">
+                        <img src="https://i.scdn.co/image/ab67706f000000021e84013143e49528f84df581" alt="DJ">
+                        <div class="item-details">
+                            <span class="item-title">DJ</span>
+                            <span class="item-subtitle">Click to start listening</span>
                         </div>
-                    </a>
+                    </div>
+                    <div class="library-item">
+                        <img class="artist-image" src="https://i.scdn.co/image/ab676161000051744b630e2f1837651a13b6920d" alt="Herb Alpert">
+                        <div class="item-details">
+                            <span class="item-title">Herb Alpert</span>
+                            <span class="item-subtitle">Artist</span>
+                        </div>
+                    </div>
+                    <div class="library-item">
+                        <div class="item-icon" style="background: linear-gradient(#00644e, #1ed760);">
+                            <svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M13.5 1.515a3 3 0 0 0-3 0L3 5.845a2 2 0 0 0-1 1.732V16.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-4.34a2.5 2.5 0 0 1 2-2.45V3.34a.5.5 0 0 1 .8-.4l5.4 3.12v1.17a2.5 2.5 0 0 1 2 2.44v4.34a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5V7.577a2 2 0 0 0-1-1.732l-7.5-4.33zM2 17.5v.99a3.01 3.01 0 0 0 2.25 2.98A4.5 4.5 0 0 0 12 24a4.5 4.5 0 0 0 7.75-2.03A3.01 3.01 0 0 0 22 19.49v-.99a.5.5 0 0 0-.5-.5H2.5a.5.5 0 0 0-.5.5z"></path></svg>
+                        </div>
+                        <div class="item-details">
+                            <span class="item-title">Your Episodes</span>
+                            <span class="item-subtitle">Playlist • Saved & downloaded epis...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <main class="main-content">
             <header class="main-header">
-                <div class="nav-buttons">
-                    <button aria-label="Go back"><svg viewBox="0 0 16 16"><path d="M11.03.47a.75.75 0 0 1 0 1.06L4.56 8l6.47 6.47a.75.75 0 1 1-1.06 1.06L2.44 8 9.97.47a.75.75 0 0 1 1.06 0z"></path></svg></button>
-                    <button aria-label="Go forward"><svg viewBox="0 0 16 16"><path d="M4.97.47a.75.75 0 0 0 0 1.06L11.44 8l-6.47 6.47a.75.75 0 1 0 1.06 1.06L13.56 8 6.03.47a.75.75 0 0 0-1.06 0z"></path></svg></button>
+                <div class="header-nav">
+                    <button><svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M11.03.47a.75.75 0 0 1 0 1.06L4.56 8l6.47 6.47a.75.75 0 1 1-1.06 1.06L2.44 8 9.97.47a.75.75 0 0 1 1.06 0z"></path></svg></button>
+                    <button><svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M4.97.47a.75.75 0 0 0 0 1.06L11.44 8l-6.47 6.47a.75.75 0 1 0 1.06 1.06L13.56 8 6.03.47a.75.75 0 0 0-1.06 0z"></path></svg></button>
                 </div>
-                 <div class="header-content-center">
-                    <div class="pill active">All</div>
-                    <div class="pill">Music</div>
-                    <div class="pill">Podcasts</div>
-                    <div class="pill">Audiobooks</div>
+                
+                 <div class="main-filters">
+                    <button class="filter-pill active" data-filter="all">All</button>
+                    <button class="filter-pill" data-filter="music">Music</button>
+                    <button class="filter-pill" data-filter="podcasts">Podcasts</button>
+                    <button class="filter-pill" data-filter="audiobooks">Audiobooks</button>
                 </div>
-                <div class="user-profile">
-                    <button aria-label="Notifications">
-                         <svg viewBox="0 0 16 16"><path d="M8 1.5a4 4 0 0 0-4 4v2.133a1.5 1.5 0 0 1-.823 1.352L2.5 9.575V11h11V9.575l-.677-.59a1.5 1.5 0 0 1-.823-1.352V5.5a4 4 0 0 0-4-4zm0 13a2.5 2.5 0 0 1-2.43-2h4.86A2.5 2.5 0 0 1 8 14.5z"></path></svg>
+
+                <div class="header-user-profile">
+                    <button style="position: relative;">
+                        <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M8 1.5a4 4 0 0 0-4 4V10a4 4 0 0 0 4 4h.347A4.004 4.004 0 0 0 12.5 11.5a4 4 0 0 0-4-4H8V1.5zM6.5 6a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0zM8 15A2.5 2.5 0 1 1 8 10a2.5 2.5 0 0 1 0 5zm2.5-3.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"></path></svg>
+                         <div class="notification-dot"></div>
                     </button>
-                    <button aria-label="Friend Activity">
-                         <svg viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 2a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"></path></svg>
+                     <button>
+                        <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M11.196 8a2.5 2.5 0 1 0-5.002.001A2.5 2.5 0 0 0 11.196 8zM15 8A4.5 4.5 0 1 1 6 8a4.5 4.5 0 0 1 9 0z"></path><path d="M5.222 14.5A3.5 3.5 0 0 1 8.5 11h.334a4.5 4.5 0 0 1 1.077 8.877A3.499 3.499 0 0 1 5.222 14.5zM12.5 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path></svg>
                     </button>
-                    <button class="avatar" aria-label="alechewitt99">A</button>
+                    <button class="profile-avatar">A</button>
                 </div>
             </header>
 
-            <main class="main-view">
-                <div class="quick-links-grid">
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67706f000000025a4f7c2ac1614f85642eaad3" alt="Spanish Songs for Kids"><span>Spanish Songs for Kids</span></div>
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67706f000000021b3f7f08c310c8bc3cb6574f" alt="Spanish Lullabies"><span>Spanish Lullabies ❤️</span></div>
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67706f00000002c9383b38b14a9be1c4f82877" alt="Chill Mix"><span>Chill Mix</span></div>
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67706f000000026e643c7b85d998794f823133" alt="White Noise"><span>White Noise 10 Hours</span></div>
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67616d00001e021624590438b4b3cfa36b5b4a" alt="Stevie Wonder"><span>Stevie Wonder Radio</span></div>
-                    <div class="quick-link-card"><img src="https://i.scdn.co/image/ab67616d00001e02ef25fa41639d40784265ea28" alt="Peaceful Piano"><span>Peaceful Piano</span></div>
+            <div class="main-view">
+                <div class="greeting-grid">
+                    <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67706f00000002ca5a755de909572796556157" alt="Peaceful Piano">
+                        <span>Peaceful Piano</span>
+                    </div>
+                    <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67616d00001e028b52f248c89547377045b644" alt="White Noise">
+                        <span>White Noise 10 Hours</span>
+                    </div>
+                     <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67706f000000020f01a4e2144f83693f9c623d" alt="Spanish Songs for Kids">
+                        <span>Spanish Songs for Kids</span>
+                    </div>
+                     <div class="greeting-card">
+                        <img src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5eb21ff3c8a9f333452097380c5/1/en/default" alt="daylist">
+                        <span>daylist</span>
+                    </div>
+                    <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67706f000000021b3f9543e887034c7b80980c" alt="Spanish Lullabies">
+                        <span>Spanish Lullabies<span style="color: #e13300; margin-left:4px; font-size:18px;">♥︎</span></span>
+                    </div>
+                    <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67706f00000002e74d156828551152a20ca8f5" alt="Cuento de SPIDEY">
+                        <span>Cuento de SPIDEY y su...</span>
+                        <div class="blue-dot"></div>
+                    </div>
+                     <div class="greeting-card">
+                        <img src="https://seeded-session-images.scdn.co/v1/img/artist/7guDJrEfX3qb6FEbdPA5qi/en" alt="Stevie Wonder Radio">
+                        <span>Stevie Wonder Radio</span>
+                    </div>
+                     <div class="greeting-card">
+                        <img src="https://i.scdn.co/image/ab67706f000000027f3128912e7535560bcec361" alt="Chill Mix">
+                        <span>Chill Mix</span>
+                    </div>
                 </div>
 
-                <section class="shelf-section">
-                    <div class="shelf-header">
-                        <h2>It's New Music Friday!</h2>
-                        <a href="#">Show all</a>
-                    </div>
-                    <div class="card-container">
-                        <div class="content-card">
-                            <img src="https://i.scdn.co/image/ab67706f00000002ca74f346b7a5611f172579b2" alt="New Music Friday Canada">
-                            <div class="card-title">New music from Ed Sheeran, Lil Uzi Vert,...</div>
-                            <div class="card-description">New music from Ed Sheeran, Lil Uzi Vert, Post Malone and more!</div>
-                            <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
-                        </div>
-                        <div class="content-card">
-                            <img src="https://i.scdn.co/image/ab67706f00000002b60db5d1bcdd9c4114755866" alt="Release Radar">
-                            <div class="card-title">Release Radar</div>
-                            <div class="card-description">Catch all the latest music from artists you follow, plus new singles picked for you.</div>
-                            <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
-                        </div>
-                        <div class="content-card">
-                            <img src="https://i.scdn.co/image/ab67706f000000022315b40d6c34882e37937d1d" alt="editors' picks: best songs of the year">
-                             <div class="card-title">editors' picks: best songs of the year so far</div>
-                            <div class="card-description">Meticulously selected by Spotify music editors from around the world.</div>
-                            <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
-                        </div>
-                        <div class="content-card">
-                            <img src="https://i.scdn.co/image/ab67706f000000020a6713997f3b55a1d77d700e" alt="editors' picks: best songs of october">
-                             <div class="card-title">editors' picks: best songs of october</div>
-                            <div class="card-description">The best new songs of the month, from our music editors around the world.</div>
-                             <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
-                        </div>
-                        <div class="content-card">
-                            <img src="https://i.scdn.co/image/ab67706f000000021b6a18355609652a65a3d001" alt="Classical Bangers 2025">
-                            <div class="card-title">Classical Bangers 2025</div>
-                            <div class="card-description">Introducing the hottest classical music of tomorrow, curated with passion.</div>
-                            <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
-                        </div>
-                    </div>
-                </section>
-                
-                 <section class="shelf-section">
-                    <div class="shelf-header">
+                <section class="content-section">
+                    <div class="section-header">
                         <h2>Made For You</h2>
                         <a href="#">Show all</a>
                     </div>
-                    <div class="card-container">
-                        <div class="content-card">
-                             <img src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5eb1e4313f831969a405763261a/1/en/default" alt="DJ Mix">
-                             <div class="beta-tag">BETA</div>
-                             <div class="card-title">DJ</div>
-                             <div class="card-description">All kinds of music, picked by your own personal DJ.</div>
-                             <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://i.scdn.co/image/ab67706f00000002c414e7daf34690c9f9832e18" alt="Discover Weekly">
+                                <div class="play-button"><svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg></div>
+                            </div>
+                            <div class="card-title">Discover Weekly</div>
+                            <div class="card-description">Your shortcut to hidden gems, deep...</div>
                         </div>
-                        <div class="content-card">
-                            <img src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5eb803d2e6761a65f4df337fd37/1/en/default" alt="Daily Mix 1">
+                        <div class="card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://i.scdn.co/image/ab67706f000000021e84013143e49528f84df581" alt="DJ">
+                                <div class="beta-tag">BETA</div>
+                                <div class="play-button"><svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg></div>
+                            </div>
+                            <div class="card-title">DJ</div>
+                            <div class="card-description">All kinds of music, picked by your own ...</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5ebc5b16a273a0e7136f060c552/1/en/default" alt="Daily Mix 1">
+                                <div class="spotify-logo-small"><svg role="img" height="20" width="20" viewBox="0 0 168 168"><path fill="currentColor" d="M83.996.277C37.747.277.253 37.77.253 84.019c0 46.25 37.494 83.742 83.743 83.742 46.25 0 83.742-37.493 83.742-83.742C167.738 37.77 130.246.277 83.996.277zM122.16 120.844c-1.402 2.454-4.32 3.445-6.774 2.043-19.103-11.02-43.34-13.52-71.537-7.425-2.814.6-5.63-1.002-6.23-3.816-1.002-2.813 1.002-5.63 3.816-6.23 30.65-6.58 57.243-3.816 78.8-4.22 2.453-.8 4.907.2 5.71 2.654.8 2.454-.2 4.907-2.656 5.71zm1.803-22.038c-1.803 3.018-5.22 4.22-8.238 2.418-21.84-13.225-54.68-17.23-79.623-9.42-3.418 1.002-6.837-1.002-7.84-4.42-1.002-3.418 1.002-6.837 4.42-7.84 28.14-8.623 64.485-4.22 89.428 11.22 3.018 1.803 4.22 5.42 2.418 8.438zm.2-22.24c-2.203 3.62-6.43 5.022-9.64 3.018C93.33 65.987 57.042 63.333 33.71 70.36c-4.02 1.203-8.24-.8-9.442-4.822-1.203-4.02.8-8.24 4.822-9.442 26.54-7.84 66.447-4.823 93.832 10.62 3.42 2.004 4.62 6.43 2.618 9.64z"/></svg></div>
+                                <div class="play-button"><svg role="img" height="24" width="24" aria-hidden="true" viewBox="0 0 24 24"><path d="M7.05 3.606l13.49 7.788a.7.7 0 010 1.212L7.05 20.394A.7.7 0 016 19.788V4.212a.7.7 0 011.05-.606z"></path></svg></div>
+                            </div>
                             <div class="card-title">Daily Mix 1</div>
-                            <div class="card-description">Dua Lipa, Chappell Roan, Taylor Swift and more.</div>
-                             <button class="play-button" aria-label="Play"><svg viewBox="0 0 24 24"><path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg></button>
+                            <div class="card-description">CantaJuego, Marta Gómez, Canciones d...</div>
                         </div>
-                        <div class="
+                        <div class="card">
+                            <div class="card-image-container">
+                                <img class="card-image" src="https://dailymix-images.scdn.co/v2/img/ab6761610000e5ebcf6c5fd3775f0f353380c83a/2/en/default" alt="Daily Mix 2">
+                                <div class="spotify-logo-small"><svg role="img" height="20" width="20" viewBox="0 0 168 168"><path fill="currentColor" d="M83.996.

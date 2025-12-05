@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document1 - Word</title>
+    <title>Document3 - Microsoft Word</title>
     <style>
         * {
             margin: 0;
@@ -12,19 +12,24 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             overflow: hidden;
         }
 
-        /* Title Bar */
         .title-bar {
-            height: 32px;
-            background: #e8e6e6;
+            background-color: #2b579a;
+            color: white;
+            height: 44px;
             display: flex;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 12px;
             justify-content: space-between;
-            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .window-controls {
@@ -32,278 +37,296 @@
             gap: 8px;
         }
 
-        .window-btn {
+        .window-control {
             width: 12px;
             height: 12px;
             border-radius: 50%;
         }
 
-        .close { background: #ff5f57; }
-        .minimize { background: #ffbd2e; }
-        .maximize { background: #28c940; }
-
-        .title-center {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
+        .window-control.close { background-color: #ff5f57; }
+        .window-control.minimize { background-color: #ffbd2e; }
+        .window-control.maximize { background-color: #28ca42; }
 
         .autosave {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 12px;
+            gap: 8px;
+            font-size: 13px;
         }
 
-        .toggle {
-            width: 32px;
-            height: 18px;
-            background: #ccc;
-            border-radius: 9px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .toggle-slider {
-            width: 14px;
-            height: 14px;
-            background: white;
+        .autosave-toggle {
+            width: 16px;
+            height: 16px;
+            background-color: white;
             border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: 0.3s;
         }
 
         .title-icons {
             display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .title-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .title-center {
+            display: flex;
+            align-items: center;
             gap: 8px;
-            font-size: 16px;
-            color: #666;
+            font-size: 13px;
         }
 
-        .title-text {
-            font-size: 12px;
-            color: #333;
-        }
-
-        .search-box {
-            font-size: 12px;
-            color: #666;
+        .title-right {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 12px;
         }
 
-        /* Menu Bar */
+        .search-bar {
+            background-color: rgba(255,255,255,0.2);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: white;
+            font-size: 13px;
+            width: 250px;
+        }
+
+        .search-bar::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
         .menu-bar {
-            height: 28px;
-            background: #f5f5f5;
+            background-color: #f3f2f1;
+            height: 44px;
             display: flex;
             align-items: center;
-            padding: 0 10px;
-            border-bottom: 1px solid #d1d1d1;
+            padding: 0 12px;
             gap: 20px;
+            border-bottom: 1px solid #d1d1d1;
         }
 
         .menu-item {
-            font-size: 13px;
+            padding: 8px 12px;
             cursor: pointer;
-            padding: 4px 8px;
+            font-size: 14px;
+            color: #333;
         }
 
-        .menu-item.active {
-            font-weight: 600;
+        .menu-item:hover {
+            background-color: #e1e1e1;
         }
 
-        .menu-right {
-            margin-left: auto;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn-with-icon {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .btn-share {
-            background: #2b579a;
-            color: white;
-            border: none;
-        }
-
-        /* Toolbar */
         .toolbar {
-            background: #f5f5f5;
-            padding: 8px 10px;
+            background-color: white;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
             border-bottom: 1px solid #d1d1d1;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
+            overflow-x: auto;
         }
 
-        .toolbar-section {
+        .toolbar-group {
             display: flex;
-            gap: 5px;
             align-items: center;
+            gap: 6px;
+            padding: 0 8px;
             border-right: 1px solid #d1d1d1;
-            padding-right: 10px;
+            height: 70px;
         }
 
-        .toolbar-section:last-child {
+        .toolbar-group:last-child {
             border-right: none;
         }
 
         .toolbar-btn {
-            padding: 5px 8px;
-            background: #f5f5f5;
-            border: 1px solid transparent;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 13px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 28px;
-            height: 28px;
+            padding: 8px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 11px;
+            gap: 4px;
+            min-width: 50px;
         }
 
         .toolbar-btn:hover {
-            background: #e1e1e1;
-            border-color: #ccc;
+            background-color: #f3f2f1;
         }
 
-        .toolbar-btn.active {
-            background: #d1d1d1;
+        .toolbar-icon {
+            font-size: 20px;
         }
 
         select {
             padding: 4px 8px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            background: white;
+            border: 1px solid #d1d1d1;
+            background-color: white;
             font-size: 13px;
         }
 
-        .icon-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
+        .format-btn {
+            padding: 6px 10px;
+            border: 1px solid #d1d1d1;
+            background-color: white;
             cursor: pointer;
-            padding: 4px;
+            font-size: 14px;
+            font-weight: bold;
         }
 
-        .icon-btn-label {
-            font-size: 9px;
-            margin-top: 2px;
+        .format-btn:hover {
+            background-color: #f3f2f1;
         }
 
-        /* Editor */
-        .editor-container {
-            background: #ebebeb;
-            height: calc(100vh - 180px);
-            overflow-y: auto;
-            padding: 20px;
+        .document-area {
+            background-color: #e1e1e1;
+            height: calc(100vh - 188px - 24px);
+            overflow: auto;
+            padding: 40px;
         }
 
         .page {
-            background: white;
             width: 816px;
             min-height: 1056px;
+            background-color: white;
             margin: 0 auto;
             padding: 96px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
 
-        .page:focus {
-            outline: none;
+        .cursor {
+            width: 2px;
+            height: 20px;
+            background-color: black;
+            animation: blink 1s infinite;
         }
 
-        /* Status Bar */
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
         .status-bar {
-            height: 22px;
-            background: #f5f5f5;
-            border-top: 1px solid #d1d1d1;
+            background-color: white;
+            height: 24px;
             display: flex;
             align-items: center;
-            padding: 0 10px;
-            font-size: 11px;
+            justify-content: space-between;
+            padding: 0 12px;
+            border-top: 1px solid #d1d1d1;
+            font-size: 12px;
             color: #666;
-            gap: 20px;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 16px;
         }
 
         .status-right {
-            margin-left: auto;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
         }
 
-        .zoom-slider {
+        .icon-btn {
+            cursor: pointer;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider {
             width: 100px;
         }
 
-        .color-indicator {
-            width: 16px;
-            height: 16px;
-            border: 1px solid #ccc;
-            display: inline-block;
-            vertical-align: middle;
+        .right-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border: 1px solid #d1d1d1;
+            background-color: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            background-color: #f3f2f1;
+        }
+
+        .share-btn {
+            background-color: #2b579a;
+            color: white;
+            border: none;
+        }
+
+        .share-btn:hover {
+            background-color: #1f4173;
+        }
+
+        .dropdown-arrow::after {
+            content: '▼';
+            margin-left: 6px;
+            font-size: 10px;
+        }
+
+        .small-icon {
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <!-- Title Bar -->
     <div class="title-bar">
-        <div class="window-controls">
-            <div class="window-btn close"></div>
-            <div class="window-btn minimize"></div>
-            <div class="window-btn maximize"></div>
-        </div>
-        <div class="title-center">
+        <div class="title-left">
+            <div class="window-controls">
+                <div class="window-control close"></div>
+                <div class="window-control minimize"></div>
+                <div class="window-control maximize"></div>
+            </div>
             <div class="autosave">
-                AutoSave
-                <div class="toggle" onclick="toggleAutoSave()">
-                    <div class="toggle-slider" id="toggleSlider"></div>
-                </div>
+                <span>AutoSave</span>
+                <div class="autosave-toggle"></div>
             </div>
             <div class="title-icons">
-                <span>🏠</span>
-                <span>💾</span>
-                <span>↶</span>
-                <span>↷</span>
-                <span>🖨️</span>
-                <span>⋯</span>
+                <span class="title-icon">🏠</span>
+                <span class="title-icon">💾</span>
+                <span class="title-icon">↶</span>
+                <span class="title-icon">↷</span>
+                <span class="title-icon">🖨️</span>
+                <span class="title-icon">...</span>
             </div>
         </div>
-        <div class="title-text">
-            <span>Document1</span>
-            <span style="color: #2b579a;">🔒 Confidential*</span>
+        <div class="title-center">
+            <span>Document3</span>
+            <span>🛡️</span>
+            <span>Confidential*</span>
         </div>
-        <div class="search-box">
-            🔍 Search (Cmd + Ctrl + U)
+        <div class="title-right">
+            <input type="text" class="search-bar" placeholder="Search (Cmd + Ctrl + U)">
         </div>
     </div>
 
-    <!-- Menu Bar -->
     <div class="menu-bar">
-        <div class="menu-item active">Home</div>
+        <div class="menu-item">Home</div>
         <div class="menu-item">Insert</div>
         <div class="menu-item">Draw</div>
         <div class="menu-item">Design</div>
@@ -312,153 +335,182 @@
         <div class="menu-item">Mailings</div>
         <div class="menu-item">Review</div>
         <div class="menu-item">View</div>
-        <div class="menu-right">
-            <button class="btn-with-icon">💬 Comments</button>
-            <button class="btn-with-icon">✏️ Editing ▼</button>
-            <button class="btn-with-icon btn-share">↗ Share ▼</button>
+        <div class="right-buttons">
+            <button class="action-btn">💬 Comments</button>
+            <button class="action-btn dropdown-arrow">✏️ Editing</button>
+            <button class="action-btn share-btn dropdown-arrow">↗ Share</button>
         </div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
-        <div class="toolbar-section">
-            <div class="icon-btn">
-                <div style="font-size: 20px;">📋</div>
-                <div class="icon-btn-label">Paste</div>
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">📋</span>
+                <span>Paste</span>
             </div>
         </div>
         
-        <div class="toolbar-section">
+        <div class="toolbar-group">
             <select>
                 <option>Calibri (Bo...</option>
             </select>
             <select>
                 <option>12</option>
             </select>
-            <button class="toolbar-btn">A↑</button>
-            <button class="toolbar-btn">A↓</button>
         </div>
 
-        <div class="toolbar-section">
-            <button class="toolbar-btn">Aa ▼</button>
-            <button class="toolbar-btn">⚡</button>
+        <div class="toolbar-group">
+            <button class="format-btn">A↑</button>
+            <button class="format-btn">A↓</button>
+            <button class="format-btn dropdown-arrow">Aa</button>
+            <button class="format-btn">🎨</button>
         </div>
 
-        <div class="toolbar-section">
-            <button class="toolbar-btn"><b>B</b></button>
-            <button class="toolbar-btn"><i>I</i></button>
-            <button class="toolbar-btn"><u>U</u></button>
-            <button class="toolbar-btn">▼</button>
-            <button class="toolbar-btn"><s>S</s></button>
-            <button class="toolbar-btn">x₂</button>
-            <button class="toolbar-btn">x²</button>
+        <div class="toolbar-group">
+            <button class="format-btn">B</button>
+            <button class="format-btn"><i>I</i></button>
+            <button class="format-btn"><u>U</u></button>
+            <button class="format-btn">abc</button>
+            <button class="format-btn">x₂</button>
+            <button class="format-btn">x²</button>
         </div>
 
-        <div class="toolbar-section">
-            <button class="toolbar-btn">A<span class="color-indicator" style="background: blue;"></span></button>
-            <button class="toolbar-btn">▼</button>
-            <button class="toolbar-btn">🖍️<span class="color-indicator" style="background: yellow;"></span></button>
-            <button class="toolbar-btn">▼</button>
-            <button class="toolbar-btn">A<span class="color-indicator" style="background: red;"></span></button>
-            <button class="toolbar-btn">▼</button>
+        <div class="toolbar-group">
+            <button class="format-btn">A</button>
+            <button class="format-btn">🖍️</button>
+            <button class="format-btn">A</button>
         </div>
 
-        <div class="toolbar-section">
-            <button class="toolbar-btn">≡</button>
-            <button class="toolbar-btn">≡</button>
-            <button class="toolbar-btn">≡</button>
-            <button class="toolbar-btn">≡</button>
+        <div class="toolbar-group">
+            <button class="format-btn">≡</button>
+            <button class="format-btn">≡</button>
+            <button class="format-btn">≡</button>
         </div>
 
-        <div class="toolbar-section">
-            <button class="toolbar-btn">⋮⋮⋮</button>
-            <button class="toolbar-btn">▼</button>
-            <button class="toolbar-btn">↕</button>
-            <button class="toolbar-btn">▼</button>
+        <div class="toolbar-group">
+            <button class="format-btn">≡</button>
+            <button class="format-btn">☰</button>
+            <button class="format-btn">⋮</button>
+            <button class="format-btn">☰</button>
         </div>
 
-        <div class="toolbar-section">
-            <div class="icon-btn">
-                <div style="color: #2b579a; font-weight: bold;">A↗</div>
-                <div class="icon-btn-label">Styles</div>
+        <div class="toolbar-group">
+            <button class="format-btn">↕️</button>
+            <button class="format-btn">↕️</button>
+        </div>
+
+        <div class="toolbar-group">
+            <button class="format-btn">¶</button>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">A✏️</span>
+                <span>Styles</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px;">🖌️</div>
-                <div class="icon-btn-label">Styles Pane</div>
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">📝</span>
+                <span>Styles<br>Pane</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px;">📝</div>
-                <div class="icon-btn-label">Dictate</div>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">🎤</span>
+                <span>Dictate</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px;">✏️</div>
-                <div class="icon-btn-label">Sensitivity</div>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn dropdown-arrow">
+                <span class="toolbar-icon">🖊️</span>
+                <span>Sensitivity</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px; color: #ff6b35;">⊞</div>
-                <div class="icon-btn-label">Add-ins</div>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">⊞</span>
+                <span>Add-ins</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px; color: #2b579a;">🖊️</div>
-                <div class="icon-btn-label">Editor</div>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon">✒️</span>
+                <span>Editor</span>
             </div>
-            <div class="icon-btn">
-                <div style="font-size: 18px; background: purple; color: white; border-radius: 3px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">∞</div>
-                <div class="icon-btn-label">Amazon Quick Suite</div>
+        </div>
+
+        <div class="toolbar-group">
+            <div class="toolbar-btn">
+                <span class="toolbar-icon" style="color: purple;">⬡</span>
+                <span>Amazon<br>Quick Suite</span>
             </div>
         </div>
     </div>
 
-    <!-- Editor -->
-    <div class="editor-container">
-        <div class="page" contenteditable="true" id="editor">
+    <div class="document-area">
+        <div class="page">
+            <div class="cursor"></div>
         </div>
     </div>
 
-    <!-- Status Bar -->
     <div class="status-bar">
-        <span>Page 1 of 1</span>
-        <span>0 words</span>
-        <span>English (United States)</span>
-        <span>🧑 Accessibility: Good to go</span>
+        <div class="status-left">
+            <span>Page 1 of 1</span>
+            <span>0 words</span>
+            <span>English (United States)</span>
+            <span>♿ Accessibility: Good to go</span>
+        </div>
         <div class="status-right">
-            <span>📱 Focus</span>
-            <span>💾</span>
-            <span>🌐</span>
-            <span>≡</span>
-            <span>💬</span>
-            <span>−</span>
-            <input type="range" class="zoom-slider" min="10" max="500" value="185">
-            <span>+</span>
-            <span>185%</span>
+            <span class="icon-btn">🖊️</span>
+            <span>Focus</span>
+            <span class="icon-btn">📄</span>
+            <span class="icon-btn">🌐</span>
+            <span class="icon-btn">☰</span>
+            <span class="icon-btn">✎</span>
+            <div class="zoom-controls">
+                <span class="icon-btn">−</span>
+                <input type="range" class="slider" min="10" max="500" value="185">
+                <span class="icon-btn">+</span>
+                <span>185%</span>
+            </div>
         </div>
     </div>
 
     <script>
-        let autoSaveOn = false;
-
-        function toggleAutoSave() {
-            autoSaveOn = !autoSaveOn;
-            const slider = document.getElementById('toggleSlider');
-            if (autoSaveOn) {
-                slider.style.left = '16px';
-                slider.parentElement.style.background = '#28c940';
-            } else {
-                slider.style.left = '2px';
-                slider.parentElement.style.background = '#ccc';
-            }
-        }
-
-        // Word count functionality
-        const editor = document.getElementById('editor');
-        editor.addEventListener('input', function() {
-            const text = this.innerText.trim();
-            const words = text ? text.split(/\s+/).length : 0;
-            document.querySelector('.status-bar span:nth-child(2)').textContent = words + ' words';
+        const page = document.querySelector('.page');
+        
+        page.addEventListener('click', function() {
+            this.focus();
         });
 
-        // Focus on editor
-        editor.focus();
+        page.setAttribute('contenteditable', 'true');
+        page.style.outline = 'none';
+
+        const cursor = document.querySelector('.cursor');
+        page.addEventListener('focus', function() {
+            cursor.style.display = 'none';
+        });
+
+        page.addEventListener('blur', function() {
+            if (page.textContent.trim() === '') {
+                cursor.style.display = 'block';
+            }
+        });
+
+        page.addEventListener('input', function() {
+            const wordCount = this.textContent.trim().split(/\s+/).filter(word => word.length > 0).length;
+            document.querySelector('.status-left span:nth-child(2)').textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
+        });
+
+        const slider = document.querySelector('.slider');
+        const zoomDisplay = document.querySelector('.zoom-controls span:last-child');
+        
+        slider.addEventListener('input', function() {
+            zoomDisplay.textContent = this.value + '%';
+        });
     </script>
 </body>
 </html>

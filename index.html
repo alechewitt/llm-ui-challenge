@@ -3,201 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Interface Benchmark Gallery</title>
+    <title>LLM UI Challenge</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>LLM Interface Benchmark Gallery</h1>
-        <p class="subtitle">Comparing LLM-generated UI recreations from screenshots</p>
+        <header>
+            <h1>LLM UI Challenge</h1>
+            <p>Comparing how different large language models recreate application interfaces from screenshots. Each model was given the same prompt and reference image.</p>
+        </header>
 
         <!-- Microsoft Word Section -->
-        <section class="app-section">
-            <div class="prompt-header">
-                <div class="prompt-text">
-                    Generate this Microsoft Word interface in HTML, CSS and JavaScript.<br>
-                    Return a single HTML file with embedded CSS and JavaScript.
+        <section class="app-section" id="microsoft-word">
+            <h2>Microsoft Word</h2>
+            <div class="prompt-box">
+                <div class="prompt-text">Generate this Microsoft Word interface in HTML, CSS and JavaScript. Return a single HTML file with embedded CSS and JavaScript.</div>
+                <div class="reference-screenshot">
+                    <h3>Reference Screenshot</h3>
+                    <a href="input_screenshots/microsoft_word.png" target="_blank">
+                        <img src="input_screenshots/microsoft_word.png" alt="Microsoft Word reference screenshot" onerror="this.parentElement.innerHTML='<div class=placeholder-container>Reference image not available</div>'">
+                    </a>
                 </div>
-                <a href="input_screenshots/microsoft_word.png" target="_blank" class="original-image-link">
-                    <img src="input_screenshots/microsoft_word.png" alt="Original Microsoft Word" class="original-image" onerror="this.parentElement.innerHTML='<div class=placeholder>Image not found</div>'">
-                </a>
             </div>
-            <div class="image-gallery">
-                <!-- claude_sonnet_4_5 -->
-                <div class="image-card">
-                    <a href="outputs/microsoft_word/claude_sonnet_4_5.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">claude_sonnet_4_5</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/microsoft_word/claude_sonnet_4_5.png" alt="claude_sonnet_4_5" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+            <div class="model-gallery">
+                <div class="model-card">
+                    <div class="model-label">Claude Sonnet 4.5</div>
+                    <a href="outputs/microsoft_word/claude_sonnet_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/claude_sonnet_4_5.png" alt="Claude Sonnet 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_2_5_pro -->
-                <div class="image-card">
-                    <a href="outputs/microsoft_word/gemini_2_5_pro.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_2_5_pro</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/microsoft_word/gemini_2_5_pro.png" alt="gemini_2_5_pro" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Claude Opus 4.5</div>
+                    <a href="outputs/microsoft_word/claude_opus_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/claude_opus_4_5.png" alt="Claude Opus 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- qwen3_vl_235b_a22b_thinking -->
-                <div class="image-card">
-                    <a href="outputs/microsoft_word/qwen3_vl_235b_a22b_thinking.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">qwen3_vl_235b_a22b_thinking</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/microsoft_word/qwen3_vl_235b_a22b_thinking.png" alt="qwen3_vl_235b_a22b_thinking" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Grok 4 Fast</div>
+                    <a href="outputs/microsoft_word/grok_4_fast.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/grok_4_fast.png" alt="Grok 4 Fast output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gpt_5_1 -->
-                <div class="image-card">
-                    <a href="outputs/microsoft_word/gpt_5_1.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gpt_5_1</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/microsoft_word/gpt_5_1.png" alt="gpt_5_1" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 2.5 Pro</div>
+                    <a href="outputs/microsoft_word/gemini_2_5_pro.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/gemini_2_5_pro.png" alt="Gemini 2.5 Pro output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_3_pro_preview -->
-                <div class="image-card">
-                    <a href="outputs/microsoft_word/gemini_3_pro_preview.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_3_pro_preview</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/microsoft_word/gemini_3_pro_preview.png" alt="gemini_3_pro_preview" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Qwen3 VL 235B</div>
+                    <a href="outputs/microsoft_word/qwen3_vl_235b_a22b_thinking.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/qwen3_vl_235b_a22b_thinking.png" alt="Qwen3 VL output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1</div>
+                    <a href="outputs/microsoft_word/gpt_5_1.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/gpt_5_1.png" alt="GPT-5.1 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1 Codex</div>
+                    <a href="outputs/microsoft_word/gpt_5_1_codex.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/gpt_5_1_codex.png" alt="GPT-5.1 Codex output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 3 Pro Preview</div>
+                    <a href="outputs/microsoft_word/gemini_3_pro_preview.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/microsoft_word/gemini_3_pro_preview.png" alt="Gemini 3 Pro Preview output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- Jira Section -->
-        <section class="app-section">
-            <div class="prompt-header">
-                <div class="prompt-text">
-                    Generate this Jira interface in HTML, CSS and JavaScript.<br>
-                    Return a single HTML file with embedded CSS and JavaScript.
+        <section class="app-section" id="jira">
+            <h2>Jira</h2>
+            <div class="prompt-box">
+                <div class="prompt-text">Generate this Jira interface in HTML, CSS and JavaScript. Return a single HTML file with embedded CSS and JavaScript.</div>
+                <div class="reference-screenshot">
+                    <h3>Reference Screenshot</h3>
+                    <a href="input_screenshots/jira.png" target="_blank">
+                        <img src="input_screenshots/jira.png" alt="Jira reference screenshot" onerror="this.parentElement.innerHTML='<div class=placeholder-container>Reference image not available</div>'">
+                    </a>
                 </div>
-                <a href="input_screenshots/jira.png" target="_blank" class="original-image-link">
-                    <img src="input_screenshots/jira.png" alt="Original Jira" class="original-image" onerror="this.parentElement.innerHTML='<div class=placeholder>Image not found</div>'">
-                </a>
             </div>
-            <div class="image-gallery">
-                <!-- claude_sonnet_4_5 -->
-                <div class="image-card">
-                    <a href="outputs/jira/claude_sonnet_4_5.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">claude_sonnet_4_5</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/jira/claude_sonnet_4_5.png" alt="claude_sonnet_4_5" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+            <div class="model-gallery">
+                <div class="model-card">
+                    <div class="model-label">Claude Sonnet 4.5</div>
+                    <a href="outputs/jira/claude_sonnet_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/claude_sonnet_4_5.png" alt="Claude Sonnet 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_2_5_pro -->
-                <div class="image-card">
-                    <a href="outputs/jira/gemini_2_5_pro.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_2_5_pro</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/jira/gemini_2_5_pro.png" alt="gemini_2_5_pro" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Claude Opus 4.5</div>
+                    <a href="outputs/jira/claude_opus_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/claude_opus_4_5.png" alt="Claude Opus 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- qwen3_vl_235b_a22b_thinking -->
-                <div class="image-card">
-                    <a href="outputs/jira/qwen3_vl_235b_a22b_thinking.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">qwen3_vl_235b_a22b_thinking</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/jira/qwen3_vl_235b_a22b_thinking.png" alt="qwen3_vl_235b_a22b_thinking" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Grok 4 Fast</div>
+                    <a href="outputs/jira/grok_4_fast.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/grok_4_fast.png" alt="Grok 4 Fast output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gpt_5_1 -->
-                <div class="image-card">
-                    <a href="outputs/jira/gpt_5_1.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gpt_5_1</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/jira/gpt_5_1.png" alt="gpt_5_1" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 2.5 Pro</div>
+                    <a href="outputs/jira/gemini_2_5_pro.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/gemini_2_5_pro.png" alt="Gemini 2.5 Pro output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_3_pro_preview -->
-                <div class="image-card">
-                    <a href="outputs/jira/gemini_3_pro_preview.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_3_pro_preview</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/jira/gemini_3_pro_preview.png" alt="gemini_3_pro_preview" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Qwen3 VL 235B</div>
+                    <a href="outputs/jira/qwen3_vl_235b_a22b_thinking.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/qwen3_vl_235b_a22b_thinking.png" alt="Qwen3 VL output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1</div>
+                    <a href="outputs/jira/gpt_5_1.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/gpt_5_1.png" alt="GPT-5.1 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1 Codex</div>
+                    <a href="outputs/jira/gpt_5_1_codex.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/gpt_5_1_codex.png" alt="GPT-5.1 Codex output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 3 Pro Preview</div>
+                    <a href="outputs/jira/gemini_3_pro_preview.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/jira/gemini_3_pro_preview.png" alt="Gemini 3 Pro Preview output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- Spotify Section -->
-        <section class="app-section">
-            <div class="prompt-header">
-                <div class="prompt-text">
-                    Generate this Spotify interface in HTML, CSS and JavaScript.<br>
-                    Return a single HTML file with embedded CSS and JavaScript.
+        <section class="app-section" id="spotify">
+            <h2>Spotify</h2>
+            <div class="prompt-box">
+                <div class="prompt-text">Generate this Spotify interface in HTML, CSS and JavaScript. Return a single HTML file with embedded CSS and JavaScript.</div>
+                <div class="reference-screenshot">
+                    <h3>Reference Screenshot</h3>
+                    <a href="input_screenshots/spotify.png" target="_blank">
+                        <img src="input_screenshots/spotify.png" alt="Spotify reference screenshot" onerror="this.parentElement.innerHTML='<div class=placeholder-container>Reference image not available</div>'">
+                    </a>
                 </div>
-                <a href="input_screenshots/spotify.png" target="_blank" class="original-image-link">
-                    <img src="input_screenshots/spotify.png" alt="Original Spotify" class="original-image" onerror="this.parentElement.innerHTML='<div class=placeholder>Image not found</div>'">
-                </a>
             </div>
-            <div class="image-gallery">
-                <!-- claude_sonnet_4_5 -->
-                <div class="image-card">
-                    <a href="outputs/spotify/claude_sonnet_4_5.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">claude_sonnet_4_5</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/spotify/claude_sonnet_4_5.png" alt="claude_sonnet_4_5" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+            <div class="model-gallery">
+                <div class="model-card">
+                    <div class="model-label">Claude Sonnet 4.5</div>
+                    <a href="outputs/spotify/claude_sonnet_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/claude_sonnet_4_5.png" alt="Claude Sonnet 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_2_5_pro -->
-                <div class="image-card">
-                    <a href="outputs/spotify/gemini_2_5_pro.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_2_5_pro</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/spotify/gemini_2_5_pro.png" alt="gemini_2_5_pro" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Claude Opus 4.5</div>
+                    <a href="outputs/spotify/claude_opus_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/claude_opus_4_5.png" alt="Claude Opus 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
-                <!-- gemini_3_pro_preview -->
-                <div class="image-card">
-                    <a href="outputs/spotify/gemini_3_pro_preview.html" target="_blank">
-                        <div class="image-label">
-                            <span class="model-name">gemini_3_pro_preview</span>
-                        </div>
-                        <div class="image-wrapper">
-                            <img src="outputs/spotify/gemini_3_pro_preview.png" alt="gemini_3_pro_preview" onerror="this.parentElement.innerHTML='<div class=placeholder>Screenshot not available</div>'">
-                        </div>
+                <div class="model-card">
+                    <div class="model-label">Grok 4 Fast</div>
+                    <a href="outputs/spotify/grok_4_fast.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/grok_4_fast.png" alt="Grok 4 Fast output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 2.5 Pro</div>
+                    <a href="outputs/spotify/gemini_2_5_pro.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/gemini_2_5_pro.png" alt="Gemini 2.5 Pro output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Qwen3 VL 235B</div>
+                    <a href="outputs/spotify/qwen3_vl_235b_a22b_thinking.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/qwen3_vl_235b_a22b_thinking.png" alt="Qwen3 VL output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1</div>
+                    <a href="outputs/spotify/gpt_5_1.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/gpt_5_1.png" alt="GPT-5.1 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1 Codex</div>
+                    <a href="outputs/spotify/gpt_5_1_codex.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/gpt_5_1_codex.png" alt="GPT-5.1 Codex output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 3 Pro Preview</div>
+                    <a href="outputs/spotify/gemini_3_pro_preview.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/spotify/gemini_3_pro_preview.png" alt="Gemini 3 Pro Preview output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
                     </a>
                 </div>
             </div>
         </section>
+
+        <!-- VS Code Section -->
+        <section class="app-section" id="vs-code">
+            <h2>VS Code</h2>
+            <div class="prompt-box">
+                <div class="prompt-text">Generate this VS Code interface in HTML, CSS and JavaScript. Return a single HTML file with embedded CSS and JavaScript.</div>
+                <div class="reference-screenshot">
+                    <h3>Reference Screenshot</h3>
+                    <a href="input_screenshots/vs_code.png" target="_blank">
+                        <img src="input_screenshots/vs_code.png" alt="VS Code reference screenshot" onerror="this.parentElement.innerHTML='<div class=placeholder-container>Reference image not available</div>'">
+                    </a>
+                </div>
+            </div>
+            <div class="model-gallery">
+                <div class="model-card">
+                    <div class="model-label">Claude Sonnet 4.5</div>
+                    <a href="outputs/vs_code/claude_sonnet_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/claude_sonnet_4_5.png" alt="Claude Sonnet 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Claude Opus 4.5</div>
+                    <a href="outputs/vs_code/claude_opus_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/claude_opus_4_5.png" alt="Claude Opus 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Grok 4 Fast</div>
+                    <a href="outputs/vs_code/grok_4_fast.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/grok_4_fast.png" alt="Grok 4 Fast output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 2.5 Pro</div>
+                    <a href="outputs/vs_code/gemini_2_5_pro.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/gemini_2_5_pro.png" alt="Gemini 2.5 Pro output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Qwen3 VL 235B</div>
+                    <a href="outputs/vs_code/qwen3_vl_235b_a22b_thinking.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/qwen3_vl_235b_a22b_thinking.png" alt="Qwen3 VL output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1</div>
+                    <a href="outputs/vs_code/gpt_5_1.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/gpt_5_1.png" alt="GPT-5.1 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1 Codex</div>
+                    <a href="outputs/vs_code/gpt_5_1_codex.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/gpt_5_1_codex.png" alt="GPT-5.1 Codex output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 3 Pro Preview</div>
+                    <a href="outputs/vs_code/gemini_3_pro_preview.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/vs_code/gemini_3_pro_preview.png" alt="Gemini 3 Pro Preview output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Google Sheets Section -->
+        <section class="app-section" id="google-sheets">
+            <h2>Google Sheets</h2>
+            <div class="prompt-box">
+                <div class="prompt-text">Generate this Google Sheets interface in HTML, CSS and JavaScript. Return a single HTML file with embedded CSS and JavaScript.</div>
+                <div class="reference-screenshot">
+                    <h3>Reference Screenshot</h3>
+                    <a href="input_screenshots/google_sheets.png" target="_blank">
+                        <img src="input_screenshots/google_sheets.png" alt="Google Sheets reference screenshot" onerror="this.parentElement.innerHTML='<div class=placeholder-container>Reference image not available</div>'">
+                    </a>
+                </div>
+            </div>
+            <div class="model-gallery">
+                <div class="model-card">
+                    <div class="model-label">Claude Sonnet 4.5</div>
+                    <a href="outputs/google_sheets/claude_sonnet_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/claude_sonnet_4_5.png" alt="Claude Sonnet 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Claude Opus 4.5</div>
+                    <a href="outputs/google_sheets/claude_opus_4_5.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/claude_opus_4_5.png" alt="Claude Opus 4.5 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Grok 4 Fast</div>
+                    <a href="outputs/google_sheets/grok_4_fast.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/grok_4_fast.png" alt="Grok 4 Fast output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 2.5 Pro</div>
+                    <a href="outputs/google_sheets/gemini_2_5_pro.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/gemini_2_5_pro.png" alt="Gemini 2.5 Pro output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Qwen3 VL 235B</div>
+                    <a href="outputs/google_sheets/qwen3_vl_235b_a22b_thinking.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/qwen3_vl_235b_a22b_thinking.png" alt="Qwen3 VL output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1</div>
+                    <a href="outputs/google_sheets/gpt_5_1.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/gpt_5_1.png" alt="GPT-5.1 output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">GPT-5.1 Codex</div>
+                    <a href="outputs/google_sheets/gpt_5_1_codex.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/gpt_5_1_codex.png" alt="GPT-5.1 Codex output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+                <div class="model-card">
+                    <div class="model-label">Gemini 3 Pro Preview</div>
+                    <a href="outputs/google_sheets/gemini_3_pro_preview.html" target="_blank" class="model-screenshot">
+                        <img src="outputs/google_sheets/gemini_3_pro_preview.png" alt="Gemini 3 Pro Preview output" onerror="this.outerHTML='<div class=placeholder-container>Screenshot not available</div>'">
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>LLM Interface Benchmark - Generated with OpenRouter API</p>
+        </footer>
     </div>
 </body>
 </html>

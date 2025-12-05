@@ -39,7 +39,7 @@ Along with the base64-encoded image. See: https://openrouter.ai/docs/guides/over
 **Error Handling:**
 - Log failures to console with model name and error message
 - Continue processing remaining models if one fails
-- Handle rate limits with appropriate retries
+- Handle rate limits with appropriate retries and backoff.
 
 Use `uv` to run the script and install dependencies.
 
@@ -53,15 +53,21 @@ Run the script for all combinations of:
 | Microsoft Word | `./input_screenshots/microsoft_word.png` |
 | Jira           | `./input_screenshots/jira.png`           |
 | Spotify        | `./input_screenshots/spotify.png`        |
+| VS Code        | `./input_screenshots/vs_code.png`        |
+| Google Sheets  | `./input_screenshots/google_sheets.png`  |
 
 **Models:**
 - `anthropic/claude-sonnet-4.5`
+- `anthropic/claude-opus-4.5`
 - `x-ai/grok-code-fast-1`
+- `x-ai/grok-4-fast`
+- `deepseek/deepseek-v3.2`
 - `google/gemini-2.5-pro`
-- `deepseek/deepseek-v3.2-exp`
 - `qwen/qwen3-vl-235b-a22b-thinking`
 - `openai/gpt-5.1`
+- `openai/gpt-5.1-codex`
 - `google/gemini-3-pro-preview`
+
 
 ## Step 3: Capture Screenshots
 
@@ -77,7 +83,7 @@ Create a static website to showcase the results.
 
 **Main Gallery Page (index.html):**
 - For each application, create a section containing:
-  - Prompt box: Contains both the prompt text (e.g., "Generate this Spotify interface...") styled as monospace code with blue accent, AND the original reference screenshot directly below the text, with a blue border around the image
+  - Prompt box: Contains both the prompt text (e.g., "Generate this Spotify interface...") styled as monospace code with blue accent, AND the original reference screenshot directly below the text.
   - Model outputs: Each model's output screenshot displayed in a single-column gallery below the prompt box
 - For model output images, display the model name label ABOVE the image (not below)
 - Clicking any image opens the actual HTML file (or original screenshot) in a new tab
@@ -85,8 +91,6 @@ Create a static website to showcase the results.
 
 **Visual Design Requirements:**
 - Light theme with white (#ffffff) background
-- Light gray (#f8f9fa) section backgrounds with subtle borders
-- Blue (#0066cc) accent color for the original image border, badges, and prompt header
 - Clean, modern typography using system fonts
 - Subtle hover effects with lift animation and shadow
 - Card-based layout with rounded corners and borders
@@ -96,9 +100,10 @@ Create a static website to showcase the results.
 - CSS Grid for image gallery layout with single column for maximum image visibility
 - Responsive design that works on all screen sizes
 - Wide container (max-width: 1800px) to utilize available screen space
-- Works when opened from local filesystem (`file://`)
 - Graceful handling of missing screenshots (show placeholder)
 - Separate styles.css file for maintainability
+
+Once you have made the index.html, test it with Playwright MCP. Ensure that images are easy to view on both desktop and mobile. If they are not easy to view or layout can be imrpoved, feel free to regenerage regenerate the screenshots.
 
 ## File Structure
 

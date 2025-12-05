@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #f4f5f7;
+            background-color: #f4f5f7;
         }
 
         .container {
@@ -21,11 +21,9 @@
             height: 100vh;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 72px;
-            background: #0052cc;
-            color: white;
+            background-color: #0052CC;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,7 +33,8 @@
         .sidebar-icon {
             width: 40px;
             height: 40px;
-            margin: 8px 0;
+            background-color: white;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -43,144 +42,163 @@
             border-radius: 4px;
         }
 
-        .sidebar-icon:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .logo {
-            font-size: 24px;
-            margin-bottom: 16px;
+        .sidebar-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #0052CC;
         }
 
         .help-icon {
             margin-top: auto;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
         }
 
-        /* Left Panel */
-        .left-panel {
-            width: 260px;
-            background: #f4f5f7;
+        .nav-sidebar {
+            width: 240px;
+            background-color: #f4f5f7;
             border-right: 1px solid #dfe1e6;
-            padding: 16px 0;
+            overflow-y: auto;
         }
 
         .project-header {
+            padding: 16px;
             display: flex;
             align-items: center;
-            padding: 8px 16px;
-            margin-bottom: 16px;
+            gap: 12px;
         }
 
         .project-avatar {
             width: 40px;
             height: 40px;
             border-radius: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin-right: 12px;
+            background: linear-gradient(135deg, #6B5FED 0%, #F093FB 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 20px;
         }
 
         .project-info h3 {
             font-size: 14px;
-            color: #172b4d;
-            margin-bottom: 2px;
+            font-weight: 600;
+            color: #172B4D;
         }
 
         .project-info p {
             font-size: 12px;
-            color: #5e6c84;
+            color: #5E6C84;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
         }
 
         .nav-item {
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            padding: 8px 16px;
-            color: #42526e;
+            gap: 12px;
             cursor: pointer;
-            transition: background 0.2s;
+            color: #42526E;
+            font-size: 14px;
+            transition: background-color 0.2s;
         }
 
         .nav-item:hover {
-            background: #ebecf0;
+            background-color: #EBECF0;
         }
 
         .nav-item.active {
-            background: #deebff;
-            color: #0052cc;
+            background-color: #DEEBFF;
+            color: #0052CC;
         }
 
-        .nav-item svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-        }
-
-        /* Main Content */
         .main-content {
             flex: 1;
             overflow-x: auto;
-            background: white;
         }
 
         .header {
+            background-color: white;
             padding: 24px 32px;
             border-bottom: 1px solid #dfe1e6;
         }
 
-        .header h1 {
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-top h1 {
             font-size: 24px;
-            color: #172b4d;
-            margin-bottom: 16px;
+            color: #172B4D;
         }
 
         .header-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 12px;
         }
 
-        .search-filters {
-            display: flex;
-            align-items: center;
-            background: #f4f5f7;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .release-btn {
-            background: #f4f5f7;
-            border: none;
+        .btn {
             padding: 8px 16px;
             border-radius: 4px;
+            border: none;
             cursor: pointer;
             font-size: 14px;
-            margin-right: 8px;
+            font-weight: 500;
         }
 
-        .more-btn {
+        .btn-secondary {
+            background-color: #f4f5f7;
+            color: #42526E;
+        }
+
+        .btn-more {
             background: none;
-            border: none;
             font-size: 20px;
-            cursor: pointer;
             padding: 4px 8px;
         }
 
-        /* Board */
-        .board {
+        .search-bar {
             display: flex;
+            align-items: center;
+            gap: 16px;
+            background-color: #fafbfc;
+            padding: 8px 16px;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            color: #42526E;
+            width: 100%;
+        }
+
+        .board {
             padding: 24px;
+            display: flex;
             gap: 16px;
             overflow-x: auto;
         }
 
         .column {
             min-width: 280px;
-            background: #f4f5f7;
+            background-color: #f4f5f7;
             border-radius: 4px;
             padding: 12px;
         }
@@ -188,17 +206,17 @@
         .column-header {
             font-size: 12px;
             font-weight: 600;
-            color: #5e6c84;
+            color: #5E6C84;
             text-transform: uppercase;
             margin-bottom: 12px;
         }
 
-        .column-header span {
+        .column-count {
             margin-left: 4px;
         }
 
         .card {
-            background: white;
+            background-color: white;
             border-radius: 4px;
             padding: 12px;
             margin-bottom: 8px;
@@ -213,7 +231,7 @@
 
         .card-title {
             font-size: 14px;
-            color: #172b4d;
+            color: #172B4D;
             margin-bottom: 8px;
             line-height: 1.4;
         }
@@ -228,22 +246,22 @@
         }
 
         .tag-yellow {
-            background: #ffc400;
-            color: #172b4d;
+            background-color: #FFC400;
+            color: #172B4D;
         }
 
         .tag-cyan {
-            background: #00b8d9;
+            background-color: #00B8D9;
             color: white;
         }
 
         .tag-orange {
-            background: #ff8b00;
+            background-color: #FF8B00;
             color: white;
         }
 
         .tag-purple {
-            background: #6554c0;
+            background-color: #6554C0;
             color: white;
         }
 
@@ -254,47 +272,58 @@
             margin-top: 8px;
         }
 
-        .card-priority {
+        .priority {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
-            color: #5e6c84;
         }
 
         .priority-icon {
             width: 16px;
             height: 16px;
-            color: #de350b;
         }
 
-        .priority-icon.blocker {
-            color: #de350b;
+        .priority-count {
+            font-size: 12px;
+            color: #5E6C84;
         }
 
         .card-id {
             font-size: 12px;
-            color: #5e6c84;
+            color: #5E6C84;
         }
 
-        .right-actions {
-            display: flex;
-            gap: 8px;
+        .icon-red {
+            color: #DE350B;
+        }
+
+        .icon-orange {
+            color: #FF8B00;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
         <div class="sidebar">
-            <div class="logo">🔷</div>
-            <div class="sidebar-icon">🔍</div>
-            <div class="sidebar-icon">➕</div>
-            <div class="sidebar-icon help-icon">❓</div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M10 2h4v9h-4zM2 10h9V2H2zM2 22h9v-9H2zM13 22h9v-9h-9z"/>
+                </svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </div>
+            <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+            </div>
+            <div class="help-icon">?</div>
         </div>
 
-        <!-- Left Panel -->
-        <div class="left-panel">
+        <div class="nav-sidebar">
             <div class="project-header">
                 <div class="project-avatar">🚀</div>
                 <div class="project-info">
@@ -302,219 +331,210 @@
                     <p>Software project</p>
                 </div>
             </div>
-            <div class="nav-item">
-                <span>📋</span>
-                <span>Backlog</span>
-            </div>
-            <div class="nav-item active">
-                <span>📊</span>
-                <span>Board</span>
-            </div>
-            <div class="nav-item">
-                <span>📈</span>
-                <span>Reports</span>
-            </div>
-            <div class="nav-item">
-                <span>🚢</span>
-                <span>Releases</span>
-            </div>
-            <div class="nav-item">
-                <span>📦</span>
-                <span>Components</span>
-            </div>
-            <div class="nav-item">
-                <span>📝</span>
-                <span>Issues</span>
-            </div>
-            <div class="nav-item">
-                <span>💾</span>
-                <span>Repository</span>
-            </div>
-            <div class="nav-item">
-                <span>➕</span>
-                <span>Add item</span>
-            </div>
-            <div class="nav-item">
-                <span>⚙️</span>
-                <span>Settings</span>
-            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <span>📋</span>
+                    <span>Backlog</span>
+                </li>
+                <li class="nav-item active">
+                    <span>▦</span>
+                    <span>Board</span>
+                </li>
+                <li class="nav-item">
+                    <span>📊</span>
+                    <span>Reports</span>
+                </li>
+                <li class="nav-item">
+                    <span>🚀</span>
+                    <span>Releases</span>
+                </li>
+                <li class="nav-item">
+                    <span>📦</span>
+                    <span>Components</span>
+                </li>
+                <li class="nav-item">
+                    <span>📝</span>
+                    <span>Issues</span>
+                </li>
+                <li class="nav-item">
+                    <span>&lt;&gt;</span>
+                    <span>Repository</span>
+                </li>
+                <li class="nav-item">
+                    <span>➕</span>
+                    <span>Add item</span>
+                </li>
+                <li class="nav-item">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </li>
+            </ul>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="header">
-                <h1>Board</h1>
-                <div class="header-actions">
-                    <div class="search-filters">
-                        <span>🔍</span>
-                        <span style="margin-left: 8px; color: #5e6c84;">Quick Filters</span>
-                        <span style="margin-left: 8px;">▼</span>
+                <div class="header-top">
+                    <h1>Board</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary">Release</button>
+                        <button class="btn btn-more">⋯</button>
                     </div>
-                    <div class="right-actions">
-                        <button class="release-btn">Release</button>
-                        <button class="more-btn">⋯</button>
-                    </div>
+                </div>
+                <div class="search-bar">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Quick Filters">
+                    <span>▼</span>
                 </div>
             </div>
 
             <div class="board">
-                <!-- TO DO Column -->
                 <div class="column">
-                    <div class="column-header">TO DO <span>5</span></div>
-                    
+                    <div class="column-header">
+                        TO DO <span class="column-count">5</span>
+                    </div>
                     <div class="card">
                         <div class="card-title">Engage Jupiter Express for outer solar system travel</div>
                         <div class="card-tag tag-yellow">SPACE TRAVEL PARTNERS</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>5</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">5</span>
                             </div>
                             <div class="card-id">TIS-25</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Create 90 day plans for all departments in the Mars Office</div>
                         <div class="card-tag tag-orange">Local Mars Office</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon blocker">🚫</span>
-                                <span>9</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">🚫</span>
+                                <span class="priority-count">9</span>
                             </div>
                             <div class="card-id">TIS-12</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Engage Saturn's Rings Resort as a preferred provider</div>
                         <div class="card-tag tag-yellow">Space Travel Partners</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>3</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">3</span>
                             </div>
                             <div class="card-id">TIS-17</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Enable Speedy SpaceCraft as the preferred</div>
                     </div>
                 </div>
 
-                <!-- IN PROGRESS Column -->
                 <div class="column">
-                    <div class="column-header">IN PROGRESS <span>5</span></div>
-                    
+                    <div class="column-header">
+                        IN PROGRESS <span class="column-count">5</span>
+                    </div>
                     <div class="card">
                         <div class="card-title">Requesting available flights is now taking > 5 seconds</div>
                         <div class="card-tag tag-cyan">SeeSpaceEZ Plus</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>3</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">3</span>
                             </div>
                             <div class="card-id">TIS-8</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
                         <div class="card-tag tag-yellow">Space Travel Partners</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>4</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">4</span>
                             </div>
                             <div class="card-id">TIS-15</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Establish a catering vendor to provide meal service</div>
                         <div class="card-tag tag-orange">Local Mars Office</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>4</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">4</span>
                             </div>
                             <div class="card-id">TIS-15</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
                     </div>
                 </div>
 
-                <!-- CODE REVIEW Column -->
                 <div class="column">
-                    <div class="column-header">CODE REVIEW <span>2</span></div>
-                    
+                    <div class="column-header">
+                        CODE REVIEW <span class="column-count">2</span>
+                    </div>
                     <div class="card">
                         <div class="card-title">Register with the Mars Ministry of Revenue</div>
                         <div class="card-tag tag-orange">Local Mars Office</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>3</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">3</span>
                             </div>
                             <div class="card-id">TIS-11</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Draft network plan for Mars Office</div>
                         <div class="card-tag tag-orange">Local Mars Office</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>3</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">3</span>
                             </div>
                             <div class="card-id">TIS-15</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- DONE Column -->
                 <div class="column">
-                    <div class="column-header">DONE <span>8</span></div>
-                    
+                    <div class="column-header">
+                        DONE <span class="column-count">8</span>
+                    </div>
                     <div class="card">
                         <div class="card-title">Homepage footer uses an inline style - should use a class</div>
                         <div class="card-tag tag-purple">Large Team Support</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
                             </div>
                             <div class="card-id">TIS-68</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Engage JetShuttle SpaceWays for travel</div>
                         <div class="card-tag tag-yellow">Space Travel Partners</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️⬆️</span>
-                                <span>5</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-red">⬆️⬆️</span>
+                                <span class="priority-count">5</span>
                             </div>
                             <div class="card-id">TIS-23</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
                         <div class="card-tag tag-yellow">Space Travel Partners</div>
                         <div class="card-footer">
-                            <div class="card-priority">
-                                <span class="priority-icon">⬆️</span>
+                            <div class="priority">
+                                <span class="priority-icon icon-orange">⬆️</span>
                             </div>
                             <div class="card-id">TIS-15</div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-title">Establish a catering vendor to provide meal service</div>
                         <div class="card-tag tag-orange">Local Mars Office</div>
@@ -523,63 +543,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Add drag and drop functionality
-        let draggedCard = null;
-
-        document.querySelectorAll('.card').forEach(card => {
-            card.draggable = true;
-            
-            card.addEventListener('dragstart', function(e) {
-                draggedCard = this;
-                this.style.opacity = '0.5';
-            });
-            
-            card.addEventListener('dragend', function(e) {
-                this.style.opacity = '1';
-            });
-        });
-
-        document.querySelectorAll('.column').forEach(column => {
-            column.addEventListener('dragover', function(e) {
-                e.preventDefault();
-            });
-            
-            column.addEventListener('drop', function(e) {
-                e.preventDefault();
-                if (draggedCard) {
-                    this.appendChild(draggedCard);
-                    updateColumnCounts();
-                }
-            });
-        });
-
-        function updateColumnCounts() {
-            document.querySelectorAll('.column').forEach(column => {
-                const count = column.querySelectorAll('.card').length;
-                const header = column.querySelector('.column-header span');
-                if (header) {
-                    header.textContent = count;
-                }
-            });
-        }
-
-        // Add click handlers
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function(e) {
-                if (!e.target.closest('.card-priority') && !e.target.closest('.card-id')) {
-                    console.log('Card clicked:', this.querySelector('.card-title').textContent);
-                }
-            });
-        });
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>

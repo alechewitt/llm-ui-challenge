@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            height: 60px;
+            background-color: #000;
+            border-bottom: 1px solid #282828;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1db954;
+        }
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            background-color: #000;
+            border: 1px solid #282828;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #b3b3b3;
+        }
+        .profile {
+            width: 32px;
+            height: 32px;
+            background-color: #282828;
+            border-radius: 50%;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: #000;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #b3b3b3;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            color: #ffffff;
+        }
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 20px;
+            background-color: #b3b3b3;
+            border-radius: 50%;
+        }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #121212;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .playlist-item {
+            background-color: #181818;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .playlist-item:hover {
+            transform: scale(1.05);
+        }
+        .playlist-cover {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #1db954, #191414);
+        }
+        .playlist-title {
+            padding: 12px;
+            font-size: 14px;
+        }
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding-bottom: 10px;
+        }
+        .horizontal-item {
+            flex: 0 0 160px;
+            height: 240px;
+            background-color: #181818;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .horizontal-cover {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        }
+        .horizontal-title {
+            padding: 12px;
+            font-size: 14px;
+        }
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 90px;
+            background-color: #181818;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-top: 1px solid #282828;
+        }
+        .now-playing {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            max-width: 300px;
+        }
+        .now-cover {
+            width: 56px;
+            height: 56px;
+            background-color: #282828;
+            margin-right: 16px;
+            border-radius: 4px;
+        }
+        .now-title {
+            font-size: 14px;
+        }
+        .now-artist {
+            color: #b3b3b3;
+            font-size: 12px;
+        }
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            background-color: #404040;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            margin: 0 8px;
+            cursor: pointer;
+        }
+        .progress {
+            flex: 1;
+            max-width: 500px;
+            height: 4px;
+            background-color: #404040;
+            border-radius: 2px;
+            margin: 0 20px;
+            cursor: pointer;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #1db954;
+            width: 30%;
+            border-radius: 2px;
+        }
+        .volume {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .volume-btn {
+            width: 24px;
+            height: 24px;
+            background-color: #404040;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .volume-bar {
+            width: 100px;
+            height: 4px;
+            background-color: #404040;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .volume-fill {
+            height: 100%;
+            background-color: #1db954;
+            width: 70%;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">Spotify</div>
+        <input type="text" class="search-bar" placeholder="What would you like to listen to?">
+        <div class="profile"></div>
+    </div>
+
+    <div style="display: flex; flex: 1;">
+        <nav class="sidebar">
+            <div class="nav-item active">
+                <div class="nav-icon"></div>
+                Home
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Search
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Your Library
+            </div>
+            <hr style="border: none; height: 1px; background: #282828; margin: 16px 20px;">
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Playlists
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Albums
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Downloads
+            </div>
+            <hr style="border: none; height: 1px; background: #282828; margin: 16px 20px;">
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Discover Weekly
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Release Radar
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Daily Mix 1
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon"></div>
+                Daily Mix 2
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="section">
+                <h2 class="section-title">Made For You</h2>
+                <div class="horizontal-scroll">
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Your Summer Rewind</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">On Repeat</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Chill Vibes</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Workout Hits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Recently Played</h2>
+                <div class="horizontal-scroll">
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Peaceful Piano</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Lo-Fi Beats</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Mood Booster</div>
+                    </div>
+                    <div class="horizontal-item">
+                        <div class="horizontal-cover"></div>
+                        <div class="horizontal-title">Dinner Jazz</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Jump Back In</h2>
+                <div class="playlist-grid">
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Liked Songs</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Chill Hits</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Pop Rising</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Rap Caviar</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Rock Classics</div>
+                    </div>
+                    <div class="playlist-item">
+                        <div class="playlist-cover"></div>
+                        <div class="playlist-title">Today's Top Hits</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="player-bar">
+        <div class="now-playing">
+            <div class="now-cover"></div>
+            <div>
+                <div class="now-title">Song Title</div>
+                <div class="now-artist">Artist Name</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="control-btn">⏮</button>
+            <button class="control-btn">⏸</button>
+            <button class="control-btn">⏭</button>
+            <div class="progress">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        <div class="volume">
+            <button class="volume-btn">🔊</button>
+            <div class="volume-bar">
+                <div class="volume-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Basic interactivity
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Simulate play/pause
+        const playBtn = document.querySelector('.control-btn:nth-child(2)');
+        playBtn.addEventListener('click', () => {
+            if (playBtn.textContent === '⏸') {
+                playBtn.textContent = '▶';
+            } else {
+                playBtn.textContent = '⏸';
+            }
+        });
+
+        // Progress simulation
+        const progress = document.querySelector('.progress');
+        let progressInterval;
+        playBtn.addEventListener('click', () => {
+            if (playBtn.textContent === '⏸') {
+                progressInterval = setInterval(() => {
+                    const fill = document.querySelector('.progress-fill');
+                    let width = parseInt(fill.style.width) || 0;
+                    if (width >= 100) {
+                        clearInterval(progressInterval);
+                    } else {
+                        fill.style.width = (width + 1) + '%';
+                    }
+                }, 200);
+            } else {
+                clearInterval(progressInterval);
+            }
+        });
+
+        // Volume simulation
+        const volumeBar = document.querySelector('.volume-bar');
+        const volumeFill = document.querySelector('.volume-fill');
+        volumeBar.addEventListener('click', (e) => {
+            const rect = volumeBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            volumeFill.style.width = (pos * 100) + '%';
+        });
+
+        // Sidebar scroll
+        document.querySelector('.sidebar').addEventListener('wheel', (e) => {
+            e.stopPropagation();
+        });
+
+        // Main content scroll
+        document.querySelector('.main-content').addEventListener('wheel', (e) => {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>

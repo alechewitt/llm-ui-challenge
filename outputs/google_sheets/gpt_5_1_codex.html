@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Google Sheets Clone</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+    margin:0;
+    font-family:'Roboto',Arial,Helvetica,sans-serif;
+    background:#f2f3f5;
+    color:#202124;
+}
+.app{
+    display:flex;
+    min-height:100vh;
+}
+.sidebar{
+    width:64px;
+    background:#f2f3f5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    padding:70px 0 20px;
+    border-left:1px solid #d7d8dc;
+}
+.side-icon{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:white;
+    border:1px solid #e0e0e0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    color:#5f6368;
+}
+.main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+}
+.topbar{
+    height:56px;
+    background:#fff;
+    display:flex;
+    align-items:center;
+    padding:0 16px;
+    border-bottom:1px solid #e0e0e0;
+}
+.logo{
+    width:32px;
+    height:32px;
+    background:#0f9d58;
+    border-radius:4px;
+    margin-right:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:bold;
+}
+.title-area{
+    flex:1;
+}
+.title-area h1{
+    font-size:16px;
+    margin:0;
+    font-weight:500;
+}
+.title-area span{
+    font-size:12px;
+    color:#5f6368;
+}
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.round-action{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#f1f3f4;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#5f6368;
+    font-weight:600;
+}
+.share-btn{
+    background:#e3f2fd;
+    color:#1967d2;
+    border-radius:999px;
+    padding:6px 18px;
+    font-weight:600;
+}
+.menu-bar{
+    background:#fff;
+    display:flex;
+    gap:18px;
+    padding:8px 20px;
+    border-bottom:1px solid #e0e0e0;
+    font-size:14px;
+}
+.toolbar{
+    background:#fff;
+    border-bottom:1px solid #e0e0e0;
+    display:flex;
+    align-items:center;
+    padding:6px 12px;
+    gap:12px;
+    font-size:14px;
+}
+.toolbar span,.toolbar button{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.toolbar input, .toolbar select{
+    border:1px solid #d7d7d7;
+    border-radius:4px;
+    padding:4px 8px;
+    font-size:14px;
+    background:#fff;
+}
+.formula-bar{
+    background:#fff;
+    border-bottom:1px solid #e0e0e0;
+    display:flex;
+    align-items:center;
+    padding:6px 12px;
+    gap:8px;
+}
+.formula-bar input{
+    flex:1;
+    border:1px solid #d7d7d7;
+    border-radius:4px;
+    padding:6px 10px;
+}
+.sheet-area{
+    flex:1;
+    background:#fff;
+    padding:0 0 0 0;
+    overflow:auto;
+}
+table{
+    border-collapse:collapse;
+    width:100%;
+    table-layout:fixed;
+}
+th,td{
+    border:1px solid #e2e2e2;
+    min-width:80px;
+    height:24px;
+    text-align:left;
+    padding:2px 6px;
+    font-size:13px;
+    position:relative;
+}
+th{
+    background:#f8f9fa;
+    font-weight:500;
+    text-align:center;
+}
+th.corner{
+    min-width:40px;
+}
+th.row-header{
+    width:40px;
+}
+td{
+    background:#fff;
+    cursor:text;
+}
+td.active{
+    outline:2px solid #1a73e8;
+    outline-offset:-1px;
+}
+th.col-active, th.row-active{
+    background:#e8f0fe;
+    color:#1967d2;
+}
+.bottom-bar{
+    border-top:1px solid #e0e0e0;
+    background:#fff;
+    height:40px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0 16px;
+}
+.tab{
+    padding:6px 16px;
+    border-radius:18px;
+    border:1px solid #c9cacf;
+    background:#e8f0fe;
+    color:#1967d2;
+    font-weight:500;
+}
+.plus-tab{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    border:1px solid #c7c7c7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    color:#5f6368;
+}
+::-webkit-scrollbar{
+    height:10px;
+    width:10px;
+}
+::-webkit-scrollbar-thumb{
+    background:#c8c8c8;
+    border-radius:8px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="main">
+        <div class="topbar">
+            greet
+        </div>
+    </div>
+</div>
+</body>
+</html>

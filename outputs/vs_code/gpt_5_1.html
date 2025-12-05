@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VS Code Interface Mock</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #111;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+body {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.window {
+  width: 100%;
+  height: 100vh;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  display: flex;
+  flex-direction: column;
+}
+.titlebar {
+  height: 30px;
+  background: #202020;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  -webkit-app-region: drag;
+}
+.traffic-lights {
+  display: flex;
+  gap: 7px;
+  margin-right: 20px;
+}
+.traffic-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.traffic-btn.red { background: #ff5f57; }
+.traffic-btn.yellow { background: #febc2e; }
+.traffic-btn.green { background: #28c840; }
+.title-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.command-palette {
+  max-width: 480px;
+  width: 100%;
+  background: #2d2d2d;
+  border-radius: 6px;
+  border: 1px solid #3a3a3a;
+  color: #ccc;
+  font-size: 12px;
+  padding: 2px 10px;
+}
+.command-palette:focus {
+  outline: none;
+  border-color: #4b8df8;
+}
+.command-palette::placeholder {
+  color: #777;
+}
+.title-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #a0a0a0;
+}
+.title-icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border: 1px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+}
+.main-area {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.activity-bar {
+  width: 50px;
+  background: #181818;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+.activity-item {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 12px;
+  cursor: pointer;
+}
+.activity-item.active {
+  background: #333;
+  color: #fff;
+}
+.activity-spacer {
+  flex: 1;
+}
+.main-content {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.sidebar {
+  width: 260px;
+  background: #252526;
+  border-right: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.sidebar-header {
+  height: 32px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #ccc;
+  border-bottom: 1px solid #333;
+}
+.sidebar-header-right {
+  display: flex;
+  gap: 6px;
+  font-size: 14px;
+}
+.sidebar-section-title {
+  padding: 6px 10px 4px;
+  font-size: 11px;
+  color: #bbb;
+  text-transform: uppercase;
+}
+.tree {
+  flex: 1;
+  overflow: auto;
+  font-size: 12px;
+  padding-bottom: 10px;
+}
+.tree-item {
+  padding: 2px 6px 2px 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tree-item .disclosure {
+  width: 10px;
+  display: inline-block;
+  color: #c5c5c5;
+}
+.tree-item .icon {
+  width: 16px;
+  margin-right: 4px;
+  font-size: 11px;
+}
+.tree-root {
+  font-weight: 500;
+  color: #c5c5c5;
+}
+.tree-folder {
+  color: #c5c5c5;
+}
+.tree-file {
+  padding-left: 28px;
+}
+.tree-file.ts {
+  color: #4fc1ff;
+}
+.tree-file.highlight {
+  color: #e8a400;
+}
+.tree-item.active {
+  background: #094771;
+}
+.tree-item:hover {
+  background: #2a2d2e;
+}
+.sidebar-bottom {
+  border-top: 1px solid #333;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #aaa;
+}
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #1e1e1e;
+  min-width: 0;
+  min-height: 0;
+}
+.tabbar {
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
+  background: #252526;
+  border-bottom: 1px solid #1e1e1e;
+}
+.tab {
+  height: 100%;
+  min-width: 120px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #bbb;
+  cursor: pointer;
+  border-right: 1px solid #2d2d2d;
+  background: #2d2d2d;
+}
+.tab.inactive {
+  background: #2a2d2d;
+  color: #888;
+}
+.tab.active {
+  background: #1e1e1e;
+  color: #fff;
+}
+.tab-icon {
+  font-size: 11px;
+  color: #4fc1ff;
+}
+.tab-dirty {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e8a400;
+}
+.tab-close {
+  font-size: 10px;
+  color: #888;
+}
+.breadcrumbs {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 11px;
+  color: #888;
+  background: #1e1e1e;
+  border-bottom: 1px solid #252526;
+}
+.breadcrumbs span + span:before {
+  content: "›";
+  margin: 0 4px;
+  color: #555;
+}
+.breadcrumbs span.current {
+  color: #ddd;
+}
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+}
+.gutter {
+  width: 40px;
+  background: #1e1e1e;
+  color: #858585;
+  text-align: right;
+  padding: 8px 6px 8px 0;
+  font-size: 12px;
+  line-height: 20px;
+  user-select: none;
+}
+.code-area {
+  flex: 1;
+  overflow: auto;
+  background: #1e1e1e;
+  padding: 8px 0 8px 0;
+}
+.code {
+  margin: 0;
+  padding: 0 12px 0 0;
+  font-size: 13px;
+  line-height: 20px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  color: #d4d4d4;
+}
+.token-keyword { color: #c586c0; }
+.token-import { color: #c586c0; }
+.token-from { color: #c586c0; }
+.token-operator { color: #d4d4d4; }
+.token-string { color: #ce9178; }
+.token-type { color: #4ec9b0; }
+.token-function { color: #dcdcaa; }
+.token-variable { color: #9cdcfe; }
+.token-punctuation { color: #d4d4d4; }
+.token-jsx-tag { color: #569cd6; }
+.token-jsx-text { color: #d4d4d4; }
+.token-brace { color: #d4d4d4; }
+.token-comment { color: #6a9955; }
+.statusbar {
+  height: 24px;
+  background: #007acc;
+  color: #eee;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+.status-left, .status-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.status-left { flex: 1; }
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: default;
+}
+.status-separator {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.25);
+}
+.status-right {
+  justify-content: flex-end;
+}
+.badge {
+  background: #1e1e1e;
+  color: #eee;
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 10px;
+}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <div class="traffic-lights">
+      <div class="traffic-btn red"></div>
+      <div class="traffic-btn yellow"></div>
+      <div class="traffic-btn green"></div>
+    </div>
+    <div class="title-center">
+      <input class="command-palette" type="text" value="claude-code-sdk-demos" />
+    </div>
+    <div class="title-right">
+      <div class="title-icon">↺</div>
+      <div class="title-icon">☁</div>
+      <div class="title-icon">⋮</div>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <div class="activity-bar">
+      <div class="activity-item active">EX</div>
+      <div class="activity-item">SR</div>
+      <div class="activity-item">SC</div>
+      <div class="activity-item">DB</div>
+      <div class="activity-item">RT</div>
+      <div class="activity-spacer"></div>
+      <div class="activity-item">AC</div>
+      <div class="activity-item">GE</div>
+    </div>
+
+    <div class="main-content">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <span>Explorer</span>
+          <div class="sidebar-header-right">
+            <span>⋯</span>
+          </div>
+        </div>
+        <div class="sidebar-section-title">Claude-code-sdk-demos</div>
+        <div class="tree">
+          <div class="tree-item tree-root">
+            <span class="disclosure">▾</span>
+            <span class="icon"></span>
+            <span>CLAUDE-CODE-SDK-DEMOS</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span class="tree-file highlight" data-file="email-db">email-agent</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span data-file="excel-demo" class="tree-folder-label">excel-demo</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure"></span>
+            <span class="icon">📂</span>
+            <span>erb</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure"></span>
+            <span class="icon">📂</span>
+            <span>agent</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure"></span>
+            <span class="icon">📂</span>
+            <span>assets</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure"></span>
+            <span class="icon">📂</span>
+            <span>node_modules</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure"></span>
+            <span class="icon">📂</span>
+            <span>release</span>
+          </div>
+
+          <div class="tree-item tree-folder">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span>src</span>
+          </div>
+
+          <div class="tree-item tree-folder" style="padding-left: 24px;">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span>__tests__</span>
+          </div>
+
+          <div class="tree-item tree-folder" style="padding-left: 24px;">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span>main</span>
+          </div>
+
+          <div class="tree-item tree-file ts" style="padding-left: 40px;" data-file="main.ts">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>main.ts</span>
+          </div>
+
+          <div class="tree-item tree-file ts" style="padding-left: 40px;" data-file="menu.ts">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>menu.ts</span>
+          </div>
+
+          <div class="tree-item tree-file ts" style="padding-left: 40px;" data-file="preload.ts">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>preload.ts</span>
+          </div>
+
+          <div class="tree-item tree-file ts active" style="padding-left: 40px;" data-file="util.ts">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>util.ts</span>
+          </div>
+
+          <div class="tree-item tree-folder" style="padding-left: 24px;">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span>renderer</span>
+          </div>
+
+          <div class="tree-item tree-folder" style="padding-left: 40px;">
+            <span class="disclosure">▾</span>
+            <span class="icon">📂</span>
+            <span>components</span>
+          </div>
+
+          <div class="tree-item tree-file ts" style="padding-left: 56px;" data-file="App.tsx">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>App.tsx</span>
+          </div>
+
+          <div class="tree-item tree-file ts" style="padding-left: 56px;" data-file="email-db.ts">
+            <span class="disclosure"></span>
+            <span class="icon">TS</span>
+            <span>email-db.ts</span>
+          </div>
+
+          <div class="tree-item tree-file" style="padding-left: 56px;" data-file="App.css">
+            <span class="disclosure"></span>
+            <span class="icon">CSS</span>
+            <span>App.css</span>
+          </div>
+        </div>
+        <div class="sidebar-bottom">
+          OUTLINE<br>
+          TIMELINE
+        </div>
+      </div>
+
+      <div class="editor-container">
+        <div class="tabbar">
+          <div class="tab inactive" data-file="email-db.ts">
+            <span class="tab-icon">TS</span>
+            <span>email-db.ts</span>
+          </div>
+          <div class="tab active" data-file="App.tsx">
+            <span class="tab-icon">TS</span>
+            <span>App.tsx</span>
+            <div class="tab-dirty"></div>
+          </div>
+          <div class="tab inactive" data-file="App.css">
+            <span class="tab-icon">CSS</span>
+            <span>App.css</span>
+          </div>
+          <div class="tab inactive" data-file="util.ts">
+            <span class="tab-icon">TS</span>
+            <span>util.ts</span>
+          </div>
+        </div>
+
+        <div class="breadcrumbs">
+          <span>excel-demo</span>
+          <span>src</span>
+          <span>renderer</span>
+          <span class="current">App.tsx</span>
+        </div>
+
+        <div class="editor-wrapper">
+          <div class="gutter">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14
+          </div>
+          <div class="code-area">
+<pre class="code">
+<span class="token-import">import</span> { <span class="token-type">MemoryRouter</span> <span class="token-operator">as</span> <span class="token-type">Router</span>, <span class="token-type">Routes</span>, <span class="token-type">Route</span> } <span class="token-from">from</span> <span class="token-string">'react-router-dom'</span>;
+<span class="token-import">import</span> <span class="token-type">ChatInterface</span> <span class="token-from">from</span> <span class="token-string">'./components/ChatInterface'</span>;
+<span class="token-import">import</span> <span class="token-string">'./App.css'</span>;
+
+<span class="token-keyword">export</span> <span class="token-keyword">default</span> <span class="token-keyword">function</span> <span class="token-function">App</span>() { 
+  <span class="token-keyword">return</span> (
+    <span class="token-jsx-tag">&lt;Router&gt;</span>
+      <span class="token-jsx-tag">&lt;Routes&gt;</span>
+        <span class="token-jsx-tag">&lt;Route</span> <span class="token-variable">path</span><span class="token-operator">=</span><span class="token-string">"/"</span> <span class="token-variable">element</span><span class="token-operator">=</span>{<span class="token-jsx-tag">&lt;ChatInterface /&gt;</span>} <span class="token-jsx-tag">/&gt;</span>
+      <span class="token-jsx-tag">&lt;/Routes&gt;</span>
+    <span class="token-jsx-tag">&lt;/Router&gt;</span>
+  );
+}
+</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="status-left">
+      <div class="status-item">
+        <span>main*</span>
+      </div>
+      <div class="status-item">
+        <span>●</span>
+        <span>1</span>
+      </div>
+      <div class="status-item">
+        <span>Amazon Q</span>
+      </div>
+      <div class="status-separator"></div>
+      <div class="status-item">
+        <span>-- INSERT --</span>
+      </div>
+    </div>
+    <div class="status-right">
+      <div class="status-item">
+        <span>Ln 14, Col 1</span>
+      </div>
+      <div class="status-item">
+        <span>Spaces: 2</span>
+      </div>
+      <div class="status-item">
+        <span>UTF-8</span>
+      </div>
+      <div class="status-item">
+        <span>LF</span>
+      </div>
+      <div class="status-item">
+        <span>{}</span>
+      </div>
+      <div class="status-item">
+        <span>TypeScript JSX</span>
+      </div>
+      <div class="badge">1</div>
+    </div>
+  </div>
+</div>
+
+<script>
+var fileNodes = document.querySelectorAll('.tree-item[data-file]');
+var tabNodes = document.querySelectorAll('.tab');
+
+function activateByName(name) {
+  fileNodes.forEach(function(node) {
+    if (node.dataset.file === name) {
+      node.classList.add('active');
+    } else {
+      node.classList.remove('active');
+    }
+  });
+  tabNodes.forEach(function(tab) {
+    if (tab.dataset.file === name) {
+      tab.classList.add('active');
+      tab.classList.remove('inactive');
+    } else {
+      tab.classList.remove('active');
+      tab.classList.add('inactive');
+    }
+  });
+}
+
+fileNodes.forEach(function(node) {
+  node.addEventListener('click', function() {
+    activateByName(node.dataset.file);
+  });
+});
+
+tabNodes.forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    activateByName(tab.dataset.file);
+  });
+});
+</script>
+</body>
+</html>

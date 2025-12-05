@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Board Clone</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --jira-blue: #0747A6; /* Primary Sidebar */
+            --jira-blue-dark: #0052CC;
+            --sidebar-bg: #F4F5F7; /* Secondary Sidebar */
+            --board-bg: #FFFFFF;
+            --column-bg: #F4F5F7;
+            --text-dark: #172B4D;
+            --text-gray: #5E6C84;
+            --border-color: #DFE1E6;
+            --card-hover: #EBECF0;
+            
+            /* Tag Colors */
+            --tag-yellow: #FFAB00;
+            --tag-yellow-bg: #FFF0B3;
+            --tag-orange: #FF991F;
+            --tag-orange-bg: #FFBDAD; /* Approx for visual match */
+            --tag-blue: #00B8D9;
+            --tag-blue-bg: #B3F5FF;
+            --tag-purple: #6554C0;
+            --tag-purple-bg: #EAE6FF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
+        /* --- Left Primary Sidebar --- */
+        .nav-primary {
+            width: 64px;
+            background-color: var(--jira-blue); // Actually usually darker blue in old Jira, purely blue in new. Using screenshot blue.
+            background-color: #0052CC;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            color: white;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .nav-primary .logo {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .nav-primary .nav-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 18px;
+        }
+
+        .nav-primary .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-primary .bottom-actions {
+            margin-top: auto;
+        }
+
+        /* --- Secondary Project Sidebar --- */
+        .nav-secondary {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            flex-shrink: 0;
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .project-icon {
+            width: 40px;
+            height: 40px;
+            background: #6554C0; /* Purple generic */
+            background-image: linear-gradient(135deg, #6554C0 0%, #8777D9 100%);
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .project-details h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .project-details span {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .menu-list {
+            list-style: none;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 3px;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-bottom: 2px;
+            font-size: 14px;
+        }
+
+        .menu-item i {
+            width: 24px;
+            color: var(--text-gray);
+            margin-right: 8px;
+        }
+
+        .menu-item:hover {
+            background-color: #EBECF0;
+        }
+
+        .menu-item.active {
+            background-color: #EBECF0; /* Light gray active state */
+            color: #0052CC;
+            font-weight: 500;
+        }
+        
+        .menu-item.active i {
+            color: #0052CC;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #C1C7D0;
+            margin: 8px 0;
+        }
+
+        /* --- Main Board Area --- */
+        .main-content {
+            flex-grow: 1;
+            background-color: var(--board-bg);
+            display: flex;
+            flex-direction: column;
+            min-width: 0; /* Flex fix */
+        }
+
+        .header {
+            padding: 24px 40px 0 40px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 3px;
+            padding: 8px 12px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-gray {
+            background-color: var(--sidebar-bg);
+            color: var(--text-dark);
+        }
+        
+        .btn-transparent {
+            background: transparent;
+            font-size: 20px;
+            color: var(--text-dark);
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-wrapper input {
+            padding: 8px 8px 8px 30px;
+            border: 2px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 14px;
+            width: 160px;
+            transition: width 0.3s, border-color 0.3s;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 12px;
+        }
+        
+        .search-wrapper input:focus {
+            width: 220px;
+            outline: none;
+            border-color: var(--jira-blue-dark);
+        }
+
+        .dropdown-trigger {
+            font-size: 14px;
+            color: var(--text-gray);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* --- Kanban Board Structure --- */
+        .board-container {
+            flex-grow: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            padding: 0 40px 20px 40px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .column {
+            display: inline-flex;
+            flex-direction: column;
+            width: 270px;
+            background-color: var(--column-bg);
+            margin-right: 12px;
+            border-radius: 3px;
+            max-height: 100%;
+            flex-shrink: 0;
+        }
+
+        .column-header {
+            padding: 12px 12px 8px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .column-content {
+            padding: 0 8px 8px 8px;
+            overflow-y: auto;
+            min-height: 50px;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25);
+            padding: 10px;
+            margin-bottom: 6px;
+            cursor: grab;
+            user-select: none;
+            transition: background-color 0.2s;
+            white-space: normal; /* Fix text inside cards */
+        }
+
+        .card:hover {
+            background-color: #fafafa;
+        }
+        
+        .card:active {
+            cursor: grabbing;
+        }
+
+        .card.dragging {
+            opacity: 0.5;
+            transform: rotate(2deg);
+        }
+
+        .card-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #172B4D;
+            margin-bottom: 8px;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .tag.yellow { background-color: var(--tag-yellow); color: #303030; } /* Image style: Solid color or bg? Img has solidish stripes */
+        /* Actually Jira labels are usually colored BG with dark text, or solid bars. The image shows Solid Bars. Correcting to match image exactly */
+        
+        /* Resetting tag style to match image solid blocks */
+        .tag {
+            color: white;
+            border-radius: 3px;
+            padding: 3px 6px;
+        }
+        
+        .tag.yellow { background-color: #FFAB00; color: #172B4D; }
+        .tag.orange { background-color: #FF7452; color: white; } /* Local Mars looks reddish orange */
+        .tag.blue { background-color: #4C9AFF; color: white; }
+        .tag.purple { background-color: #6554C0; color: white; }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .priority-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .priority-high { color: #FF5630; }
+        .priority-med { color: #FFAB00; }
+
+        .story-points {
+            background-color: #EBECF0;
+            color: var(--text-gray);
+            border-radius: 10px; /* Pill shape */
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            height: 16px;
+            line-height: 14px;
+            display: inline-block;
+        }
+
+        .issue-id {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+        
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #DFE1E6;
+            /* Placeholder pattern */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="%236B778C"/></svg>');
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C1C7D0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A5ADBA;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Narrow Left Sidebar -->
+    <nav class="nav-primary">
+        <div class="logo">
+            <i class="fab fa-jira"></i>
+        </div>
+        <div class="nav-item"><i class="fas fa-search"></i></div>
+        <div class="nav-item"><i class="fas fa-plus"></i></div>
+        
+        <div class="bottom-actions">
+            <div class="nav-item"><i class="fas fa-question-circle"></i></div>
+            <div class="nav-item">
+                <div class="avatar" style="width:24px; height:24px; background: #0052CC;"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Project Sidebar -->
+    <nav class="nav-secondary">
+        <div class="project-info">
+            <div class="project-icon">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="project-details">
+                <h2>Teams in Space</h2>
+                <span>Software project</span>
+            </div>
+        </div>
+
+        <ul class="menu-list">
+            <li class="menu-item"><i class="fas fa-stream"></i> Backlog</li>
+            <li class="menu-item active"><i class="fas fa-columns"></i> Board</li>
+            <li class="menu-item"><i class="fas fa-chart-line"></i> Reports</li>
+            <li class="menu-item"><i class="fas fa-list-ul"></i> Releases</li>
+            <li class="menu-item"><i class="fas fa-cube"></i> Components</li>
+            <li class="menu-item"><i class="fas fa-check-square"></i> Issues</li>
+            <li class="menu-item"><i class="fas fa-code"></i> Repository</li>
+            <div class="divider"></div>
+            <li class="menu-item"><i class="fas fa-plus-square"></i> Add item</li>
+            <li class="menu-item"><i class="fas fa-cog"></i> Settings</li>
+        </ul>
+    </nav>
+
+    <!-- 3. Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="header-top">
+                <h1>Board</h1>
+                <div class="header-actions">
+                    <button class="btn btn-gray">Release</button>
+                    <button class="btn btn-transparent"><i class="fas fa-ellipsis-h"></i></button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="">
+                </div>
+                <div class="dropdown-trigger">
+                    Quick Filters <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>
+                </div>
+                <div class="dropdown-trigger">
+                    <!-- User avatars would go here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="board-container">
+            
+            <!-- Column 1: TO DO -->
+            <div class="column" id="col-todo">
+                <div class="column-header">
+                    <span>TO DO <span class="count">3</span></span>
+                </div>
+                <div class="column-content">
+                    <!-- Card 1 -->
+                    <div class="card" draggable="true">
+                        <div class="card-text">Engage Jupiter Express for outer solar system travel</div>
+                        <div class="tag yellow">Space Travel Partners</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">5</span>
+                            </div>
+                            <span class="issue-id">TIS-25</span>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card" draggable="true">
+                        <div class="card-text">Create 90 day plans for all departments in the Mars Office</div>
+                        <div class="tag orange">Local Mars Office</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high" style="color: #cf2828"><i class="fas fa-ban"></i></span> <!-- Blocker icon approx -->
+                                <span class="story-points">9</span>
+                            </div>
+                            <span class="issue-id">TIS-12</span>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="card" draggable="true">
+                        <div class="card-text">Engage Saturn's Rings Resort as a preferred provider</div>
+                        <div class="tag yellow">Space Travel Partners</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">3</span>
+                            </div>
+                            <span class="issue-id">TIS-17</span>
+                        </div>
+                    </div>
+                     <!-- Card 4 -->
+                     <div class="card" draggable="true">
+                        <div class="card-text">Enable Speedy SpaceCraft as the preferred</div>
+                        <div class="tag blue">SeeSpaceEZ Plus</div>
+                        <!-- Footer omitted for brevity per screenshot cut off -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: IN PROGRESS -->
+            <div class="column" id="col-progress">
+                <div class="column-header">
+                    <span>IN PROGRESS <span class="count">3</span></span>
+                </div>
+                <div class="column-content">
+                    <div class="card" draggable="true">
+                        <div class="card-text">Requesting avaliable flights is now taking > 5 seconds</div>
+                        <div class="tag blue">SeeSpaceEZ Plus</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">3</span>
+                            </div>
+                            <span class="issue-id">TIS-8</span>
+                        </div>
+                    </div>
+
+                    <div class="card" draggable="true">
+                        <div class="card-text">Engage Saturn Shuttle Lines for group tours</div>
+                        <div class="tag yellow">Space Travel Partners</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">4</span>
+                            </div>
+                            <span class="issue-id">TIS-15</span>
+                        </div>
+                    </div>
+
+                    <div class="card" draggable="true">
+                        <div class="card-text">Establish a catering vendor to provide meal service</div>
+                        <div class="tag orange">Local Mars Office</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">4</span>
+                            </div>
+                            <span class="issue-id">TIS-15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: CODE REVIEW -->
+            <div class="column" id="col-review">
+                <div class="column-header">
+                    <span>CODE REVIEW <span class="count">2</span></span>
+                </div>
+                <div class="column-content">
+                    <div class="card" draggable="true">
+                        <div class="card-text">Register with the Mars Ministry of Revenue</div>
+                        <div class="tag orange">Local Mars Office</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">3</span>
+                            </div>
+                            <span class="issue-id">TIS-11</span>
+                        </div>
+                    </div>
+
+                    <div class="card" draggable="true">
+                        <div class="card-text">Draft network plan for Mars Office</div>
+                        <div class="tag orange">Local Mars Office</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">3</span>
+                            </div>
+                            <span class="issue-id">TIS-15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 4: DONE -->
+            <div class="column" id="col-done">
+                <div class="column-header">
+                    <span>DONE <span class="count">3</span></span>
+                </div>
+                <div class="column-content">
+                    <div class="card" draggable="true">
+                        <div class="card-text">Homepage footer uses an inline style - should use a class</div>
+                        <div class="tag purple">Large Team Support</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                            </div>
+                            <span class="issue-id">TIS-68</span>
+                        </div>
+                    </div>
+
+                    <div class="card" draggable="true">
+                        <div class="card-text">Engage JetShuttle SpaceWays for travel</div>
+                        <div class="tag yellow">Space Travel Partners</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon priority-high"><i class="fas fa-angle-double-up"></i></span>
+                                <span class="story-points">5</span>
+                            </div>
+                            <span class="issue-id">TIS-23</span>
+                        </div>
+                    </div>
+
+                    <div class="card" draggable="true">
+                        <div class="card-text">Engage Saturn Shuttle Lines for group tours</div>
+                        <div class="tag yellow">Space Travel Partners</div>
+                        <div class="card-footer">
+                            <div class="footer-left">
+                                <span class="priority-icon"><i class="fas fa-arrow-up" style="color: #cf2828"></i></span>
+                            </div>
+                            <span class="issue-id">TIS-15</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Simple Drag and Drop Implementation
+        const cards = document.querySelectorAll('.card');
+        const lists = document.querySelectorAll('.column-content');
+
+        let draggedItem = null;
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', function () {
+                draggedItem = this;
+                setTimeout(() => {
+                    this.style.display = 'none';
+                }, 0);
+            });
+
+            card.addEventListener('dragend', function () {
+                setTimeout(() => {
+                    draggedItem.style.display = 'block';
+                    draggedItem = null;
+                    updateCounts();
+                }, 0);
+            });
+        });
+
+        lists.forEach(list => {
+            list.addEventListener('dragover', function (e) {
+                e.preventDefault(); // allow drop
+                this.style.backgroundColor = '#E3E4E6'; // highlight effect
+            });
+
+            list.addEventListener('dragleave', function (e) {
+                this.style.backgroundColor = ''; // remove highlight
+            });
+
+            list.addEventListener('drop', function (e) {
+                this.append(draggedItem);
+                this.style.backgroundColor = '';
+            });
+        });
+
+        // Function to update the counts in headers (Visual nice-to-have)
+        function updateCounts() {
+            document.querySelectorAll('.column').forEach(col => {
+                const countSpan = col.querySelector('.count');
+                const cardCount = col.querySelectorAll('.card').length;
+                if(countSpan) countSpan.innerText = cardCount;
+            });
+        }
+
+        // Initialize counts on load
+        updateCounts();
+    </script>
+</body>
+</html>

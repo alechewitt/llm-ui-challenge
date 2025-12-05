@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document1 - Word</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            height: 32px;
+            background: #e8e6e6;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            justify-content: space-between;
+            border-bottom: 1px solid #d1d1d1;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28c940; }
+
+        .title-center {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .autosave {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .toggle {
+            width: 32px;
+            height: 18px;
+            background: #ccc;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .toggle-slider {
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        .title-icons {
+            display: flex;
+            gap: 8px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .title-text {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .search-box {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            height: 28px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            border-bottom: 1px solid #d1d1d1;
+            gap: 20px;
+        }
+
+        .menu-item {
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .menu-item.active {
+            font-weight: 600;
+        }
+
+        .menu-right {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-share {
+            background: #2b579a;
+            color: white;
+            border: none;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: #f5f5f5;
+            padding: 8px 10px;
+            border-bottom: 1px solid #d1d1d1;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            border-right: 1px solid #d1d1d1;
+            padding-right: 10px;
+        }
+
+        .toolbar-section:last-child {
+            border-right: none;
+        }
+
+        .toolbar-btn {
+            padding: 5px 8px;
+            background: #f5f5f5;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+        }
+
+        .toolbar-btn:hover {
+            background: #e1e1e1;
+            border-color: #ccc;
+        }
+
+        .toolbar-btn.active {
+            background: #d1d1d1;
+        }
+
+        select {
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: white;
+            font-size: 13px;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .icon-btn-label {
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        /* Editor */
+        .editor-container {
+            background: #ebebeb;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .page {
+            background: white;
+            width: 816px;
+            min-height: 1056px;
+            margin: 0 auto;
+            padding: 96px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .page:focus {
+            outline: none;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 22px;
+            background: #f5f5f5;
+            border-top: 1px solid #d1d1d1;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 11px;
+            color: #666;
+            gap: 20px;
+        }
+
+        .status-right {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zoom-slider {
+            width: 100px;
+        }
+
+        .color-indicator {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Bar -->
+    <div class="title-bar">
+        <div class="window-controls">
+            <div class="window-btn close"></div>
+            <div class="window-btn minimize"></div>
+            <div class="window-btn maximize"></div>
+        </div>
+        <div class="title-center">
+            <div class="autosave">
+                AutoSave
+                <div class="toggle" onclick="toggleAutoSave()">
+                    <div class="toggle-slider" id="toggleSlider"></div>
+                </div>
+            </div>
+            <div class="title-icons">
+                <span>🏠</span>
+                <span>💾</span>
+                <span>↶</span>
+                <span>↷</span>
+                <span>🖨️</span>
+                <span>⋯</span>
+            </div>
+        </div>
+        <div class="title-text">
+            <span>Document1</span>
+            <span style="color: #2b579a;">🔒 Confidential*</span>
+        </div>
+        <div class="search-box">
+            🔍 Search (Cmd + Ctrl + U)
+        </div>
+    </div>
+
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-item active">Home</div>
+        <div class="menu-item">Insert</div>
+        <div class="menu-item">Draw</div>
+        <div class="menu-item">Design</div>
+        <div class="menu-item">Layout</div>
+        <div class="menu-item">References</div>
+        <div class="menu-item">Mailings</div>
+        <div class="menu-item">Review</div>
+        <div class="menu-item">View</div>
+        <div class="menu-right">
+            <button class="btn-with-icon">💬 Comments</button>
+            <button class="btn-with-icon">✏️ Editing ▼</button>
+            <button class="btn-with-icon btn-share">↗ Share ▼</button>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-section">
+            <div class="icon-btn">
+                <div style="font-size: 20px;">📋</div>
+                <div class="icon-btn-label">Paste</div>
+            </div>
+        </div>
+        
+        <div class="toolbar-section">
+            <select>
+                <option>Calibri (Bo...</option>
+            </select>
+            <select>
+                <option>12</option>
+            </select>
+            <button class="toolbar-btn">A↑</button>
+            <button class="toolbar-btn">A↓</button>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn">Aa ▼</button>
+            <button class="toolbar-btn">⚡</button>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn"><b>B</b></button>
+            <button class="toolbar-btn"><i>I</i></button>
+            <button class="toolbar-btn"><u>U</u></button>
+            <button class="toolbar-btn">▼</button>
+            <button class="toolbar-btn"><s>S</s></button>
+            <button class="toolbar-btn">x₂</button>
+            <button class="toolbar-btn">x²</button>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn">A<span class="color-indicator" style="background: blue;"></span></button>
+            <button class="toolbar-btn">▼</button>
+            <button class="toolbar-btn">🖍️<span class="color-indicator" style="background: yellow;"></span></button>
+            <button class="toolbar-btn">▼</button>
+            <button class="toolbar-btn">A<span class="color-indicator" style="background: red;"></span></button>
+            <button class="toolbar-btn">▼</button>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn">≡</button>
+            <button class="toolbar-btn">≡</button>
+            <button class="toolbar-btn">≡</button>
+            <button class="toolbar-btn">≡</button>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="toolbar-btn">⋮⋮⋮</button>
+            <button class="toolbar-btn">▼</button>
+            <button class="toolbar-btn">↕</button>
+            <button class="toolbar-btn">▼</button>
+        </div>
+
+        <div class="toolbar-section">
+            <div class="icon-btn">
+                <div style="color: #2b579a; font-weight: bold;">A↗</div>
+                <div class="icon-btn-label">Styles</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px;">🖌️</div>
+                <div class="icon-btn-label">Styles Pane</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px;">📝</div>
+                <div class="icon-btn-label">Dictate</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px;">✏️</div>
+                <div class="icon-btn-label">Sensitivity</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px; color: #ff6b35;">⊞</div>
+                <div class="icon-btn-label">Add-ins</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px; color: #2b579a;">🖊️</div>
+                <div class="icon-btn-label">Editor</div>
+            </div>
+            <div class="icon-btn">
+                <div style="font-size: 18px; background: purple; color: white; border-radius: 3px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">∞</div>
+                <div class="icon-btn-label">Amazon Quick Suite</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-container">
+        <div class="page" contenteditable="true" id="editor">
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span>Page 1 of 1</span>
+        <span>0 words</span>
+        <span>English (United States)</span>
+        <span>🧑 Accessibility: Good to go</span>
+        <div class="status-right">
+            <span>📱 Focus</span>
+            <span>💾</span>
+            <span>🌐</span>
+            <span>≡</span>
+            <span>💬</span>
+            <span>−</span>
+            <input type="range" class="zoom-slider" min="10" max="500" value="185">
+            <span>+</span>
+            <span>185%</span>
+        </div>
+    </div>
+
+    <script>
+        let autoSaveOn = false;
+
+        function toggleAutoSave() {
+            autoSaveOn = !autoSaveOn;
+            const slider = document.getElementById('toggleSlider');
+            if (autoSaveOn) {
+                slider.style.left = '16px';
+                slider.parentElement.style.background = '#28c940';
+            } else {
+                slider.style.left = '2px';
+                slider.parentElement.style.background = '#ccc';
+            }
+        }
+
+        // Word count functionality
+        const editor = document.getElementById('editor');
+        editor.addEventListener('input', function() {
+            const text = this.innerText.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.querySelector('.status-bar span:nth-child(2)').textContent = words + ' words';
+        });
+
+        // Focus on editor
+        editor.focus();
+    </script>
+</body>
+</html>

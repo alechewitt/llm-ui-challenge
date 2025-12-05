@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Google Sheets Interface</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    :root {
+      --toolbar-bg: #f0f0f0;
+      --header-bg: #fff;
+      --grid-line: #e0e0e0;
+      --selected-bg: #d6eaf8;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--grid-line);
+      height: 56px;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sheet-icon {
+      background: #0f9d58;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: #5f6368;
+    }
+
+    .share-btn {
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .profile-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #4285f4;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+    }
+
+    .menu-bar {
+      display: flex;
+      padding: 0 16px;
+      height: 32px;
+      align-items: center;
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--grid-line);
+    }
+
+    .menu-item {
+      margin-right: 16px;
+      cursor: pointer;
+      color: #202124;
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      padding: 8px 16px;
+      background-color: var(--toolbar-bg);
+      border-bottom: 1px solid var(--grid-line);
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 8px;
+      border: 1px solid transparent;
+      padding: 2px;
+      border-radius: 2px;
+    }
+
+    .toolbar-group:hover {
+      border: 1px solid var(--grid-line);
+      background-color: #e8e8e8;
+    }
+
+    .toolbar-btn {
+      background: none;
+      border: none;
+      padding: 4px 6px;
+      border-radius: 2px;
+      cursor: pointer;
+      color: #5f6368;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .toolbar-btn:hover {
+      background-color: #e8e8e8;
+    }
+
+    .toolbar-btn:active {
+      background-color: #dcdcdc;
+    }
+
+    .toolbar-btn.active {
+      background-color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .toolbar-input {
+      border: 1px solid var(--grid-line);
+      border-radius: 2px;
+      padding: 2px 6px;
+      font-size: 14px;
+      width: 40px;
+      text-align: center;
+    }
+
+    .formula-bar {
+      display: flex;
+      align-items: center;
+      padding: 4px 16px;
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--grid-line);
+      height: 32px;
+    }
+
+    .cell-ref {
+      border: 1px solid var(--grid-line);
+      border-radius: 2px;
+      padding: 2px 5px;
+      margin-right: 8px;
+      font-size: 14px;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .formula-input {
+      flex: 1;
+      border: 1px solid var(--grid-line);
+      border-radius: 2px;
+      padding: 2px 6px;
+      font-size: 14px;
+      height: 24px;
+    }
+
+    .spreadsheet-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 56px - 32px - 32px - 32px);
+      overflow: hidden;
+    }
+
+    .grid-header {
+      display: flex;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: var(--header-bg);
+    }
+
+    .grid-body {
+      flex: 1;
+      overflow: auto;
+      position: relative;
+    }
+
+    .row {
+      display: flex;
+      min-height: 30px;
+      height: 30px;
+    }
+
+    .cell {
+      border: 1px solid var(--grid-line);
+      box-sizing: border-box;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 100px;
+      height: 30px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header-cell {
+      background-color: var(--header-bg);
+      font-weight: bold;
+      border-bottom: 1px solid var(--grid-line);
+      height: 30px;
+      line-height: 30px;
+    }
+
+    .row-header {
+      background-color: var(--header-bg);
+      font-weight: bold;
+      border-right: 1px solid var(--grid-line);
+      width: 40px;
+      text-align: center;
+      position: sticky;
+      left: 0;
+      z-index: 5;
+    }
+
+    .grid-cell {
+      background-color: white;
+      cursor: pointer;
+    }
+
+    .grid-cell.selected {
+      background-color: var(--selected-bg);
+      border-color: #000;
+      z-index: 1;
+    }
+
+    .sheet-tabs {
+      display: flex;
+      align-items: center;
+      padding: 4px 16px;
+      background-color: var(--header-bg);
+      border-top: 1px solid var(--grid-line);
+      height: 32px;
+    }
+
+    .add-sheet {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #5f6368;
+    }
+
+    .sheet-tab {
+      background: #e8e8e8;
+      border: 1px solid var(--grid-line);
+      border-radius: 2px;
+      padding: 4px 12px;
+      margin-right: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sheet-tab.active {
+      background: white;
+      border-bottom: 2px solid #4285f4;
+    }
+
+    .sheet-tab-dropdown {
+      margin-left: 4px;
+      color: #5f6368;
+    }
+
+    .scrollbar {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      height: 10px;
+      width: 100%;
+      background: #e0e0e0;
+      border-top: 1px solid var(--grid-line);
+    }
+
+    .scrollbar-handle {
+      height: 100%;
+      width: 100px;
+      background: #bfbfbf;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="sheet-icon">S</div>
+      <span class="title">Untitled spreadsheet</span>
+      <span>★</span>
+      <span>📁</span>
+      <span>☁️</span>
+    </div>
+    <div class="top-bar-right">
+      <button class="icon-btn">🕒</button>
+      <button class="icon-btn">💬</button>
+      <button class="icon-btn">🎥</button>
+      <button class="share-btn">Share</button>
+      <button class="icon-btn">✨</button>
+      <div class="profile-img">U</div>
+    </div>
+  </div>
+
+  <div class="menu-bar">
+    <div class="menu-item">File</div>
+    <div class="menu-item">Edit</div>
+    <div class="menu-item">View</div>
+    <div class="menu-item">Insert</div>
+    <div class="menu-item">Format</div>
+    <div class="menu-item">Data</div>
+    <div class="menu-item">Tools</div>
+    <div class="menu-item">Extensions</div>
+    <div class="menu-item">Help</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <button class="toolbar-btn">🔍</button>
+      <button class="toolbar-btn">↩</button>
+      <button class="toolbar-btn">↪</button>
+      <button class="toolbar-btn">🖨️</button>
+      <button class="toolbar-btn">🔍</button>
+      <button class="toolbar-btn">100%</button>
+    </div>
+    
+    <div class="toolbar-group">
+      <button class="toolbar-btn">£</button>
+      <button class="toolbar-btn">%</button>
+      <button class="toolbar-btn">.0</button>
+      <button class="toolbar-btn">.00</button>
+      <button class="toolbar-btn">123</button>
+    </div>
+    
+    <div class="toolbar-group">
+      <select class="toolbar-input">
+        <option>Arial</option>
+      </select>
+      <select class="toolbar-input">
+        <option>10</option>
+      </select>
+      <button class="toolbar-btn">+</button>
+      <button class="toolbar-btn">-</button>
+    </div>
+    
+    <div class="toolbar-group">
+      <button class="toolbar-btn">B</button>
+      <button class="toolbar-btn">I</button>
+      <button class="toolbar-btn">U</button>
+      <button class="toolbar-btn">A̲</button>
+      <button class="toolbar-btn">A</button>
+      <button class="toolbar-btn">🎨</button>
+      <button class="toolbar-btn"> Borders</button>
+    </div>
+    
+    <div class="toolbar-group">
+      <button class="toolbar-btn">:)</button>
+    </div>
+  </div>
+
+  <div class="formula-bar">
+    <div class="cell-ref">A1</div>
+    <input type="text" class="formula-input">
+  </div>
+
+  <div class="spreadsheet-container">
+    <div class="grid-header">
+      <div class="row">
+        <div class="cell header-cell"></div>
+        <div class="cell header-cell">A</div>
+        <div class="cell header-cell">B</div>
+        <div class="cell header-cell">C</div>
+        <div class="cell header-cell">D</div>
+        <div class="cell header-cell">E</div>
+        <div class="cell header-cell">F</div>
+        <div class="cell header-cell">G</div>
+        <div class="cell header-cell">H</div>
+        <div class="cell header-cell">I</div>
+        <div class="cell header-cell">J</div>
+        <div class="cell header-cell">K</div>
+      </div>
+    </div>
+    
+    <div class="grid-body">
+      <!-- Generated by JavaScript -->
+    </div>
+    
+    <div class="scrollbar">
+      <div class="scrollbar-handle"></div>
+    </div>
+  </div>
+
+  <div class="sheet-tabs">
+    <button class="add-sheet">+</button>
+    <div class="sheet-tab active">
+      <span>Sheet1</span>
+      <span class="sheet-tab-dropdown">▼</span>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const gridBody = document.querySelector('.grid-body');
+      const cellRef = document.querySelector('.cell-ref');
+      let selectedCell = null;
+      
+      // Create rows and cells
+      for (let i = 1; i <= 20; i++) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        
+        // Row header
+        const rowHeader = document.createElement('div');
+        rowHeader.className = 'cell row-header';
+        rowHeader.textContent = i;
+        row.appendChild(rowHeader);
+        
+        // Grid cells
+        for (let j = 0; j < 11; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell grid-cell';
+          cell.dataset.cell = String.fromCharCode(65 + j) + i;
+          
+          cell.addEventListener('click', function() {
+            if (selectedCell) {
+              selectedCell.classList.remove('selected');
+            }
+            this.classList.add('selected');
+            selectedCell = this;
+            cellRef.textContent = this.dataset.cell;
+          });
+          
+          row.appendChild(cell);
+        }
+        
+        gridBody.appendChild(row);
+      }
+      
+      // Set default selected cell (A1)
+      document.querySelector('.grid-cell').classList.add('selected');
+      selectedCell = document.querySelector('.grid-cell');
+      cellRef.textContent = 'A1';
+    });
+  </script>
+</body>
+</html>

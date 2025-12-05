@@ -1,1 +1,0 @@
-Create a simple interactive web page that helps non-technical users understand how LLMs work. There should be no more than three pages.

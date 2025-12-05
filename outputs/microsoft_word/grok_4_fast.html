@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Word</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .window-frame {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+        }
+
+        .title-bar {
+            background-color: #ffffff;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+            border-bottom: 1px solid #ccc;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .title-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .window-btn.close { background-color: #e81123; }
+        .window-btn.min { background-color: #f9a825; }
+        .window-btn.max { background-color: #7cbb4f; }
+
+        .ribbon-container {
+            background-color: #ffffff;
+            border-bottom: 1px solid #ccc;
+            flex-shrink: 0;
+        }
+
+        .ribbon-tabs {
+            display: flex;
+            background-color: #f8f9fa;
+            padding: 0 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .ribbon-tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #333;
+            border: none;
+            background: none;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .ribbon-tab.active {
+            border-bottom-color: #0078d4;
+            background-color: #ffffff;
+        }
+
+        .ribbon-tab:hover {
+            background-color: #e9ecef;
+        }
+
+        .ribbon-panel {
+            display: none;
+            padding: 10px;
+            background-color: #ffffff;
+        }
+
+        .ribbon-panel.active {
+            display: flex;
+            gap: 20px;
+        }
+
+        .ribbon-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            min-width: 120px;
+        }
+
+        .group-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            padding: 0 5px;
+        }
+
+        .group-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn.primary {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background-color: #106ebe;
+        }
+
+        .document-area {
+            flex: 1;
+            position: relative;
+            background-color: #ffffff;
+            overflow: auto;
+        }
+
+        .document {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 1in auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 1in;
+            font-family: 'Calibri', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            outline: none;
+        }
+
+        .status-bar {
+            height: 25px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .status-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .zoom-slider {
+            width: 100px;
+            height: 4px;
+            background-color: #ccc;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .zoom-handle {
+            width: 12px;
+            height: 12px;
+            background-color: #0078d4;
+            border-radius: 50%;
+            position: absolute;
+            top: -4px;
+            left: 50px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="window-frame">
+        <div class="title-bar">
+            <div class="title-bar-left">
+                <span>Document1 - Word</span>
+            </div>
+            <div class="title-bar-right">
+                <div class="window-controls">
+                    <div class="window-btn min"></div>
+                    <div class="window-btn max"></div>
+                    <div class="window-btn close"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ribbon-container">
+            <div class="ribbon-tabs">
+                <button class="ribbon-tab active" data-tab="home">File</button>
+                <button class="ribbon-tab" data-tab="home">Home</button>
+                <button class="ribbon-tab" data-tab="insert">Insert</button>
+                <button class="ribbon-tab" data-tab="design">Design</button>
+                <button class="ribbon-tab" data-tab="layout">Layout</button>
+                <button class="ribbon-tab" data-tab="references">References</button>
+                <button class="ribbon-tab" data-tab="mailings">Mailings</button>
+                <button class="ribbon-tab" data-tab="review">Review</button>
+                <button class="ribbon-tab" data-tab="view">View</button>
+                <button class="ribbon-tab" data-tab="help">Help</button>
+                <div style="flex: 1;"></div>
+                <button class="ribbon-tab">Share</button>
+                <input type="text" placeholder="Search" style="padding: 5px; border: 1px solid #ccc; border-radius: 3px; margin-left: 10px;">
+            </div>
+
+            <div class="ribbon-panel active" id="home-panel">
+                <div class="ribbon-group">
+                    <div class="group-label">Clipboard</div>
+                    <div class="group-buttons">
+                        <button class="btn">Paste</button>
+                        <button class="btn">Cut</button>
+                        <button class="btn">Copy</button>
+                    </div>
+                </div>
+                <div class="ribbon-group">
+                    <div class="group-label">Font</div>
+                    <div class="group-buttons">
+                        <select style="padding: 2px; font-size: 12px;">
+                            <option>Calibri</option>
+                        </select>
+                        <input type="number" value="11" style="width: 40px; padding: 2px; font-size: 12px;">
+                        <button class="btn">B</button>
+                        <button class="btn">I</button>
+                        <button class="btn">U</button>
+                    </div>
+                </div>
+                <div class="ribbon-group">
+                    <div class="group-label">Paragraph</div>
+                    <div class="group-buttons">
+                        <button class="btn">Bullets</button>
+                        <button class="btn">Numbering</button>
+                        <button class="btn">Multilevel</button>
+                        <button class="btn">Decrease Indent</button>
+                        <button class="btn">Increase Indent</button>
+                    </div>
+                </div>
+                <div class="ribbon-group">
+                    <div class="group-label">Styles</div>
+                    <div class="group-buttons">
+                        <button class="btn primary" style="font-size: 10px;">Normal</button>
+                        <button class="btn">Heading 1</button>
+                        <button class="btn">Heading 2</button>
+                    </div>
+                </div>
+                <div style="flex: 1;"></div>
+                <div class="ribbon-group">
+                    <div class="group-label">Editing</div>
+                    <div class="group-buttons">
+                        <button class="btn">Find</button>
+                        <button class="btn">Replace</button>
+                        <button class="btn">Select</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ribbon-panel" id="insert-panel">
+                <div class="ribbon-group">
+                    <div class="group-label">Pages</div>
+                    <div class="group-buttons">
+                        <button class="btn">Cover Page</button>
+                        <button class="btn">Blank Page</button>
+                        <button class="btn">Page Break</button>
+                    </div>
+                </div>
+                <!-- More groups for Insert tab -->
+                <div style="flex: 1;"></div>
+            </div>
+
+            <!-- Other panels can be added similarly, but keeping minimal -->
+        </div>
+
+        <div class="document-area">
+            <div class="document" contenteditable="true">
+                <p>Ready</p>
+                <p>&nbsp;</p>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-left">
+                <span>Page 1 of 1</span>
+                <span>Words: 1</span>
+                <span>Characters: 5</span>
+            </div>
+            <div class="status-right">
+                <span>English (United States)</span>
+                <span>Accessibility: Ready to go</span>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span>100%</span>
+                    <div class="zoom-slider">
+                        <div class="zoom-handle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.ribbon-tab');
+        const panels = document.querySelectorAll('.ribbon-panel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab || 'home';
+                const targetPanel = document.getElementById(targetTab + '-panel') || document.getElementById('home-panel');
+
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+
+                tab.classList.add('active');
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+
+        // Simulate cursor focus
+        const doc = document.querySelector('.document');
+        doc.focus();
+    </script>
+</body>
+</html>

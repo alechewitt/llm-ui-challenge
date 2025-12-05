@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Board - Teams in Space</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f4f5f7;
+            min-height: 100vh;
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: 60px;
+            background-color: #0747a6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 16px;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .left-sidebar .logo {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 24px;
+        }
+
+        .left-sidebar .icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .left-sidebar .icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .left-sidebar .icon svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .help-icon {
+            margin-top: auto;
+            margin-bottom: 16px;
+        }
+
+        /* Navigation Sidebar */
+        .nav-sidebar {
+            width: 240px;
+            background-color: #fafbfc;
+            border-right: 1px solid #dfe1e6;
+            padding: 16px 0;
+            margin-left: 60px;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .project-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+        }
+
+        .project-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            border-radius: 4px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .project-info h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #172b4d;
+        }
+
+        .project-info p {
+            font-size: 12px;
+            color: #6b778c;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            color: #42526e;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background-color: #ebecf0;
+        }
+
+        .nav-item.active {
+            background-color: #e4f0ff;
+            color: #0052cc;
+            border-left: 3px solid #0052cc;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            fill: currentColor;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .board-header h1 {
+            font-size: 24px;
+            color: #172b4d;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .release-btn {
+            padding: 8px 16px;
+            background-color: #f4f5f7;
+            border: 1px solid #dfe1e6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #42526e;
+        }
+
+        .more-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #6b778c;
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #dfe1e6;
+            border-radius: 4px;
+            padding: 6px 12px;
+            background: white;
+        }
+
+        .search-box svg {
+            width: 18px;
+            height: 18px;
+            fill: #6b778c;
+        }
+
+        .quick-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #42526e;
+            cursor: pointer;
+        }
+
+        .quick-filters svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Board Columns */
+        .board {
+            display: flex;
+            gap: 16px;
+            min-width: max-content;
+        }
+
+        .column {
+            width: 280px;
+            min-width: 280px;
+            background-color: #f4f5f7;
+            border-radius: 4px;
+            padding: 8px;
+        }
+
+        .column-header {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .column-header h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #5e6c84;
+            text-transform: uppercase;
+        }
+
+        .column-header .count {
+            font-size: 12px;
+            color: #5e6c84;
+            margin-left: 8px;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            background-color: #f8f9fa;
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #172b4d;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .tag-space-travel {
+            background-color: #0052cc;
+        }
+
+        .tag-seespace {
+            background-color: #ff991f;
+        }
+
+        .tag-local-mars {
+            background-color: #ff5630;
+        }
+
+        .tag-large-team {
+            background-color: #ff991f;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .priority {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .priority svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .priority-high svg {
+            fill: #ff5630;
+        }
+
+        .priority-medium svg {
+            fill: #ff991f;
+        }
+
+        .story-points {
+            font-size: 12px;
+            color: #5e6c84;
+            background-color: #f4f5f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .card-id {
+            font-size: 12px;
+            color: #5e6c84;
+        }
+
+        .blocked-icon svg {
+            fill: #ff5630;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Sidebar -->
+    <div class="left-sidebar">
+        <div class="logo">
+            <svg viewBox="0 0 32 32" fill="white">
+                <path d="M16 2L4 8v8c0 7.5 5.1 14.5 12 16 6.9-1.5 12-8.5 12-16V8L16 2zm0 4l8 4v6c0 5.5-3.4 10.5-8 12-4.6-1.5-8-6.5-8-12v-6l8-4z"/>
+            </svg>
+        </div>
+        <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        </div>
+        <div class="icon">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </div>
+        <div class="icon help-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        </div>
+    </div>
+
+    <!-- Navigation Sidebar -->
+    <div class="nav-sidebar">
+        <div class="project-header">
+            <div class="project-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+            </div>
+            <div class="project-info">
+                <h2>Teams in Space</h2>
+                <p>Software project</p>
+            </div>
+        </div>
+
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            Backlog
+        </div>
+        <div class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg>
+            Board
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            Reports
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Releases
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"/></svg>
+            Components
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            Issues
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+            Repository
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></svg>
+            Add item
+        </div>
+        <div class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            Settings
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="board-header">
+            <h1>Board</h1>
+            <div class="header-actions">
+                <button class="release-btn">Release</button>
+                <div class="more-btn">•••</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </div>
+            <div class="quick-filters">
+                Quick Filters
+                <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+        </div>
+
+        <div class="board" id="board">
+            <!-- Columns will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const boardData = {
+            columns: [
+                {
+                    id: 'todo',
+                    title: 'TO DO',
+                    count: 5,
+                    cards: [
+                        {
+                            id: 'TIS-25',
+                            title: 'Engage Jupiter Express for outer solar system travel',
+                            tag: 'SPACE TRAVEL PARTNERS',
+                            tagClass: 'tag-space-travel',
+                            priority: 'high',
+                            points: 5
+                        },
+                        {
+                            id: 'TIS-12',
+                            title: 'Create 90 day plans for all departments in the Mars Office',
+                            tag: 'Local Mars Office',
+                            tagClass: 'tag-local-mars',
+                            priority: 'blocked',
+                            points: 9
+                        },
+                        {
+                            id: 'TIS-17',
+                            title: 'Engage Saturn\'s Rings Resort as a preferred provider',
+                            tag: 'Space Travel Partners',
+                            tagClass: 'tag-space-travel',
+                            priority: 'high',
+                            points: 3
+                        },
+                        {
+                            id: 'TIS-XX',
+                            title: 'Enable Speedy SpaceCraft as the preferred',
+                            tag: 'SeeSpaceEZ Plus',
+                            tagClass: 'tag-seespace',
+                            priority: 'high',
+                            points: null
+                        }
+                    ]
+                },
+                {
+                    id: 'inprogress',
+                    title: 'IN PROGRESS',
+                    count: 5,
+                    cards: [
+                        {
+                            id: 'TIS-8',
+                            title: 'Requesting avaliable flights is now taking > 5 seconds',
+                            tag: 'SeeSpaceEZ Plus',
+                            tagClass: 'tag-seespace',
+                            priority: 'high',
+                            points: 3
+                        },
+                        {
+                            id: 'TIS-15',
+                            title: 'Engage Saturn Shuttle Lines for group tours',
+                            tag: 'Space Travel Partners',
+                            tagClass: 'tag-space-travel',
+                            priority: 'high',
+                            points: 4
+                        },
+                        {
+                            id: 'TIS-15',
+                            title: 'Establish a catering vendor to provide meal service',
+                            tag: 'Local Mars Office',
+                            tagClass: 'tag-local-mars',
+                            priority: 'high',
+                            points: 4
+                        },
+                        {
+                            id: 'TIS-XX',
+                            title: 'Engage Saturn Shuttle Lines for group tours',
+                            tag: 'Space Travel Partners',
+                            tagClass: 'tag-space-travel',
+                            priority: 'high',
+                            points: null
+                        }
+                    ]
+                },
+                {
+                    id: 'codereview',
+                    title: 'CODE REVIEW',
+                    count: 2,
+                    cards: [
+                        {
+                            id: 'TIS-11',
+                            title: 'Register with the Mars Ministry of Revenue',
+                            tag: 'Local Mars Office',
+                            tagClass: 'tag-local-mars',
+                            priority: 'high',
+                            points: 3
+                        },
+                        {
+                            id: 'TIS-15',
+                            title: 'Draft network plan for Mars Office',
+                            tag: 'Local Mars Office',
+                            tagClass: 'tag-local-mars',
+                            priority: 'high',
+                            points: 3
+                        }
+                    ]
+                },
+                {
+                    id: 'done',
+                    title: 'DONE',
+                    count: 8,
+                    cards: [
+                        {
+                            id: 'TIS-68',
+                            title: 'Homepage footer uses an inline style - should use a class',
+                            tag: 'Large Team Support',
+                            tagClass: 'tag-large-team',
+                            priority: 'high',
+                            points: null
+                        },
+                        {
+                            id: 'TIS-23',
+                            title: 'Engage JetShuttle SpaceWays for travel',
+                            tag: 'Space Travel Partners',
+                            tagClass: 'tag-space-travel',
+                            priority: 'high',
+                            points: 5
+                        },
+                        {
+                            id: 'TIS-15',
+                            title: 'Engage Saturn Shuttle Lines for group tours',
+                            tag: 'Space Travel Partners',
+                            tagClass: 'tag-space-travel',
+                            priority: 'medium',
+                            points: null
+                        },
+                        {
+                            id: 'TIS-XX',
+                            title: 'Establish a catering vendor to provide meal service',
+                            tag: 'Local Mars Office',
+                            tagClass: 'tag-local-mars',
+                            priority: 'high',
+                            points: null
+                        }
+                    ]
+                }
+            ]
+        };
+
+        function getPriorityIcon(priority) {
+            if (priority === 'blocked') {
+                return `<div class="priority blocked-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="#ff5630" stroke-width="2"/><path d="M8 12h8" stroke="#ff5630" stroke-width="2"/></svg>
+                </div>`;
+            } else if (priority === 'medium') {
+                return `<div class="priority priority-medium">
+                    <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h16z" fill="#ff991f"/></svg>
+                </div>`;
+            }
+            return `<div class="priority priority-high">
+                <svg viewBox="0 0 24 24"><path d="M12 4L4 12h5v8h6v-8h5z"/></svg>
+            </div>`;
+        }
+
+        function createCard(card) {
+            const cardElement = document.createElement('div');
+            cardElement.className = 'card';
+            cardElement.draggable = true;
+            cardElement.dataset.id = card.id;
+
+            cardElement.innerHTML = `
+                <div class="card-title">${card.title}</div>
+                <span class="card-tag ${card.tagClass}">${card.tag}</span>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        ${getPriorityIcon(card.priority)}
+                        ${card.points ? `<span class="story-points">${card.points}</span>` : ''}
+                    </div>
+                    <span class="card-id">${card.id}</span>
+                </div>
+            `;
+
+            cardElement.addEventListener('dragstart', handleDragStart);
+            cardElement.addEventListener('dragend', handleDragEnd);
+
+            return cardElement;
+        }
+
+        function createColumn(column) {
+            const columnElement = document.createElement('div');
+            columnElement.className = 'column';
+            columnElement.dataset.columnId = column.id;
+
+            columnElement.innerHTML = `
+                <div class="column-header">
+                    <h3>${column.title}</h3>
+                    <span class="count">${column.count}</span>
+                </div>
+            `;
+
+            const cardsContainer = document.createElement('div');
+            cardsContainer.className = 'cards-container';
+
+            column.cards.forEach(card => {
+                cardsContainer.appendChild(createCard(card));
+            });
+
+            columnElement.appendChild(cardsContainer);
+
+            columnElement.addEventListener('dragover', handleDragOver);
+            columnElement.addEventListener('drop', handleDrop);
+
+            return columnElement;
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+
+            boardData.columns.forEach(column => {
+                board.appendChild(createColumn(column));
+            });
+        }
+
+        let draggedCard = null;
+
+        function handleDragStart(e) {
+            draggedCard = this;
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            draggedCard = null;
+            document.querySelectorAll('.column').forEach(col => {
+                col.style.backgroundColor = '';
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.style.backgroundColor = '#e4f0ff';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.style.backgroundColor = '';
+            
+            if (draggedCard) {
+                const cardsContainer = this.querySelector('.cards-container');
+                cardsContainer.appendChild(draggedCard);
+                updateColumnCounts();
+            }
+        }
+
+        function updateColumnCounts() {
+            document.querySelectorAll('.column').forEach(column => {
+                const count = column.querySelectorAll('.card').length;
+                column.querySelector('.count').textContent = count;
+            });
+        }
+
+        // Initialize the board
+        renderBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled spreadsheet - Google Sheets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sheets-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+        }
+
+        .sheets-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .doc-title input {
+            font-size: 18px;
+            border: none;
+            outline: none;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .doc-title input:hover {
+            background: #f1f3f4;
+        }
+
+        .doc-title input:focus {
+            background: #fff;
+            border: 2px solid #1a73e8;
+        }
+
+        .doc-icons {
+            display: flex;
+            gap: 4px;
+            color: #5f6368;
+        }
+
+        .doc-icons span {
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .menu-item {
+            padding: 4px 8px;
+            font-size: 14px;
+            color: #3c4043;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .menu-item:hover {
+            background: #f1f3f4;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #5f6368;
+        }
+
+        .header-icon:hover {
+            background: #f1f3f4;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #c2e7ff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #001d35;
+        }
+
+        .share-btn:hover {
+            background: #b3d9f1;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            background: #f9fbfd;
+            border-bottom: 1px solid #e0e0e0;
+            gap: 4px;
+        }
+
+        .tool-btn {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #444;
+            font-size: 18px;
+            background: transparent;
+            border: none;
+        }
+
+        .tool-btn:hover {
+            background: #e8eaed;
+        }
+
+        .tool-separator {
+            width: 1px;
+            height: 20px;
+            background: #dadce0;
+            margin: 0 4px;
+        }
+
+        .tool-select {
+            height: 28px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 0 8px;
+            font-size: 13px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tool-select:hover {
+            background: #f1f3f4;
+        }
+
+        .zoom-select {
+            width: 70px;
+        }
+
+        .font-select {
+            width: 100px;
+        }
+
+        .font-size-select {
+            width: 50px;
+        }
+
+        /* Formula Bar */
+        .formula-bar {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cell-reference {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            min-width: 80px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .cell-reference input {
+            width: 50px;
+            border: none;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .formula-icon {
+            padding: 4px 12px;
+            color: #5f6368;
+            font-style: italic;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .formula-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 4px 8px;
+            font-size: 13px;
+        }
+
+        /* Spreadsheet */
+        .spreadsheet-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .spreadsheet {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+        }
+
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .row-header {
+            position: sticky;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            min-width: 46px;
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            border-right: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+        }
+
+        .col-header {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 2;
+            min-width: 100px;
+            width: 100px;
+            height: 24px;
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            font-weight: 500;
+            border-right: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+        }
+
+        .col-header.selected {
+            background: #d3e3fd;
+            color: #1967d2;
+        }
+
+        .corner-header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            background: #f8f9fa;
+            z-index: 3;
+            border-right: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+        }
+
+        td {
+            border-right: 1px solid #e2e2e2;
+            border-bottom: 1px solid #e2e2e2;
+            padding: 0;
+            height: 21px;
+            min-width: 100px;
+            width: 100px;
+        }
+
+        td.cell {
+            position: relative;
+        }
+
+        td.cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            padding: 2px 4px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            background: transparent;
+        }
+
+        td.selected {
+            outline: 2px solid #1a73e8;
+            outline-offset: -1px;
+        }
+
+        td.selected::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            bottom: -3px;
+            width: 6px;
+            height: 6px;
+            background: #1a73e8;
+            border-radius: 50%;
+            cursor: crosshair;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            background: #f9fbfd;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .add-sheet {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #444;
+            font-size: 20px;
+        }
+
+        .add-sheet:hover {
+            background: #e8eaed;
+        }
+
+        .sheet-menu {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #444;
+        }
+
+        .sheet-menu:hover {
+            background: #e8eaed;
+        }
+
+        .sheet-tabs {
+            display: flex;
+            margin-left: 8px;
+        }
+
+        .sheet-tab {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            color: #3c4043;
+        }
+
+        .sheet-tab.active {
+            background: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .sheet-tab-arrow {
+            font-size: 10px;
+            color: #5f6368;
+        }
+
+        .scrollbar-horizontal {
+            height: 12px;
+            background: #f1f3f4;
+            margin-left: 46px;
+            flex: 1;
+            border-radius: 6px;
+            margin-right: 12px;
+        }
+
+        .scrollbar-thumb {
+            height: 100%;
+            width: 40%;
+            background: #dadce0;
+            border-radius: 6px;
+        }
+
+        .scrollbar-thumb:hover {
+            background: #bdc1c6;
+        }
+
+        /* Right sidebar */
+        .right-sidebar {
+            position: fixed;
+            right: 0;
+            top: 100px;
+            width: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #fff;
+            border-left: 1px solid #e0e0e0;
+            height: calc(100vh - 150px);
+        }
+
+        .sidebar-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #5f6368;
+            font-size: 20px;
+        }
+
+        .sidebar-icon:hover {
+            background: #f1f3f4;
+        }
+
+        .sidebar-icon.calendar {
+            color: #1a73e8;
+        }
+
+        .sidebar-icon.contacts {
+            color: #1a73e8;
+        }
+
+        .sidebar-icon.maps {
+            color: #34a853;
+        }
+
+        .sidebar-expand {
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="sheets-icon">
+            <svg viewBox="0 0 48 48">
+                <path fill="#43a047" d="M37,45H11c-1.657,0-3-1.343-3-3V6c0-1.657,1.343-3,3-3h19l10,10v29C40,43.657,38.657,45,37,45z"/>
+                <path fill="#c8e6c9" d="M40,13H30c-1.1,0-2-0.9-2-2V3L40,13z"/>
+                <path fill="#2e7d32" d="M30,13h10L30,3V13z"/>
+                <path fill="#e8f5e9" d="M31,23H17c-0.552,0-1,0.448-1,1v12c0,0.552,0.448,1,1,1h14c0.552,0,1-0.448,1-1V24C32,23.448,31.552,23,31,23z"/>
+                <path fill="#43a047" d="M31,23H17c-0.552,0-1,0.448-1,1v2h16v-2C32,23.448,31.552,23,31,23z"/>
+                <path fill="#c8e6c9" d="M16,26h16v2H16V26z M16,30h16v2H16V30z M16,34h10v2H16V34z"/>
+            </svg>
+        </div>
+        <div class="doc-info">
+            <div class="doc-title">
+                <input type="text" value="Untitled spreadsheet" id="docTitle">
+                <div class="doc-icons">
+                    <span>☆</span>
+                    <span>📁</span>
+                    <span>☁</span>
+                </div>
+            </div>
+            <div class="menu-bar">
+                <span class="menu-item">File</span>
+                <span class="menu-item">Edit</span>
+                <span class="menu-item">View</span>
+                <span class="menu-item">Insert</span>
+                <span class="menu-item">Format</span>
+                <span class="menu-item">Data</span>
+                <span class="menu-item">Tools</span>
+                <span class="menu-item">Extensions</span>
+                <span class="menu-item">Help</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-icon">🕐</div>
+            <div class="header-icon">💬</div>
+            <div class="header-icon">📹</div>
+            <button class="share-btn">
+                <span>🔒</span>
+                Share
+            </button>
+            <div class="avatar"></div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="tool-btn">🔍</button>
+        <button class="tool-btn">↩</button>
+        <button class="tool-btn">↪</button>
+        <button class="tool-btn">🖨</button>
+        <button class="tool-btn">🎨</button>
+        <div class="tool-select zoom-select">
+            <span>100%</span>
+            <span>▼</span>
+        </div>
+        <div class="tool-separator"></div>
+        <button class="tool-btn">£</button>
+        <button class="tool-btn">%</button>
+        <button class="tool-btn">.0</button>
+        <button class="tool-btn">.00</button>
+        <button class="tool-btn">123</button>
+        <div class="tool-separator"></div>
+        <div class="tool-select font-select">
+            <span>Arial</span>
+            <span>▼</span>
+        </div>
+        <div class="tool-separator"></div>
+        <button class="tool-btn">−</button>
+        <div class="tool-select font-size-select">
+            <span>10</span>
+        </div>
+        <button class="tool-btn">+</button>
+        <div class="tool-separator"></div>
+        <button class="tool-btn"><b>B</b></button>
+        <button class="tool-btn"><i>I</i></button>
+        <button class="tool-btn"><s>S</s></button>
+        <button class="tool-btn"><u>A</u></button>
+        <div class="tool-separator"></div>
+        <button class="tool-btn">🪣</button>
+        <button class="tool-btn">⊞</button>
+        <button class="tool-btn">⧉</button>
+        <div class="tool-separator"></div>
+        <button class="tool-btn">⋮</button>
+    </div>
+
+    <!-- Formula Bar -->
+    <div class="formula-bar">
+        <div class="cell-reference">
+            <input type="text" value="A1" id="cellRef">
+            <span>▼</span>
+        </div>
+        <div class="formula-icon">fx</div>
+        <input type="text" class="formula-input" id="formulaInput">
+    </div>
+
+    <!-- Spreadsheet -->
+    <div class="spreadsheet-container">
+        <div class="spreadsheet" id="spreadsheet">
+            <table id="spreadsheetTable">
+                <thead>
+                    <tr id="headerRow">
+                        <th class="corner-header row-header"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="add-sheet">+</div>
+        <div class="sheet-menu">☰</div>
+        <div class="sheet-tabs">
+            <div class="sheet-tab active">
+                Sheet1
+                <span class="sheet-tab-arrow">▼</span>
+            </div>
+        </div>
+        <div class="scrollbar-horizontal">
+            <div class="scrollbar-thumb"></div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+        <div class="sidebar-icon calendar">📅</div>
+        <div class="sidebar-icon">☑</div>
+        <div class="sidebar-icon contacts">👤</div>
+        <div class="sidebar-icon maps">📍</div>
+        <div class="sidebar-expand">+</div>
+    </div>
+
+    <script>
+        const ROWS = 50;
+        const COLS = 26;
+        const data = {};
+        let selectedCell = null;
+        let selectedCol = null;
+
+        function getColLetter(index) {
+            return String.fromCharCode(65 + index);
+        }
+
+        function createSpreadsheet() {
+            const headerRow = document.getElementById('headerRow');
+            const tableBody = document.getElementById('tableBody');
+
+            // Create column headers
+            for (let i = 0; i < COLS; i++) {
+                const th = document.createElement('th');
+                th.className = 'col-header';
+                th.textContent = getColLetter(i);
+                th.dataset.col = i;
+                headerRow.appendChild(th);
+            }
+
+            // Create rows
+            for (let row = 1; row <= ROWS; row++) {
+                const tr = document.createElement('tr');
+                
+                // Row header
+                const rowHeader = document.createElement('td');
+                rowHeader.className = 'row-header';
+                rowHeader.textContent = row;
+                tr.appendChild(rowHeader);
+
+                // Cells
+                for (let col = 0; col < COLS; col++) {
+                    const td = document.createElement('td');
+                    td.className = 'cell';
+                    td.dataset.row = row;
+                    td.dataset.col = col;
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.dataset.row = row;
+                    input.dataset.col = col;
+
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                }
+
+                tableBody.appendChild(tr);
+            }
+
+            // Select A1 by default
+            selectCell(1, 0);
+        }
+
+        function selectCell(row, col) {
+            // Remove previous selection
+            if (selectedCell) {
+                selectedCell.classList.remove('selected');
+            }
+
+            // Remove previous column highlight
+            const colHeaders = document.querySelectorAll('.col-header');
+            colHeaders.forEach(h => h.classList.remove('selected'));
+
+            // Select new cell
+            const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+            if (cell) {
+                cell.classList.add('selected');
+                selectedCell = cell;
+
+                // Highlight column header
+                const colHeader = document.querySelector(`th[data-col="${col}"]`);
+                if (colHeader) {
+                    colHeader.classList.add('selected');
+                }
+
+                // Update cell reference
+                const cellRef = document.getElementById('cellRef');
+                cellRef.value = getColLetter(col) + row;
+
+                // Update formula bar
+                const formulaInput = document.getElementById('formulaInput');
+                const cellKey = `${row}-${col}`;
+                formulaInput.value = data[cellKey] || '';
+
+                // Focus the input
+                const input = cell.querySelector('input');
+                if (input) {
+                    input.focus();
+                }
+            }
+        }
+
+        function handleCellClick(e) {
+            const cell = e.target.closest('td.cell');
+            if (cell) {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                selectCell(row, col);
+            }
+        }
+
+        function handleCellInput(e) {
+            if (e.target.tagName === 'INPUT' && e.target.closest('td.cell')) {
+                const row = e.target.dataset.row;
+                const col = e.target.dataset.col;
+                const cellKey = `${row}-${col}`;
+                data[cellKey] = e.target.value;
+
+                // Update formula bar
+                const formulaInput = document.getElementById('formulaInput');
+                formulaInput.value = e.target.value;
+            }
+        }
+
+        function handleFormulaInput(e) {
+            if (selectedCell) {
+                const row = selectedCell.dataset.row;
+                const col = selectedCell.dataset.col;
+                const cellKey = `${row}-${col}`;
+                const input = selectedCell.querySelector('input');
+                if (input) {
+                    input.value = e.target.value;
+                    data[cellKey] = e.target.value;
+                }
+            }
+        }
+
+        function handleKeyDown(e) {
+            if (!selectedCell) return;
+
+            const row = parseInt(selectedCell.dataset.row);
+            const col = parseInt(selectedCell.dataset.col);
+
+            let newRow = row;
+            let newCol = col;
+
+            switch (e.key) {
+                case 'ArrowUp':
+                    newRow = Math.max(1, row - 1);
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    newRow = Math.min(ROWS, row + 1);
+                    e.preventDefault();
+                    break;
+                case 'ArrowLeft':
+                    if (!e.target.closest('.formula-input') && e.target.selectionStart === 0) {
+                        newCol = Math.max(0, col - 1);
+                        e.preventDefault();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (!e.target.closest('.formula-input') && e.target.selectionEnd === e.target.value.length) {
+                        newCol = Math.min(COLS - 1, col + 1);
+                        e.preventDefault();
+                    }
+                    break;
+                case 'Enter':
+                    newRow = Math.min(ROWS, row + 1);
+                    e.preventDefault();
+                    break;
+                case 'Tab':
+                    if (e.shiftKey) {
+                        newCol = Math.max(0, col - 1);
+                    } else {
+                        newCol = Math.min(COLS - 1, col + 1);
+                    }
+                    e.preventDefault();
+                    break;
+            }
+
+            if (newRow !== row || newCol !== col) {
+                selectCell(newRow, newCol);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            createSpreadsheet();
+
+            const spreadsheet = document.getElementById('spreadsheet');
+            spreadsheet.addEventListener('click', handleCellClick);
+            spreadsheet.addEventListener('input', handleCellInput);
+
+            const formulaInput = document.getElementById('formulaInput');
+            formulaInput.addEventListener('input', handleFormulaInput);
+
+            document.addEventListener('keydown', handleKeyDown);
+        });
+    </script>
+</body>
+</html>

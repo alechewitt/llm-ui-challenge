@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1e1e1e;
+            color: #cccccc;
+            overflow: hidden;
+        }
+
+        .window {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .title-bar {
+            background: #323233;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            justify-content: space-between;
+        }
+
+        .traffic-lights {
+            display: flex;
+            gap: 8px;
+        }
+
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .traffic-light.red { background: #ff5f56; }
+        .traffic-light.yellow { background: #ffbd2e; }
+        .traffic-light.green { background: #27c93f; }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .nav-button {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 8px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 600px;
+            background: #3c3c3c;
+            border: 1px solid #3c3c3c;
+            border-radius: 4px;
+            padding: 4px 12px;
+            color: #cccccc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            outline: none;
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .title-right-icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .activity-bar {
+            width: 50px;
+            background: #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+            gap: 20px;
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            color: #858585;
+        }
+
+        .activity-icon.active {
+            color: #ffffff;
+            border-left: 2px solid #007acc;
+        }
+
+        .activity-icon .badge {
+            position: absolute;
+            top: 0;
+            right: 8px;
+            background: #007acc;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #252526;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            color: #cccccc;
+        }
+
+        .explorer-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 8px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 13px;
+        }
+
+        .tree-item:hover {
+            background: #2a2d2e;
+        }
+
+        .tree-item .chevron {
+            width: 16px;
+            font-size: 10px;
+            color: #cccccc;
+            margin-right: 2px;
+        }
+
+        .tree-item .icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 6px;
+        }
+
+        .tree-item.indent-1 { padding-left: 20px; }
+        .tree-item.indent-2 { padding-left: 36px; }
+        .tree-item.indent-3 { padding-left: 52px; }
+
+        .tree-item .modified-indicator {
+            margin-left: auto;
+            color: #569cd6;
+            font-size: 16px;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #1e1e1e;
+        }
+
+        .tabs-bar {
+            background: #252526;
+            display: flex;
+            align-items: center;
+            height: 35px;
+            border-bottom: 1px solid #1e1e1e;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            height: 100%;
+            background: #2d2d2d;
+            border-right: 1px solid #1e1e1e;
+            cursor: pointer;
+            font-size: 13px;
+            color: #969696;
+        }
+
+        .tab.active {
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .tab .close {
+            margin-left: 4px;
+        }
+
+        .breadcrumb {
+            padding: 8px 15px;
+            font-size: 12px;
+            color: #999999;
+            background: #1e1e1e;
+            border-bottom: 1px solid #2d2d2d;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .git-info {
+            padding: 4px 15px;
+            font-size: 11px;
+            color: #858585;
+            background: #1e1e1e;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .editor {
+            flex: 1;
+            display: flex;
+            overflow: auto;
+        }
+
+        .line-numbers {
+            background: #1e1e1e;
+            color: #858585;
+            padding: 20px 10px;
+            text-align: right;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 22px;
+            user-select: none;
+            min-width: 50px;
+        }
+
+        .code-content {
+            flex: 1;
+            padding: 20px 20px 20px 10px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 22px;
+            white-space: pre;
+            color: #d4d4d4;
+        }
+
+        .keyword { color: #c586c0; }
+        .function { color: #dcdcaa; }
+        .string { color: #ce9178; }
+        .import { color: #c586c0; }
+        .tag { color: #4ec9b0; }
+        .attribute { color: #9cdcfe; }
+        .bracket { color: #ffd700; }
+        .component { color: #4ec9b0; }
+
+        .status-bar {
+            background: #007acc;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #ffffff;
+        }
+
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .section-header .chevron {
+            width: 16px;
+            font-size: 10px;
+            margin-right: 4px;
+        }
+
+        .toolbar-icons {
+            display: flex;
+            gap: 10px;
+            padding-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="traffic-lights">
+                <div class="traffic-light red"></div>
+                <div class="traffic-light yellow"></div>
+                <div class="traffic-light green"></div>
+            </div>
+            <div class="navigation">
+                <div class="nav-buttons">
+                    <button class="nav-button">←</button>
+                    <button class="nav-button">→</button>
+                </div>
+                <div class="search-bar">
+                    <span>🔍</span>
+                    <input type="text" value="claude-code-sdk-demos" readonly>
+                </div>
+            </div>
+            <div class="title-right-icons">
+                <button class="icon-btn">💬</button>
+                <button class="icon-btn">⊞</button>
+                <button class="icon-btn">▭</button>
+                <button class="icon-btn">☰</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <div class="activity-bar">
+                <div class="activity-icon active">📄</div>
+                <div class="activity-icon">🔍</div>
+                <div class="activity-icon">
+                    <span>⎇</span>
+                    <span class="badge">3</span>
+                </div>
+                <div class="activity-icon">▶</div>
+                <div class="activity-icon">◎</div>
+                <div style="flex: 1;"></div>
+                <div class="activity-icon">👤</div>
+                <div class="activity-icon">⚙</div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <span>EXPLORER</span>
+                    <span>...</span>
+                </div>
+                <div class="explorer-content">
+                    <div class="tree-item">
+                        <span class="chevron">▼</span>
+                        <span class="icon">📁</span>
+                        <span>CLAUDE-CODE-SDK-DEMOS</span>
+                    </div>
+                    <div class="tree-item indent-1">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>email-agent</span>
+                        <span class="modified-indicator">●</span>
+                    </div>
+                    <div class="tree-item indent-1">
+                        <span class="chevron">▼</span>
+                        <span class="icon">📁</span>
+                        <span>excel-demo</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>.erb</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>agent</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>assets</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>node_modules</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>release</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▼</span>
+                        <span class="icon">📁</span>
+                        <span>src</span>
+                    </div>
+                    <div class="tree-item indent-3">
+                        <span class="chevron">▶</span>
+                        <span class="icon">📁</span>
+                        <span>__tests__</span>
+                    </div>
+                    <div class="tree-item indent-3">
+                        <span class="chevron">▼</span>
+                        <span class="icon">📁</span>
+                        <span>main</span>
+                    </div>
+                    <div class="tree-item indent-3" style="padding-left: 84px;">
+                        <span class="icon">📘</span>
+                        <span>main.ts</span>
+                    </div>
+                    <div class="tree-item indent-3" style="padding-left: 84px;">
+                        <span class="icon">📘</span>
+                        <span>menu.ts</span>
+                    </div>
+                    <div class="tree-item indent-3" style="padding-left: 84px;">
+                        <span class="icon">📘</span>
+                        <span>preload.ts</span>
+                    </div>
+                    <div class="tree-item indent-3" style="padding-left: 84px;">
+                        <span class="icon">📘</span>
+                        <span>util.ts</span>
+                    </div>
+                    <div class="tree-item indent-2">
+                        <span class="chevron">▼</span>
+                        <span class="icon">📁</span>
+                        <span>renderer</span>
+                    </div>
+                    <div class="section-header" style="margin-top: 10px;">
+                        <span class="chevron">▼</span>
+                        <span>OUTLINE</span>
+                    </div>
+                    <div class="section-header">
+                        <span class="chevron">▶</span>
+                        <span>TIMELINE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-container">
+                <div class="tabs-bar">
+                    <div class="tab">
+                        <span style="color: #519aba;">TS</span>
+                        <span>email-db.ts</span>
+                        <span style="color: #999;">M</span>
+                    </div>
+                    <div class="tab active">
+                        <span style="color: #519aba;">⚛</span>
+                        <span>App.tsx</span>
+                        <span class="close">×</span>
+                    </div>
+                    <div class="tab">
+                        <span style="color: #7c3aed;">🎨</span>
+                        <span>App.css</span>
+                    </div>
+                    <div class="tab">
+                        <span style="color: #519aba;">TS</span>
+                        <span>util.ts</span>
+                    </div>
+                    <div class="toolbar-icons" style="margin-left: auto;">
+                        <span>🌟</span>
+                        <span>◐</span>
+                        <span>○</span>
+                        <span>○</span>
+                        <span>🌙</span>
+                        <span>⫿</span>
+                        <span>⋮</span>
+                    </div>
+                </div>
+
+                <div class="breadcrumb">
+                    <span class="breadcrumb-item">excel-demo</span>
+                    <span>›</span>
+                    <span class="breadcrumb-item">src</span>
+                    <span>›</span>
+                    <span class="breadcrumb-item">renderer</span>
+                    <span>›</span>
+                    <span class="breadcrumb-item">⚛ App.tsx</span>
+                    <span>›</span>
+                    <span>...</span>
+                </div>
+
+                <div class="git-info">
+                    Thariq Shihipar, last month | 1 author (Thariq Shihipar)
+                </div>
+
+                <div class="editor">
+                    <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14</div>
+                    <div class="code-content"><span class="import">import</span> { <span class="component">MemoryRouter</span> <span class="keyword">as</span> <span class="component">Router</span>, <span class="component">Routes</span>, <span class="component">Route</span> } <span class="keyword">from</span> <span class="string">'react-router-dom'</span>;
+<span class="import">import</span> <span class="component">ChatInterface</span> <span class="keyword">from</span> <span class="string">'./components/ChatInterface'</span>;
+<span class="import">import</span> <span class="string">'./App.css'</span>;
+
+<span class="keyword">export default</span> <span class="function">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;Router&gt;</span>
+      <span class="tag">&lt;Routes&gt;</span>
+        <span class="tag">&lt;Route</span> <span class="attribute">path</span>=<span class="string">"/"</span> <span class="attribute">element</span>={<span class="tag">&lt;ChatInterface</span> <span class="tag">/&gt;</span>} <span class="tag">/&gt;</span>
+      <span class="tag">&lt;/Routes&gt;</span>
+    <span class="tag">&lt;/Router&gt;</span>
+  );
+}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-left">
+                <span>⎇ main*</span>
+                <span>○</span>
+                <span>🚀 Launchpad</span>
+                <span>⊗ 0 ⚠ 0</span>
+                <span>▶ Amazon Q</span>
+                <span>-- INSERT --</span>
+            </div>
+            <div class="status-right">
+                <span>🔍</span>
+                <span>Ln 14, Col 1</span>
+                <span>Spaces: 2</span>
+                <span>UTF-8</span>
+                <span>LF</span>
+                <span>{} TypeScript JSX</span>
+                <span>🎯</span>
+                <span>🔔</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

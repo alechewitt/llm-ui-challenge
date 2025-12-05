@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spotify UI Replica</title>
+<style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+:root {
+  --bg-main: #000;
+  --bg-sidebar: #000;
+  --bg-card: #181818;
+  --bg-elevated: #121212;
+  --bg-elevated-2: #181818;
+  --accent: #1db954;
+  --text-main: #fff;
+  --text-muted: #b3b3b3;
+  --text-soft: #a7a7a7;
+  --pill-bg: #2a2a2a;
+  --border-subtle: #282828;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.5);
+  --transition-fast: 120ms ease-out;
+  --transition-med: 200ms ease;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  display: flex;
+}
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+.main-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding: 8px;
+  gap: 8px;
+}
+.sidebar {
+  width: 295px;
+  min-width: 260px;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sidebar-top {
+  padding: 12px 16px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+.window-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.window-dot.red {background:#ff5f57;}
+.window-dot.yellow {background:#febc2e;}
+.window-dot.green {background:#28c840;}
+.sidebar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #121212;
+  font-size: 17px;
+}
+.sidebar-header {
+  padding: 4px 16px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sidebar-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.sidebar-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: .08em;
+}
+.sidebar-header-buttons {
+  display: flex;
+  gap: 8px;
+}
+.round-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #181818;
+  border: none;
+  color: var(--text-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+.round-btn:hover {
+  background: #2a2a2a;
+  color: #fff;
+  transform: scale(1.05);
+}
+.sidebar-filters {
+  padding: 4px 12px 10px;
+  display: flex;
+  gap: 8px;
+}
+.pill {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  background: var(--pill-bg);
+  color: var(--text-soft);
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+.pill.active,
+.pill:hover {
+  background: #fff;
+  color: #000;
+  transform: translateY(-1px);
+}
+.library-list {
+  flex: 1;
+  overflow: hidden auto;
+  padding: 0 8px 8px;
+}
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.playlist-item:hover {
+  background: #181818;
+}
+.playlist-cover {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #3a3a3a, #121212);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  overflow: hidden;
+}
+.playlist-cover.circle {
+  border-radius: 50%;
+}
+.playlist-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.playlist-title {
+  font-size: 13px;
+  font-weight: 500;
+}
+.playlist-subtitle {
+  font-size: 11px;
+  color: var(--text-soft);
+}
+.your-episodes {
+  background: linear-gradient(135deg, #1e3264, #121212);
+}
+.sidebar-scroll-fade {
+  position: sticky;
+  bottom: 0;
+  height: 40px;
+  background: linear-gradient(to top, var(--bg-sidebar), transparent);
+  pointer-events: none;
+}
+
+/* Main content */
+.content {
+  flex: 1;
+  background: radial-gradient(circle at top left, #333 0, #121212 40%, #000 100%);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+.top-nav {
+  padding: 12px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-home {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #181818;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.nav-home svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+}
+.nav-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #242424;
+  border-radius: 999px;
+  padding: 0 14px;
+  gap: 8px;
+}
+.nav-search-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #b3b3b3;
+  position: relative;
+}
+.nav-search-icon::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  bottom: -3px;
+  height: 7px;
+  width: 2px;
+  background: #b3b3b3;
+  transform: rotate(40deg);
+}
+.nav-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 13px;
+}
+.nav-search input::placeholder {
+  color: var(--text-soft);
+}
+.nav-search-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #181818;
+  cursor: pointer;
+}
+.nav-search-btn span {
+  font-size: 14px;
+}
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-circle-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: #181818;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  cursor:pointer;
+}
+.nav-profile {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #f15a24;
+  color: #000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 600;
+  cursor:pointer;
+}
+
+/* Scrollable main sections */
+.content-scroll {
+  flex:1;
+  overflow: hidden auto;
+  padding: 6px 20px 24px;
+}
+.content-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+.content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.content-scroll::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 999px;
+}
+
+/* Filter tabs */
+.media-filters {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.media-tabs {
+  display:flex;
+  gap:10px;
+}
+.media-tab {
+  padding: 3px 14px;
+  font-size: 11px;
+  border-radius: 999px;
+  background:#2a2a2a;
+  color:var(--text-soft);
+  border:none;
+  cursor:pointer;
+  transition:background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+.media-tab.active,
+.media-tab:hover {
+  background:#fff;
+  color:#000;
+  transform:translateY(-1px);
+}
+.filter-row {
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+.filter-chip {
+  padding:8px 14px;
+  font-size:12px;
+  border-radius:8px;
+  background:#2a2a2a;
+  color:var(--text-main);
+  white-space:nowrap;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+.filter-chip span.cover {
+  width:28px;
+  height:28px;
+  border-radius:4px;
+  background:linear-gradient(135deg,#3a3a3a,#000);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+}
+.filter-chip:hover {
+  background:#3a3a3a;
+}
+
+/* Section headings */
+.section {
+  margin-top:24px;
+}
+.section-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title {
+  font-size:20px;
+  font-weight:700;
+}
+.section-header small {
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--text-soft);
+}
+
+/* Card rows */
+.card-row {
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  padding-bottom:10px;
+}
+.card {
+  width:180px;
+  flex-shrink:0;
+  background:var(--bg-card);
+  border-radius:var(--radius-lg);
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  box-shadow: var(--shadow-soft);
+  cursor:pointer;
+  position:relative;
+  transition:background var(--transition-med), transform var(--transition-med), box-shadow var(--transition-med);
+}
+.card:hover {
+  background:#282828;
+  transform:translateY(-2px);
+  box-shadow:0 14px 45px rgba(0,0,0,0.7);
+}
+.card-cover {
+  width:100%;
+  border-radius:10px;
+  aspect-ratio:1/1;
+  background:linear-gradient(135deg,#e91e63,#9c27b0);
+  position:relative;
+  overflow:hidden;
+}
+.card-cover.blue {background:linear-gradient(135deg,#304ffe,#00bcd4);}
+.card-cover.orange {background:linear-gradient(135deg,#ff9800,#ff5722);}
+.card-cover.green {background:linear-gradient(135deg,#00e676,#1db954);}
+.card-cover img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.card-tag {
+  position:absolute;
+  top:6px;
+  right:6px;
+  padding:2px 6px;
+  font-size:9px;
+  text-transform:uppercase;
+  background:#1db954;
+  border-radius:999px;
+  color:#000;
+  font-weight:700;
+}
+.card-title {
+  font-size:14px;
+  font-weight:600;
+}
+.card-subtitle {
+  font-size:11px;
+  color:var(--text-soft);
+}
+
+/* Round cover row */
+.round-card {
+  width:140px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.round-card-cover {
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#673ab7,#3f51b5);
+  overflow:hidden;
+}
+.round-card-title {
+  font-size:14px;
+}
+
+/* Player bar */
+.player {
+  height:84px;
+  background:var(--bg-elevated-2);
+  border-top:1px solid var(--border-subtle);
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:16px;
+}
+.player-left {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:180px;
+  max-width:260px;
+}
+.player-cover {
+  width:56px;
+  height:56px;
+  border-radius:4px;
+  background:linear-gradient(135deg,#3d5afe,#00e676);
+  overflow:hidden;
+  flex-shrink:0;
+}
+.player-meta {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.player-title {
+  font-size:13px;
+  font-weight:500;
+}
+.player-artist {
+  font-size:11px;
+  color:var(--text-soft);
+}
+.player-center {
+  flex:1.6;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+.player-controls-top {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  justify-content:center;
+}
+.player-btn {
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  border:none;
+  background:transparent;
+  color:var(--text-soft);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  cursor:pointer;
+  transition:color var(--transition-fast), transform var(--transition-fast);
+}
+.player-btn:hover {
+  color:#fff;
+  transform:translateY(-1px);
+}
+.play-btn {
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#fff;
+  color:#000;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 16px rgba(0,0,0,0.6);
+}
+.play-icon::before {
+  content:"▶";
+  margin-left:2px;
+}
+.playing .play-icon::before {
+  content:"⏸";
+  margin-left:0;
+}
+.player-progress {
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  color:var(--text-soft);
+}
+.progress-bar {
+  flex:1;
+  height:4px;
+  border-radius:999px;
+  background:#404040;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+}
+.progress-bar-fill {
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#1db954,#1ed760);
+}
+.progress-bar-knob {
+  position:absolute;
+  top:50%;
+  transform:translate(0,-50%);
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 4px rgba(0,0,0,0.6);
+  display:none;
+}
+.progress-bar:hover .progress-bar-knob {
+  display:block;
+}
+.player-right {
+  flex:1;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  color:var(--text-soft);
+  font-size:14px;
+}
+.player-right-icons {
+  display:flex;
+  gap:8px;
+}
+.volume-bar {
+  width:90px;
+  height:4px;
+  border-radius:999px;
+  background:#404040;
+  position:relative;
+  cursor:pointer;
+}
+.volume-fill {
+  height:100%;
+  width:60%;
+  border-radius:999px;
+  background:#fff;
+}
+.volume-knob {
+  position:absolute;
+  top:50%;
+  transform:translate(54px,-50%);
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff;
+}
+
+/* Utility */
+.badge {
+  font-size:9px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:#333;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+@media (max-width: 960px) {
+  .sidebar {
+    display:none;
+  }
+  .player-left {
+    display:none;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-actions .nav-circle-icon:nth-child(1),
+  .nav-actions .nav-circle-icon:nth-child(2) {
+    display:none;
+  }
+  .card {width:150px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="main-area">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="window-controls">
+          <div class="window-dot red"></div>
+          <div class="window-dot yellow"></div>
+          <div class="window-dot green"></div>
+        </div>
+        <div class="sidebar-icon">♪</div>
+      </div>
+      <div class="sidebar-header">
+        <div class="sidebar-header-left">
+          <div class="sidebar-title">Your Library</div>
+          <div class="sidebar-sub">Playlists • Podcasts • Artists</div>
+        </div>
+        <div class="sidebar-header-buttons">
+          <button class="round-btn" title="Create playlist">+</button>
+          <button class="round-btn" title="Options">↕</button>
+        </div>
+      </div>
+      <div class="sidebar-filters">
+        <button class="pill active">Playlists</button>
+        <button class="pill">Podcasts</button>
+        <button class="pill">Albums</button>
+      </div>
+      <div class="library-list" id="libraryList">
+        <div class="playlist-item" data-title="Man of Steel!!" data-artist="Jamiroquai">
+          <div class="playlist-cover">
+            <span>MS</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">Man of Steel!!</div>
+            <div class="playlist-subtitle">Playlist • 31 tracks</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="We are the champions!" data-artist="Queen">
+          <div class="playlist-cover">
+            <span>WC</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">We are the champions!</div>
+            <div class="playlist-subtitle">Playlist • 42 tracks</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="Duo" data-artist="Various Artists">
+          <div class="playlist-cover">
+            <span>DU</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">Duo</div>
+            <div class="playlist-subtitle">Playlist • Spotify</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="I'll cover you!" data-artist="Covers Only">
+          <div class="playlist-cover">
+            <span>IC</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">I'll cover you!</div>
+            <div class="playlist-subtitle">Playlist • 55 tracks</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="Morning Motivation" data-artist="Spotify">
+          <div class="playlist-cover">
+            <span>MM</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">Morning Motivation</div>
+            <div class="playlist-subtitle">Playlist • Spotify</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="80's" data-artist="Various Artists">
+          <div class="playlist-cover">
+            <span>80</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">80's</div>
+            <div class="playlist-subtitle">Playlist • Throwback</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="Jazz band, club jazz, and jazz trip" data-artist="Various Artists">
+          <div class="playlist-cover">
+            <span>JZ</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">jazz band, club jazz, and jazz tr...</div>
+            <div class="playlist-subtitle">Playlist • Spotify</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="DJ" data-artist="Spotify DJ">
+          <div class="playlist-cover">
+            <span>DJ</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">DJ</div>
+            <div class="playlist-subtitle">Click to start listening</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="Herb Alpert" data-artist="Herb Alpert">
+          <div class="playlist-cover circle">
+            <span>HA</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">Herb Alpert</div>
+            <div class="playlist-subtitle">Artist</div>
+          </div>
+        </div>
+        <div class="playlist-item" data-title="Your Episodes" data-artist="Podcasts">
+          <div class="playlist-cover your-episodes">
+            <span>EP</span>
+          </div>
+          <div class="playlist-meta">
+            <div class="playlist-title">Your Episodes</div>
+            <div class="playlist-subtitle">Saved & downloaded episodes</div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-scroll-fade"></div>
+    </aside>
+
+    <section class="content">
+      <header class="top-nav">
+        <div class="nav-home" title="Home">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 3L2 12h3v9h6v-6h2v6h6v-9h3z"/>
+          </svg>
+        </div>
+        <div class="nav-search">
+          <div class="nav-search-icon"></div>
+          <input type="text" placeholder="What do you want to play?">
+          <button class="nav-search-btn" title="Search">
+            <span>⌕</span>
+          </button>
+        </div>
+        <div class="nav-actions">
+          <div class="nav-circle-icon" title="Friend Activity">👥</div>
+          <div class="nav-circle-icon" title="Notifications">🔔</div>
+          <div class="nav-circle-icon" title="Settings">⚙</div>
+          <div class="nav-profile">A</div>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        <div class="media-filters">
+          <div class="media-tabs">
+            <button class="media-tab active">All</button>
+            <button class="media-tab">Music</button>
+            <button class="media-tab">Podcasts</button>
+            <button class="media-tab">Audiobooks</button>
+          </div>
+          <div class="filter-row">
+            <div class="filter-chip">
+              <span class="cover">PP</span>
+              Peaceful Piano
+            </div>
+            <div class="filter-chip">
+              <span class="cover">WN</span>
+              White Noise 10 Hours
+            </div>
+            <div class="filter-chip">
+              <span class="cover">SP</span>
+              Spanish Songs for Kids
+            </div>
+            <div class="filter-chip">
+              <span class="cover">DL</span>
+              daylist
+            </div>
+            <div class="filter-chip">
+              <span class="cover">SL</span>
+              Spanish Lullabies ❤
+            </div>
+            <div class="filter-chip">
+              <span class="cover">SW</span>
+              Stevie Wonder Radio
+            </div>
+            <div class="filter-chip">
+              <span class="cover">CM</span>
+              Chill Mix
+            </div>
+          </div>
+        </div>
+
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">Made For You</div>
+            <small>Show all</small>
+          </div>
+          <div class="card-row">
+            <article class="card">
+              <div class="card-cover">
+                <div class="card-tag">Weekly</div>
+              </div>
+              <div class="card-title">Discover Weekly</div>
+              <div class="card-subtitle">Your shortcut to hidden gems, deep cuts and more.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover blue">
+                <div class="card-tag">Beta</div>
+              </div>
+              <div class="card-title">DJ</div>
+              <div class="card-subtitle">All kinds of music, picked just for you by your own DJ.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover orange"></div>
+              <div class="card-title">Daily Mix 1</div>
+              <div class="card-subtitle">CantaJuego, Marta Gómez and more.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover green"></div>
+              <div class="card-title">Daily Mix 2</div>
+              <div class="card-subtitle">Jamiroquai, Flo Naegeli and more.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover"></div>
+              <div class="card-title">Daily Mix 3</div>
+              <div class="card-subtitle">Tankelflukt, Into the Woods and more.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">Recently played</div>
+            <small>Show all</small>
+          </div>
+          <div class="card-row">
+            <div class="round-card">
+              <div class="round-card-cover"></div>
+              <div class="round-card-title">Jamiroquai</div>
+            </div>
+            <div class="round-card">
+              <div class="round-card-cover" style="background:linear-gradient(135deg,#b39ddb,#ffccbc);"></div>
+              <div class="round-card-title">Peaceful Piano</div>
+            </div>
+            <div class="round-card">
+              <div class="round-card-cover" style="background:linear-gradient(135deg,#e0f7fa,#b3e5fc);"></div>
+              <div class="round-card-title">White Noise 10 Hours</div>
+            </div>
+            <div class="round-card">
+              <div class="round-card-cover" style="background:linear-gradient(135deg,#ffeb3b,#f44336);"></div>
+              <div class="round-card-title">Spanish Baby Lullabies</div>
+            </div>
+            <div class="round-card">
+              <div class="round-card-cover" style="background:linear-gradient(135deg,#00e5ff,#ffea00);"></div>
+              <div class="round-card-title">daylist</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <div class="section-title">Because you listened to White Noise</div>
+            <small>Show all</small>
+          </div>
+          <div class="card-row">
+            <article class="card">
+              <div class="card-cover blue"></div>
+              <div class="card-title">Deep Sleep</div>
+              <div class="card-subtitle">Sounds to help you drift away.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover" style="background:linear-gradient(135deg,#455a64,#90a4ae);"></div>
+              <div class="card-title">Night Rain</div>
+              <div class="card-subtitle">Soft rainfall and distant thunder.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover" style="background:linear-gradient(135deg,#4caf50,#cddc39);"></div>
+              <div class="card-title">Forest Ambience</div>
+              <div class="card-subtitle">Birdsong, creeks and gentle wind.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover" style="background:linear-gradient(135deg,#3f51b5,#7986cb);"></div>
+              <div class="card-title">Ocean Waves</div>
+              <div class="card-subtitle">Slow waves for deep relaxation.</div>
+            </article>
+            <article class="card">
+              <div class="card-cover" style="background:linear-gradient(135deg,#5d4037,#bcaaa4);"></div>
+              <div class="card-title">Brown Noise</div>
+              <div class="card-subtitle">Warm, low frequency noise generator.</div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <footer class="player" id="player">
+    <div class="player-left">
+      <div class="player-cover" id="playerCover"></div>
+      <div class="player-meta">
+        <div class="player-title" id="playerTitle">Virtual Insanity - Remastered 2006</div>
+        <div class="player-artist" id="playerArtist">Jamiroquai</div>
+      </div>
+    </div>
+    <div class="player-center">
+      <div class="player-controls-top">
+        <button class="player-btn" title="Shuffle">🔀</button>
+        <button class="player-btn" title="Previous">⏮</button>
+        <button class="player-btn play-btn" id="playToggle" title="Play">
+          <span class="play-icon"></span>
+        </button>
+        <button class="player-btn" title="Next">⏭</button>
+        <button class="player-btn" title="Repeat">🔁</button>
+      </div>
+      <div class="player-progress">
+        <span id="currentTime">0:56</span>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-bar-fill" id="progressFill"></div>
+          <div class="progress-bar-knob" id="progressKnob"></div>
+        </div>
+        <span id="totalTime">3:49</span>
+      </div>
+    </div>
+    <div class="player-right">
+      <div class="player-right-icons">
+        <span title="Lyrics">🎤</span>
+        <span title="Queue">☰</span>
+        <span title="Devices">🖥</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:13px;">🔊</span>
+        <div class="volume-bar" id="volumeBar">
+          <div class="volume-fill" id="volumeFill"></div>
+          <div class="volume-knob" id="volumeKnob"></div>
+        </div>
+      </div>
+      <div class="nav-circle-icon" title="Full screen">⤢</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const playToggle = document.getElementById('playToggle');
+  const player = document.getElementById('player');
+  const progressFill = document.getElementById('progressFill');
+  const progressBar = document.getElementById('progressBar');
+  const progressKnob = document.getElementById('progressKnob');
+  const currentTimeEl = document.getElementById('currentTime');
+  const totalTimeEl = document.getElementById('totalTime');
+  const libraryList = document.getElementById('libraryList');
+  const playerTitle = document.getElementById('playerTitle');
+  const playerArtist = document.getElementById('playerArtist');
+  const volumeBar = document.getElementById('volumeBar');
+  const volumeFill = document.getElementById('volumeFill');
+  const volumeKnob = document.getElementById('volumeKnob');
+
+  let isPlaying = false;
+  let progress = 0.25;
+  let duration = 229; // 3:49
+  let lastTimestamp = null;
+  let rafId = null;
+
+  function formatTime(sec) {
+    sec = Math.max(0, Math.floor(sec));
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return m + ':' + (s < 10 ? '0' + s : s);
+  }
+
+  function updateProgressUI() {
+    const percent = progress * 100;
+    progressFill.style.width = percent + '%';
+    const barWidth = progressBar.clientWidth;
+    const knobX = barWidth * progress - 5;
+    progressKnob.style.left = knobX + 'px';
+    currentTimeEl.textContent = formatTime(duration * progress);
+  }
+
+  function tick(timestamp) {
+    if (!isPlaying) return;
+    if (lastTimestamp == null) lastTimestamp = timestamp;
+    const delta = (timestamp - lastTimestamp) / 1000;
+    lastTimestamp = timestamp;
+    progress += delta / duration;
+    if (progress >= 1) {
+      progress = 0;
+      isPlaying = false;
+      player.classList.remove('playing');
+      cancelAnimationFrame(rafId);
+      updateProgressUI();
+      return;
+    }
+    updateProgressUI();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  playToggle.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    player.classList.toggle('playing', isPlaying);
+    lastTimestamp = null;
+    if (isPlaying) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+    }
+  });
+
+  progressBar.addEventListener('click', e => {
+    const rect = progressBar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    progress = Math.min(1, Math.max(0, ratio));
+    updateProgressUI();
+  });
+
+  Array.from(libraryList.querySelectorAll('.playlist-item')).forEach(item => {
+    item.addEventListener('click', () => {
+      const title = item.dataset.title || 'Unknown title';
+      const artist = item.dataset.artist || 'Unknown artist';
+      playerTitle.textContent = title;
+      playerArtist.textContent = artist;
+      progress = 0;
+      updateProgressUI();
+      if (!isPlaying) {
+        isPlaying = true;
+        player.classList.add('playing');
+        lastTimestamp = null;
+        rafId = requestAnimationFrame(tick);
+      }
+    });
+  });
+
+  volumeBar.addEventListener('click', e => {
+    const rect = volumeBar.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    const clamped = Math.min(1, Math.max(0, ratio));
+    const percent = clamped * 100;
+    volumeFill.style.width = percent + '%';
+    const knobX = rect.width * clamped - 5;
+    volumeKnob.style.transform = 'translate(' + knobX + 'px,-50%)';
+  });
+
+  totalTimeEl.textContent = formatTime(duration);
+  progress = 56 / duration;
+  updateProgressUI();
+})();
+</script>
+</body>
+</html>

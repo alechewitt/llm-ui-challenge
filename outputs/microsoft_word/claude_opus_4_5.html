@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document3 - Microsoft Word</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background-color: #f3f3f3;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            background-color: #7b7b7b;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            color: white;
+            font-size: 13px;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 15px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-close { background-color: #ff5f57; }
+        .btn-minimize { background-color: #ffbd2e; }
+        .btn-maximize { background-color: #28ca41; }
+
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .autosave {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .autosave-toggle {
+            width: 36px;
+            height: 18px;
+            background: #4a4a4a;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .autosave-toggle::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+        }
+
+        .title-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 10px;
+        }
+
+        .title-icon {
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        .document-title {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .confidential {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        /* Ribbon Tabs */
+        .ribbon-tabs {
+            background-color: #f3f3f3;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            height: 36px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ribbon-tab {
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #333;
+            border: none;
+            background: none;
+        }
+
+        .ribbon-tab.active {
+            font-weight: 500;
+            border-bottom: 2px solid #333;
+        }
+
+        .ribbon-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comments-btn, .editing-btn, .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .comments-btn {
+            background: none;
+            color: #333;
+        }
+
+        .editing-btn {
+            background: none;
+            color: #333;
+        }
+
+        .share-btn {
+            background: #0078d4;
+            color: white;
+        }
+
+        /* Ribbon Toolbar */
+        .ribbon-toolbar {
+            background-color: #f3f3f3;
+            padding: 8px 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 5px;
+            border-bottom: 1px solid #d0d0d0;
+            min-height: 90px;
+        }
+
+        .tool-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 8px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .paste-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .paste-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .paste-icon {
+            font-size: 28px;
+            margin-bottom: 3px;
+        }
+
+        .paste-tools {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-left: 5px;
+        }
+
+        .small-tool {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .font-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .font-row {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .font-select {
+            width: 100px;
+            padding: 3px 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .size-select {
+            width: 50px;
+            padding: 3px 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .font-tool {
+            padding: 3px 6px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-radius: 3px;
+        }
+
+        .font-tool:hover {
+            background: #e5e5e5;
+        }
+
+        .font-tool.bold { font-weight: bold; }
+        .font-tool.italic { font-style: italic; }
+        .font-tool.underline { text-decoration: underline; }
+
+        .paragraph-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .para-row {
+            display: flex;
+            gap: 2px;
+        }
+
+        .para-tool {
+            padding: 4px 6px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #555;
+            border-radius: 3px;
+        }
+
+        .para-tool:hover {
+            background: #e5e5e5;
+        }
+
+        .styles-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .style-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .style-icon {
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+
+        .style-label {
+            font-size: 10px;
+            color: #333;
+        }
+
+        .large-tool-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .large-tool {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .large-tool-icon {
+            font-size: 24px;
+            margin-bottom: 3px;
+            color: #0078d4;
+        }
+
+        .large-tool-label {
+            font-size: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Document Area */
+        .document-area {
+            flex: 1;
+            background-color: #e8e8e8;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .page {
+            background: white;
+            width: 816px;
+            min-height: 1056px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 96px;
+        }
+
+        .editor {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-family: 'Calibri', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            resize: none;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background-color: #f3f3f3;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #d0d0d0;
+        }
+
+        .status-left {
+            display: flex;
+            gap: 20px;
+        }
+
+        .status-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoom-slider {
+            width: 100px;
+            height: 4px;
+        }
+
+        .view-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-icon {
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .view-icon:hover {
+            opacity: 1;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Bar -->
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn btn-close"></button>
+            <button class="window-btn btn-minimize"></button>
+            <button class="window-btn btn-maximize"></button>
+        </div>
+        <div class="title-left">
+            <div class="autosave">
+                AutoSave <div class="autosave-toggle"></div>
+            </div>
+            <div class="title-icons">
+                <span class="title-icon">🏠</span>
+                <span class="title-icon">💾</span>
+                <span class="title-icon">↩️</span>
+                <span class="title-icon">↪️</span>
+                <span class="title-icon">⋯</span>
+            </div>
+        </div>
+        <div class="document-title">
+            Document3
+            <span class="confidential">🔒 Confidential*</span>
+        </div>
+        <div class="search-box">
+            🔍 Search (Cmd + Ctrl + U)
+        </div>
+    </div>
+
+    <!-- Ribbon Tabs -->
+    <div class="ribbon-tabs">
+        <button class="ribbon-tab active">Home</button>
+        <button class="ribbon-tab">Insert</button>
+        <button class="ribbon-tab">Draw</button>
+        <button class="ribbon-tab">Design</button>
+        <button class="ribbon-tab">Layout</button>
+        <button class="ribbon-tab">References</button>
+        <button class="ribbon-tab">Mailings</button>
+        <button class="ribbon-tab">Review</button>
+        <button class="ribbon-tab">View</button>
+        <div class="ribbon-right">
+            <button class="comments-btn">💬 Comments</button>
+            <button class="editing-btn">✏️ Editing ▾</button>
+            <button class="share-btn">👥 Share ▾</button>
+        </div>
+    </div>
+
+    <!-- Ribbon Toolbar -->
+    <div class="ribbon-toolbar">
+        <div class="tool-group paste-group">
+            <div style="display: flex;">
+                <button class="paste-btn">
+                    <span class="paste-icon">📋</span>
+                    Paste
+                </button>
+                <div class="paste-tools">
+                    <span class="small-tool">✂️</span>
+                    <span class="small-tool">📄</span>
+                    <span class="small-tool">🖌️</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-group">
+            <div class="font-group">
+                <div class="font-row">
+                    <select class="font-select">
+                        <option>Calibri (Bo...</option>
+                    </select>
+                    <select class="size-select">
+                        <option>12</option>
+                    </select>
+                    <button class="font-tool">A↑</button>
+                    <button class="font-tool">A↓</button>
+                    <button class="font-tool">Aa</button>
+                    <button class="font-tool">🔤</button>
+                </div>
+                <div class="font-row">
+                    <button class="font-tool bold">B</button>
+                    <button class="font-tool italic">I</button>
+                    <button class="font-tool underline">U</button>
+                    <button class="font-tool">ab̲</button>
+                    <button class="font-tool">x₂</button>
+                    <button class="font-tool">x²</button>
+                    <button class="font-tool" style="color: red;">A</button>
+                    <button class="font-tool">🖍️</button>
+                    <button class="font-tool" style="color: blue;">A</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-group">
+            <div class="paragraph-group">
+                <div class="para-row">
+                    <button class="para-tool">≡•</button>
+                    <button class="para-tool">≡1</button>
+                    <button class="para-tool">≡→</button>
+                    <button class="para-tool">⇤</button>
+                    <button class="para-tool">⇥</button>
+                    <button class="para-tool">↕️</button>
+                    <button class="para-tool">¶</button>
+                </div>
+                <div class="para-row">
+                    <button class="para-tool">≡←</button>
+                    <button class="para-tool">≡↔</button>
+                    <button class="para-tool">≡→</button>
+                    <button class="para-tool">≡≡</button>
+                    <button class="para-tool">↕</button>
+                    <button class="para-tool">🎨</button>
+                    <button class="para-tool">⊞</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-group styles-group">
+            <div class="style-item">
+                <span class="style-icon" style="color: #0078d4; font-weight: bold;">A</span>
+                <span class="style-label">Styles</span>
+            </div>
+            <div class="style-item">
+                <span class="style-icon">📑</span>
+                <span class="style-label">Styles Pane</span>
+            </div>
+        </div>
+
+        <div class="tool-group large-tool-group">
+            <button class="large-tool">
+                <span class="large-tool-icon">🎤</span>
+                <span class="large-tool-label">Dictate</span>
+            </button>
+            <button class="large-tool">
+                <span class="large-tool-icon">🔒</span>
+                <span class="large-tool-label">Sensitivity</span>
+            </button>
+            <button class="large-tool">
+                <span class="large-tool-icon">🧩</span>
+                <span class="large-tool-label">Add-ins</span>
+            </button>
+            <button class="large-tool">
+                <span class="large-tool-icon">✏️</span>
+                <span class="large-tool-label">Editor</span>
+            </button>
+            <button class="large-tool">
+                <span class="large-tool-icon" style="color: #e91e63;">📧</span>
+                <span class="large-tool-label">Amazon<br>Quick Suite</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Document Area -->
+    <div class="document-area">
+        <div class="page">
+            <div class="editor" contenteditable="true" id="editor"></div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-left">
+            <span>Page 1 of 1</span>
+            <span id="wordCount">0 words</span>
+            <span>English (United States)</span>
+            <span class="status-item">✓ Accessibility: Good to go</span>
+        </div>
+        <div class="status-right">
+            <span class="status-item">✏️ Focus</span>
+            <div class="view-icons">
+                <span class="view-icon">🌐</span>
+                <span class="view-icon">📄</span>
+                <span class="view-icon">📐</span>
+            </div>
+            <div class="zoom-controls">
+                <span>−</span>
+                <input type="range" class="zoom-slider" min="50" max="200" value="185">
+                <span>+</span>
+                <span>185%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+        const wordCountEl = document.getElementById('wordCount');
+
+        // Focus editor on load
+        editor.focus();
+
+        // Word count
+        editor.addEventListener('input', function() {
+            const text = editor.innerText.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            wordCountEl.textContent = words + ' words';
+        });
+
+        // Tab switching
+        document.querySelectorAll('.ribbon-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.ribbon-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Font formatting
+        document.querySelectorAll('.font-tool').forEach(tool => {
+            tool.addEventListener('click', function() {
+                if (this.classList.contains('bold')) {
+                    document.execCommand('bold', false, null);
+                } else if (this.classList.contains('italic')) {
+                    document.execCommand('italic', false, null);
+                } else if (this.classList.contains('underline')) {
+                    document.execCommand('underline', false, null);
+                }
+                editor.focus();
+            });
+        });
+
+        // Font and size change
+        document.querySelector('.font-select').addEventListener('change', function() {
+            document.execCommand('fontName', false, this.value);
+            editor.focus();
+        });
+
+        document.querySelector('.size-select').addEventListener('change', function() {
+            document.execCommand('fontSize', false, this.value);
+            editor.focus();
+        });
+
+        // Zoom slider
+        const zoomSlider = document.querySelector('.zoom-slider');
+        const page = document.querySelector('.page');
+        
+        zoomSlider.addEventListener('input', function() {
+            const zoom = this.value / 100;
+            page.style.transform = `scale(${zoom})`;
+            page.style.transformOrigin = 'top center';
+            this.nextElementSibling.nextElementSibling.textContent = this.value + '%';
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.metaKey || e.ctrlKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'b':
+                        e.preventDefault();
+                        document.execCommand('bold', false, null);
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        document.execCommand('italic', false, null);
+                        break;
+                    case 'u':
+                        e.preventDefault();
+                        document.execCommand('underline', false, null);
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

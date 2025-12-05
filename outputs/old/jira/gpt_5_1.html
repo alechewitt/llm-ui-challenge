@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Jira Style Board</title>
+<style>
+  :root {
+    --blue: #0747a6;
+    --blue-dark: #04326b;
+    --gray-100: #f4f5f7;
+    --gray-200: #ebecf0;
+    --gray-300: #dfe1e6;
+    --gray-500: #7a869a;
+    --gray-700: #344563;
+    --orange: #ffab00;
+    --red: #de350b;
+    --green: #36b37e;
+    --purple: #6554c0;
+    --radius-sm: 3px;
+    --radius-md: 4px;
+    --shadow-card: 0 1px 1px rgba(9, 30, 66, 0.25);
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-ui);
+    color: var(--gray-700);
+    background: white;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+    background: var(--gray-100);
+    overflow: hidden;
+  }
+
+  /* LEFT BLUE RAIL ----------------------------------------------------- */
+  .rail {
+    width: 64px;
+    background: var(--blue);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rail-logo {
+    height: 64px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .rail-logo span {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid #fff;
+    position: relative;
+  }
+
+  /* simple abstract "Jira" mark */
+  .rail-logo span::before,
+  .rail-logo span::after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    border-radius: 3px;
+  }
+
+  .rail-logo span::before {
+    width: 14px;
+    height: 4px;
+    top: 6px;
+    left: 4px;
+    transform: rotate(-40deg);
+  }
+
+  .rail-logo span::after {
+    width: 10px;
+    height: 4px;
+    bottom: 6px;
+    right: 4px;
+    transform: rotate(-40deg);
+    opacity: 0.8;
+  }
+
+  .rail-nav {
+    padding-top: 16px;
+    flex: 1;
+  }
+
+  .rail-btn {
+    width: 40px;
+    height: 40px;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .rail-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .rail-btn svg {
+    fill: #fff;
+    width: 20px;
+    height: 20px;
+  }
+
+  .rail-bottom {
+    padding: 16px 0;
+  }
+
+  /* SECONDARY SIDE BAR -------------------------------------------------- */
+  .sidebar {
+    width: 260px;
+    background: #fafbfc;
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-project {
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .project-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 20%, #ffb400, #ff5630);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    margin-right: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-avatar::after {
+    content: "";
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    top: 18%;
+    left: 18%;
+  }
+
+  .project-meta h1 {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .project-meta span {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .sidebar-nav {
+    padding: 8px 0;
+    flex: 1;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: var(--gray-700);
+    cursor: pointer;
+  }
+
+  .sidebar-item-icon {
+    width: 24px;
+    text-align: center;
+    margin-right: 8px;
+    color: var(--gray-500);
+    font-size: 18px;
+  }
+
+  .sidebar-item.active {
+    background: #e9efff;
+    border-radius: 4px;
+    margin: 0 8px;
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .sidebar-item.active .sidebar-item-icon {
+    color: var(--blue);
+  }
+
+  .sidebar-item:hover {
+    background: rgba(9, 30, 66, 0.04);
+  }
+
+  .sidebar-bottom {
+    padding: 8px 8px 16px;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  /* MAIN BOARD AREA ----------------------------------------------------- */
+  .board {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .board-header-wrap {
+    padding: 20px 24px 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .board-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .board-title {
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  .board-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-shell {
+    display: flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    background: var(--gray-100);
+  }
+
+  .search-shell:focus-within {
+    border-color: var(--blue);
+    background: #fff;
+  }
+
+  .search-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-500);
+    position: relative;
+    margin-right: 6px;
+  }
+
+  .search-icon::after {
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 2px;
+    background: var(--gray-500);
+    border-radius: 2px;
+    right: -2px;
+    bottom: -1px;
+    transform: rotate(45deg);
+  }
+
+  #searchInput {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    width: 180px;
+  }
+
+  .btn {
+    font-size: 13px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .btn-ghost {
+    border-color: transparent;
+    color: var(--gray-700);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(9, 30, 66, 0.04);
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    border-color: var(--blue-dark);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--blue-dark);
+  }
+
+  .btn-icon {
+    width: 32px;
+    padding: 0;
+    font-size: 20px;
+  }
+
+  .board-subheader {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+
+  /* COLUMNS ------------------------------------------------------------- */
+  .board-scroll {
+    flex: 1;
+    overflow: auto;
+    padding: 16px 16px 24px;
+  }
+
+  .columns {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 900px;
+  }
+
+  .column {
+    background: #f5f6f8;
+    border-radius: 3px;
+    padding: 8px;
+    min-width: 260px;
+    flex: 0 0 260px;
+  }
+
+  .column-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-500);
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .column-header span {
+    color: var(--gray-500);
+  }
+
+  /* CARDS --------------------------------------------------------------- */
+  .card {
+    background: #fff;
+    border-radius: var(--radius-sm);
+    padding: 12px 12px 10px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid #fff;
+    margin-top: 8px;
+    font-size: 13px;
+    cursor: default;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card:hover {
+    border-color: var(--blue);
+  }
+
+  .card-title {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+    color: #172b4d;
+  }
+
+  .tag.space {
+    background: #ffe380;
+  }
+
+  .tag.local {
+    background: #ffbdad;
+  }
+
+  .tag.large-team {
+    background: #eae6ff;
+    color: #403294;
+  }
+
+  .tag.blue {
+    background: #deebff;
+    color: #0747a6;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+
+  .card-metadata-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .priority-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--red);
+    position: relative;
+  }
+
+  .priority-icon::before {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 5px;
+    background: var(--red);
+    left: 3px;
+    top: 1px;
+    transform: skewX(-20deg);
+  }
+
+  .priority-icon::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 5px;
+    background: var(--red);
+    right: 3px;
+    top: 1px;
+    transform: skewX(20deg);
+  }
+
+  .priority-icon.low {
+    border-color: var(--green);
+  }
+
+  .priority-icon.low::before,
+  .priority-icon.low::after {
+    background: var(--green);
+  }
+
+  .issue-count {
+    border-radius: 999px;
+    border: 1px solid var(--gray-300);
+    padding: 0 5px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* QUICK FILTER DROPDOWN ----------------------------------------------- */
+  .filters {
+    position: relative;
+  }
+
+  .filters-menu {
+    position: absolute;
+    right: 0;
+    top: 32px;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 4px 8px rgba(9, 30, 66, 0.25);
+    padding: 4px 0;
+    font-size: 13px;
+    min-width: 180px;
+    display: none;
+    z-index: 10;
+  }
+
+  .filters-menu.active {
+    display: block;
+  }
+
+  .filters-item {
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .filters-item:hover {
+    background: rgba(9, 30, 66, 0.04);
+  }
+
+  .filters-item.active {
+    font-weight: 500;
+    color: var(--blue);
+  }
+
+  /* RESPONSIVE ---------------------------------------------------------- */
+  @media (max-width: 1100px) {
+    .sidebar {
+      display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .board-header-actions {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    #searchInput {
+      width: 120px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .rail {
+      display: none;
+    }
+
+    .board-header-wrap {
+      padding: 12px 12px 8px;
+    }
+
+    .board-scroll {
+      padding: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- LEFT BLUE RAIL -->
+  <div class="rail">
+    <div class="rail-logo">
+      <span></span>
+    </div>
+    <div class="rail-nav">
+      <div class="rail-btn" title="Search">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="5"></circle>
+          <line x1="15" y1="15" x2="21" y2="21" stroke="white" stroke-width="2" stroke-linecap="round"></line>
+        </svg>
+      </div>
+      <div class="rail-btn" title="Create">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19" stroke="white" stroke-width="2" stroke-linecap="round"></line>
+          <line x1="5" y1="12" x2="19" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"></line>
+        </svg>
+      </div>
+    </div>
+    <div class="rail-bottom">
+      <div class="rail-btn" title="Help">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="white" stroke-width="2" fill="none"></circle>
+          <path d="M10.5 10a1.5 1.5 0 0 1 3 0c0 1.5-1.5 1.5-1.5 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"></path>
+          <circle cx="12" cy="17" r="1" fill="white"></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECONDARY SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-project">
+      <div class="project-avatar">🌌</div>
+      <div class="project-meta">
+        <h1>Teams in Space</h1>
+        <span>Software project</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">☰</div>
+        <span>Backlog</span>
+      </div>
+      <div class="sidebar-item active">
+        <div class="sidebar-item-icon">▦</div>
+        <span>Board</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">📈</div>
+        <span>Reports</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">🎯</div>
+        <span>Releases</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">📦</div>
+        <span>Components</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">☑</div>
+        <span>Issues</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">{"</>"}</div>
+        <span>Repository</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">＋</div>
+        <span>Add item</span>
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-item">
+        <div class="sidebar-item-icon">⚙</div>
+        <span>Settings</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN BOARD -->
+  <main class="board">
+    <div class="board-header-wrap">
+      <div class="board-header-top">
+        <div class="board-title">Board</div>
+        <div class="board-header-actions">
+          <div class="search-shell">
+            <div class="search-icon"></div>
+            <input id="searchInput" type="text" placeholder="Search this board" />
+          </div>
+
+          <div class="filters">
+            <button id="filterToggle" class="btn btn-ghost">
+              Quick Filters ▾
+            </button>
+            <div id="filtersMenu" class="filters-menu">
+              <div class="filters-item active" data-filter="all">All issues</div>
+              <div class="filters-item" data-filter="space">Space Travel Partners</div>
+              <div class="filters-item" data-filter="local">Local Mars Office</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary">Release</button>
+          <button class="btn btn-ghost btn-icon" aria-label="More">⋯</button>
+        </div>
+      </div>
+      <div class="board-subheader">
+        Kanban board · Teams in Space
+      </div>
+    </div>
+
+    <div class="board-scroll">
+      <div class="columns" id="columns">
+        <!-- TO DO -->
+        <section class="column">
+          <header class="column-header">
+            <span>TO DO</span><span>5</span>
+          </header>
+
+          <article class="card" data-tags="space" data-title="Engage Jupiter Express for outer solar system travel">
+            <h3 class="card-title">
+              Engage Jupiter Express for outer solar system travel
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">5</span>
+              </div>
+              <span>TIS-25</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="local" data-title="Create 90 day plans for all departments in the Mars Office">
+            <h3 class="card-title">
+              Create 90 day plans for all departments in the Mars Office
+            </h3>
+            <div class="card-tags">
+              <span class="tag local">Local Mars Office</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">9</span>
+              </div>
+              <span>TIS-12</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Engage Saturn's Rings Resort as a preferred provider">
+            <h3 class="card-title">
+              Engage Saturn's Rings Resort as a preferred provider
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">3</span>
+              </div>
+              <span>TIS-9</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Enable Speedy SpaceCraft upgrades for premium users">
+            <h3 class="card-title">
+              Enable Speedy SpaceCraft upgrades for premium users
+            </h3>
+            <div class="card-tags">
+              <span class="tag blue">SeeSpaceEZ Plus</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">2</span>
+              </div>
+              <span>TIS-21</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- IN PROGRESS -->
+        <section class="column">
+          <header class="column-header">
+            <span>IN PROGRESS</span><span>5</span>
+          </header>
+
+          <article class="card" data-tags="space" data-title="Requesting available flights is now taking &gt; 5 seconds">
+            <h3 class="card-title">
+              Requesting available flights is now taking &gt; 5 seconds
+            </h3>
+            <div class="card-tags">
+              <span class="tag blue">SeeSpaceEZ Plus</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">3</span>
+              </div>
+              <span>TIS-8</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Engage Saturn Shuttle Lines for group tours">
+            <h3 class="card-title">
+              Engage Saturn Shuttle Lines for group tours
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">4</span>
+              </div>
+              <span>TIS-15</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="local" data-title="Establish a catering vendor to provide meal service">
+            <h3 class="card-title">
+              Establish a catering vendor to provide meal service
+            </h3>
+            <div class="card-tags">
+              <span class="tag local">Local Mars Office</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">4</span>
+              </div>
+              <span>TIS-15</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Implement in-flight entertainment beta for long-haul trips">
+            <h3 class="card-title">
+              Implement in‑flight entertainment beta for long‑haul trips
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">1</span>
+              </div>
+              <span>TIS-30</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- CODE REVIEW -->
+        <section class="column">
+          <header class="column-header">
+            <span>CODE REVIEW</span><span>2</span>
+          </header>
+
+          <article class="card" data-tags="local" data-title="Register with the Mars Ministry of Revenue">
+            <h3 class="card-title">
+              Register with the Mars Ministry of Revenue
+            </h3>
+            <div class="card-tags">
+              <span class="tag local">Local Mars Office</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">3</span>
+              </div>
+              <span>TIS-11</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="local" data-title="Draft network plan for Mars Office">
+            <h3 class="card-title">
+              Draft network plan for Mars Office
+            </h3>
+            <div class="card-tags">
+              <span class="tag local">Local Mars Office</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">3</span>
+              </div>
+              <span>TIS-15</span>
+            </div>
+          </article>
+        </section>
+
+        <!-- DONE -->
+        <section class="column">
+          <header class="column-header">
+            <span>DONE</span><span>8</span>
+          </header>
+
+          <article class="card" data-tags="large-team" data-title="Homepage footer uses an inline style - should use a class">
+            <h3 class="card-title">
+              Homepage footer uses an inline style – should use a class
+            </h3>
+            <div class="card-tags">
+              <span class="tag large-team">Large Team Support</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">2</span>
+              </div>
+              <span>TIS-68</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Engage JetShuttle SpaceWays for travel">
+            <h3 class="card-title">
+              Engage JetShuttle SpaceWays for travel
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon"></div>
+                <span class="issue-count">5</span>
+              </div>
+              <span>TIS-23</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="space" data-title="Engage Saturn Shuttle Lines for group tours (completed)">
+            <h3 class="card-title">
+              Engage Saturn Shuttle Lines for group tours
+            </h3>
+            <div class="card-tags">
+              <span class="tag space">Space Travel Partners</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">1</span>
+              </div>
+              <span>TIS-15</span>
+            </div>
+          </article>
+
+          <article class="card" data-tags="local" data-title="Establish a catering vendor to provide meal service (completed)">
+            <h3 class="card-title">
+              Establish a catering vendor to provide meal service
+            </h3>
+            <div class="card-tags">
+              <span class="tag local">Local Mars Office</span>
+            </div>
+            <div class="card-footer">
+              <div class="card-metadata-left">
+                <div class="priority-icon low"></div>
+                <span class="issue-count">4</span>
+              </div>
+              <span>TIS-19</span>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Simple search: filter cards by text
+  const searchInput = document.getElementById("searchInput");
+  const cards = Array.from(document.querySelectorAll(".card"));
+
+  function applySearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    cards.forEach((card) => {
+      const text = card.dataset.title.toLowerCase();
+      card.style.display = text.includes(query) ? "" : "none";
+    });
+  }
+
+  searchInput.addEventListener("input", applySearch);
+
+  // Quick filters by tag
+  const filterToggle = document.getElementById("filterToggle");
+  const filtersMenu = document.getElementById("filtersMenu");
+  const filterItems = Array.from(
+    document.querySelectorAll(".filters-item")
+  );
+
+  function closeFilters(event) {
+    if (!filtersMenu.contains(event.target) && event.target !== filterToggle) {
+      filtersMenu.classList.remove("active");
+      document.removeEventListener("click", closeFilters);
+    }
+  }
+
+  filterToggle.addEventListener("click", (e) => {
+    e.stopPropagation();
+    filtersMenu.classList.toggle("active");
+    if (filtersMenu.classList.contains("active")) {
+      setTimeout(() => document.addEventListener("click", closeFilters), 0);
+    } else {
+      document.removeEventListener("click", closeFilters);
+    }
+  });
+
+  filterItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      filterItems.forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+      const filter = item.getAttribute("data-filter");
+
+      cards.forEach((card) => {
+        const tags = card.dataset.tags || "";
+        let show = true;
+        if (filter !== "all") {
+          show = tags.split(/\s+/).includes(filter);
+        }
+        const matchesSearch = card
+          .dataset.title.toLowerCase()
+          .includes(searchInput.value.trim().toLowerCase());
+        card.style.display = show && matchesSearch ? "" : "none";
+      });
+
+      filtersMenu.classList.remove("active");
+    });
+  });
+</script>
+</body>
+</html>

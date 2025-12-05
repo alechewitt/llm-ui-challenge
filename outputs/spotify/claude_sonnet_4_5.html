@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', 'Arial', sans-serif;
+            background: #000;
             color: #fff;
             overflow: hidden;
         }
@@ -24,181 +24,148 @@
             flex-direction: column;
         }
 
-        /* Top Bar */
         .top-bar {
             display: flex;
             align-items: center;
             padding: 16px;
-            background-color: #000;
+            background: #000;
             gap: 16px;
         }
 
-        .window-controls {
+        .traffic-lights {
             display: flex;
             gap: 8px;
         }
 
-        .window-btn {
+        .traffic-light {
             width: 12px;
             height: 12px;
             border-radius: 50%;
         }
 
-        .window-btn.red { background-color: #ff5f56; }
-        .window-btn.yellow { background-color: #ffbd2e; }
-        .window-btn.green { background-color: #27c93f; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
 
-        .nav-buttons {
+        .nav-arrows {
             display: flex;
             gap: 16px;
             margin-left: 8px;
         }
 
-        .nav-btn {
-            background: none;
+        .nav-arrow {
+            background: transparent;
             border: none;
             color: #b3b3b3;
             font-size: 24px;
             cursor: pointer;
         }
 
+        .home-icon {
+            background: #1a1a1a;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 200px;
+        }
+
         .search-bar {
             flex: 1;
             max-width: 500px;
+            background: #242424;
+            border-radius: 24px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            background-color: #242424;
-            border-radius: 24px;
-            padding: 8px 16px;
-            margin-left: 16px;
-        }
-
-        .home-icon {
-            background-color: #242424;
-            padding: 8px 16px;
-            border-radius: 24px;
-            margin-left: 16px;
+            gap: 12px;
         }
 
         .search-bar input {
-            background: none;
+            background: transparent;
             border: none;
             color: #fff;
-            flex: 1;
-            margin-left: 8px;
             outline: none;
+            flex: 1;
+            font-size: 14px;
         }
 
         .top-right-icons {
-            margin-left: auto;
             display: flex;
-            gap: 16px;
+            gap: 20px;
             align-items: center;
+            margin-left: auto;
         }
 
         .icon-btn {
-            background: none;
+            background: transparent;
             border: none;
             color: #b3b3b3;
             font-size: 20px;
             cursor: pointer;
-            position: relative;
         }
 
-        .notification-dot {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 8px;
-            height: 8px;
-            background-color: #1db954;
+        .profile-icon {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #ff6b35;
+            background: #ff6b35;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            cursor: pointer;
         }
 
-        /* Main Content */
         .main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        /* Sidebar */
         .sidebar {
-            width: 280px;
-            background-color: #000;
-            padding: 16px;
+            width: 350px;
+            background: #000;
+            padding: 24px;
             overflow-y: auto;
         }
 
         .sidebar-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .sidebar-title {
-            display: flex;
             align-items: center;
-            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-header h2 {
             font-size: 16px;
-            font-weight: bold;
         }
 
-        .sidebar-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .sidebar-actions button {
-            background: none;
-            border: none;
-            color: #b3b3b3;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .sidebar-tabs {
+        .sidebar-icons {
             display: flex;
             gap: 16px;
-            margin-bottom: 16px;
         }
 
-        .sidebar-tab {
-            background: none;
-            border: none;
-            color: #b3b3b3;
-            cursor: pointer;
-            padding: 8px 0;
-        }
-
-        .sidebar-tab.active {
-            color: #fff;
-        }
-
-        .sidebar-controls {
+        .tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 16px 0;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
-        .sidebar-controls button {
-            background: none;
-            border: none;
+        .tab {
+            background: transparent;
             color: #b3b3b3;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            color: #fff;
         }
 
         .playlist-item {
@@ -211,19 +178,19 @@
         }
 
         .playlist-item:hover {
-            background-color: #1a1a1a;
+            background: #1a1a1a;
         }
 
-        .playlist-img {
+        .playlist-cover {
             width: 48px;
             height: 48px;
             border-radius: 4px;
-            background-color: #5f3dc4;
+            background: #333;
+            flex-shrink: 0;
         }
 
         .playlist-info h4 {
             font-size: 14px;
-            font-weight: normal;
             margin-bottom: 4px;
         }
 
@@ -232,12 +199,11 @@
             color: #b3b3b3;
         }
 
-        /* Content Area */
-        .content {
+        .content-area {
             flex: 1;
-            background: linear-gradient(to bottom, #1a1a1a 0%, #121212 300px);
-            padding: 24px;
+            background: #121212;
             overflow-y: auto;
+            padding: 24px;
         }
 
         .filter-tabs {
@@ -246,577 +212,559 @@
             margin-bottom: 24px;
         }
 
-        .filter-btn {
-            background-color: #242424;
+        .filter-tab {
+            background: #242424;
             border: none;
             color: #fff;
-            padding: 8px 20px;
+            padding: 10px 20px;
             border-radius: 20px;
             cursor: pointer;
+            font-size: 14px;
         }
 
-        .filter-btn.active {
-            background-color: #fff;
+        .filter-tab.active {
+            background: #fff;
             color: #000;
         }
 
-        .quick-access {
+        .content-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
             margin-bottom: 32px;
         }
 
-        .quick-item {
-            display: flex;
-            align-items: center;
-            background-color: #2a2a2a;
-            border-radius: 4px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .quick-item:hover {
-            background-color: #3a3a3a;
-        }
-
-        .quick-item-img {
-            width: 60px;
-            height: 60px;
-            background-color: #5f3dc4;
-        }
-
-        .quick-item-title {
-            padding: 0 16px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .section {
-            margin-bottom: 32px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .show-all {
-            color: #b3b3b3;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .show-all:hover {
-            text-decoration: underline;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 24px;
-        }
-
-        .card {
-            background-color: #181818;
-            padding: 16px;
+        .content-card {
+            background: #1a1a1a;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
 
-        .card:hover {
-            background-color: #282828;
+        .content-card:hover {
+            background: #282828;
         }
 
-        .card-img {
+        .card-image {
             width: 100%;
             aspect-ratio: 1;
-            background-color: #333;
-            border-radius: 8px;
+            background: #333;
+            border-radius: 4px;
             margin-bottom: 12px;
         }
 
         .card-title {
             font-size: 14px;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
-        .card-description {
+        .card-subtitle {
             font-size: 12px;
             color: #b3b3b3;
-            line-height: 1.4;
         }
 
-        /* Player */
-        .player {
-            background-color: #181818;
-            border-top: 1px solid #282828;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 32px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .show-all {
+            color: #b3b3b3;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .show-all:hover {
+            color: #fff;
+        }
+
+        .made-for-you-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .made-for-you-card {
+            background: #1a1a1a;
             padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .made-for-you-card:hover {
+            background: #282828;
+        }
+
+        .mfy-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #333;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .recently-played-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .player-bar {
+            background: #181818;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #282828;
+        }
+
+        .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 300px;
+        }
+
+        .album-art {
+            width: 56px;
+            height: 56px;
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .song-info h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .song-info p {
+            font-size: 12px;
+            color: #b3b3b3;
         }
 
         .player-controls {
+            flex: 1;
+            max-width: 720px;
+        }
+
+        .control-buttons {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 16px;
             margin-bottom: 8px;
         }
 
-        .player-btn {
-            background: none;
+        .control-btn {
+            background: transparent;
             border: none;
             color: #b3b3b3;
-            cursor: pointer;
             font-size: 16px;
+            cursor: pointer;
         }
 
         .play-btn {
+            background: #fff;
+            color: #000;
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background-color: #fff;
-            color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
         }
 
         .progress-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
 
         .time {
-            font-size: 11px;
+            font-size: 12px;
             color: #b3b3b3;
         }
 
         .progress {
             flex: 1;
             height: 4px;
-            background-color: #4d4d4d;
+            background: #4d4d4d;
             border-radius: 2px;
-            overflow: hidden;
+            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            background-color: #fff;
-            width: 40%;
+            background: #fff;
+            border-radius: 2px;
+            width: 30%;
         }
 
-        .now-playing {
-            position: fixed;
-            bottom: 90px;
-            left: 16px;
+        .right-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
+            width: 300px;
+            justify-content: flex-end;
         }
 
-        .now-playing-img {
-            width: 56px;
-            height: 56px;
-            background-color: #333;
-            border-radius: 4px;
-        }
-
-        .now-playing-info h4 {
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .now-playing-info p {
-            font-size: 11px;
-            color: #b3b3b3;
-        }
-
-        .player-right {
-            position: fixed;
-            bottom: 24px;
-            right: 16px;
+        .volume-control {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
+            width: 150px;
         }
 
-        .volume-slider {
-            width: 100px;
+        .volume-bar {
+            flex: 1;
             height: 4px;
-            background-color: #4d4d4d;
+            background: #4d4d4d;
             border-radius: 2px;
         }
 
         .volume-fill {
-            width: 70%;
             height: 100%;
-            background-color: #fff;
+            background: #fff;
             border-radius: 2px;
+            width: 70%;
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 8px;
+            height: 8px;
+            background: #1e90ff;
+            border-radius: 50%;
+        }
+
+        .icon-container {
+            position: relative;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Top Bar -->
         <div class="top-bar">
-            <div class="window-controls">
-                <div class="window-btn red"></div>
-                <div class="window-btn yellow"></div>
-                <div class="window-btn green"></div>
+            <div class="traffic-lights">
+                <div class="traffic-light red"></div>
+                <div class="traffic-light yellow"></div>
+                <div class="traffic-light green"></div>
             </div>
-            <div class="nav-buttons">
-                <button class="nav-btn">‹</button>
-                <button class="nav-btn">›</button>
+            <div class="nav-arrows">
+                <button class="nav-arrow">‹</button>
+                <button class="nav-arrow">›</button>
             </div>
-            <div class="home-icon">🏠</div>
+            <div class="home-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5v-6a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6H20V7.577l-7.5-4.33z"/>
+                </svg>
+            </div>
             <div class="search-bar">
-                <span>🔍</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#b3b3b3">
+                    <path d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 1 0 1.414-1.414l-4.344-4.344a9.157 9.157 0 0 0 2.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z"/>
+                </svg>
                 <input type="text" placeholder="What do you want to play?">
             </div>
             <div class="top-right-icons">
-                <button class="icon-btn">
-                    🔔
-                    <span class="notification-dot"></span>
-                </button>
+                <button class="icon-btn">🛒</button>
+                <div class="icon-container">
+                    <button class="icon-btn">🔔</button>
+                    <div class="notification-dot"></div>
+                </div>
                 <button class="icon-btn">👥</button>
-                <div class="user-avatar">A</div>
+                <div class="profile-icon">A</div>
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
-            <!-- Sidebar -->
             <div class="sidebar">
                 <div class="sidebar-header">
-                    <div class="sidebar-title">
-                        <span>📚</span>
-                        <span>Your Library</span>
-                    </div>
-                    <div class="sidebar-actions">
-                        <button>+</button>
-                        <button>⤢</button>
+                    <h2>Your Library</h2>
+                    <div class="sidebar-icons">
+                        <button class="icon-btn">+</button>
+                        <button class="icon-btn">⤢</button>
                     </div>
                 </div>
 
-                <div class="sidebar-tabs">
-                    <button class="sidebar-tab active">Playlists</button>
-                    <button class="sidebar-tab">Podcasts</button>
-                    <button class="sidebar-tab">Albums</button>
-                </div>
-
-                <div class="sidebar-controls">
-                    <button>🔍</button>
-                    <button>Recents ≡</button>
+                <div class="tabs">
+                    <button class="tab">Playlists</button>
+                    <button class="tab">Podcasts</button>
+                    <button class="tab">Albums</button>
+                    <button class="tab">›</button>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Liked Songs</h4>
-                        <p>🎵 Playlist • 51 songs</p>
+                        <h4>Man of Steel!</h4>
+                        <p>Playlist • 31r73z5sngxqxhd7vxsk7l2...</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #e74c3c;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Spanish baby boom</h4>
-                        <p>Playlist • alechewitt99</p>
+                        <h4>We are the champions!</h4>
+                        <p>Playlist • 31r73z5sngxqxhd7vxsk7l2...</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #3498db;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Baby C Major EarAnchor</h4>
-                        <p>Playlist • alechewitt99</p>
+                        <h4>Duo</h4>
+                        <p>Playlist • 31r73z5sngxqxhd7vxsk7l2...</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #9b59b6;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Discover Weekly</h4>
+                        <h4>I'll cover you!</h4>
+                        <p>Playlist • 31r73z5sngxqxhd7vxsk7l2...</p>
+                    </div>
+                </div>
+
+                <div class="playlist-item">
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                    <div class="playlist-info">
+                        <h4>Morning Motivation</h4>
                         <p>Playlist • Spotify</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #2ecc71;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Piano Ideas</h4>
-                        <p>Playlist • alechewitt99</p>
+                        <h4>80's</h4>
+                        <p>Playlist • 31r73z5sngxqxhd7vxsk7l2...</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #34495e;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Blueberry debut</h4>
-                        <p>Playlist • Simrita Shaheed</p>
+                        <h4>jazz band, club jazz, and jazz tr...</h4>
+                        <p>Playlist • Spotify</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #1abc9c;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Malpica</h4>
+                        <h4>DJ</h4>
+                        <p>Click to start listening</p>
+                    </div>
+                </div>
+
+                <div class="playlist-item">
+                    <div class="playlist-cover" style="background: #555;"></div>
+                    <div class="playlist-info">
+                        <h4>Herb Alpert</h4>
                         <p>Artist</p>
                     </div>
                 </div>
 
                 <div class="playlist-item">
-                    <div class="playlist-img" style="background-color: #f39c12;"></div>
+                    <div class="playlist-cover" style="background: linear-gradient(135deg, #3cba54 0%, #3cba54 100%);"></div>
                     <div class="playlist-info">
-                        <h4>Alec + Simi</h4>
-                        <p>Playlist • tivvyhewitt</p>
+                        <h4>Your Episodes</h4>
+                        <p>Playlist • Saved & downloaded epis...</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Content Area -->
-            <div class="content">
+            <div class="content-area">
                 <div class="filter-tabs">
-                    <button class="filter-btn active">All</button>
-                    <button class="filter-btn">Music</button>
-                    <button class="filter-btn">Podcasts</button>
-                    <button class="filter-btn">Audiobooks</button>
+                    <button class="filter-tab active">All</button>
+                    <button class="filter-tab">Music</button>
+                    <button class="filter-tab">Podcasts</button>
+                    <button class="filter-tab">Audiobooks</button>
                 </div>
 
-                <div class="quick-access">
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #e74c3c;"></div>
-                        <div class="quick-item-title">Spanish Songs for Kids</div>
+                <div class="content-grid">
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);"></div>
+                        <div class="card-title">Peaceful Piano</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #3498db;"></div>
-                        <div class="quick-item-title">Spanish Lullabies 💙</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #b3d9ff 0%, #7ab8e8 100%);"></div>
+                        <div class="card-title">White Noise</div>
+                        <div class="card-subtitle">10 Hours</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #95a5a6;"></div>
-                        <div class="quick-item-title">Chill Mix</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);"></div>
+                        <div class="card-title">Spanish</div>
+                        <div class="card-subtitle">Songs for Kids</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #9b59b6;"></div>
-                        <div class="quick-item-title">Stevie Wonder Radio</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);"></div>
+                        <div class="card-title">daylist</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #2ecc71;"></div>
-                        <div class="quick-item-title">Cuento de SPIDEY y su Superequip...</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <div class="card-title">Spanish</div>
+                        <div class="card-subtitle">Lullabies 🔥</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #e67e22;"></div>
-                        <div class="quick-item-title">Peaceful Piano</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        <div class="card-title">Cuento de</div>
+                        <div class="card-subtitle">SPIDEY y su...</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #1abc9c;"></div>
-                        <div class="quick-item-title">White Noise 10 Hours</div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);"></div>
+                        <div class="card-title">Stevie</div>
+                        <div class="card-subtitle">Wonder Radio</div>
                     </div>
-                    <div class="quick-item">
-                        <div class="quick-item-img" style="background-color: #c0392b;"></div>
-                        <div class="quick-item-title">Chappell Roan</div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">It's New Music Friday!</h2>
-                        <a href="#" class="show-all">Show all</a>
-                    </div>
-                    <div class="card-grid">
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
-                            <div class="card-title">New music from Ed Sheeran, Lil Uzi Vert,...</div>
-                            <div class="card-description">New music from Ed Sheeran, Lil Uzi Vert,...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
-                            <div class="card-title">Release Radar</div>
-                            <div class="card-description">Catch all the latest music from artists yo...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
-                            <div class="card-title">editors' picks: best songs of the year so far</div>
-                            <div class="card-description">Meticulously selected by Spotify music...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
-                            <div class="card-title">editors' picks: best songs of october</div>
-                            <div class="card-description">The best new songs of the month,...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);"></div>
-                            <div class="card-title">Classical Bangers 2025</div>
-                            <div class="card-description">Introducing the hottest classical mus...</div>
-                        </div>
+                    <div class="content-card">
+                        <div class="card-image" style="background: linear-gradient(135deg, #434343 0%, #000000 100%);"></div>
+                        <div class="card-title">Chill Mix</div>
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header">
-                        <h2 class="section-title">Made For You</h2>
-                        <a href="#" class="show-all">Show all</a>
+                <div class="section-header">
+                    <h2>Made For You</h2>
+                    <a href="#" class="show-all">Show all</a>
+                </div>
+
+                <div class="made-for-you-grid">
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%, #f093fb 100%);"></div>
+                        <div class="card-title">DISCOVER WEEKLY</div>
+                        <div class="card-subtitle">Your shortcut to hidden gems, deep...</div>
                     </div>
-                    <div class="card-grid">
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative;">
-                                <div style="position: absolute; bottom: 10px; left: 10px; background: #0d72ea; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px;">BETA</div>
-                            </div>
-                            <div class="card-title">DJ</div>
-                            <div class="card-description">All kinds of music, picked by your own ...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background-color: #fab1a0; position: relative;">
-                                <div style="position: absolute; bottom: 10px; left: 10px; background: #00b894; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Daily Mix</div>
-                            </div>
-                            <div class="card-title">Daily Mix</div>
-                            <div class="card-description">Dua Lipa, Chappell Roan, Taylor Swift an...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background-color: #55efc4; position: relative;">
-                                <div style="position: absolute; bottom: 10px; left: 10px; background: #fdcb6e; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Daily Mix</div>
-                            </div>
-                            <div class="card-title">Daily Mix</div>
-                            <div class="card-description">Ethan Elgar, Emile Cerise, Lexi Bradley...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background-color: #e17055; position: relative;">
-                                <div style="position: absolute; bottom: 10px; left: 10px; background: #d63031; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Daily Mix</div>
-                            </div>
-                            <div class="card-title">Daily Mix</div>
-                            <div class="card-description">CantaJuego, Whistlefritz, Marta...</div>
-                        </div>
-                        <div class="card">
-                            <div class="card-img" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); position: relative;">
-                                <div style="position: absolute; bottom: 10px; left: 10px; background: #6c5ce7; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px;">Daily Mix</div>
-                            </div>
-                            <div class="card-title">Daily Mix</div>
-                            <div class="card-description">Misa Bee, Crystal Slowdown, Noise...</div>
-                        </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                        <div class="card-title">DJ</div>
+                        <div class="card-subtitle">All kinds of music, picked by your own...</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);"></div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-subtitle">CantaJuego, Marta Gómez, Canciones d...</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);"></div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-subtitle">Kat Eaton, MT Jones, Flo Naegeli and more</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+                        <div class="card-title">Daily Mix</div>
+                        <div class="card-subtitle">Tankeflukt, Sam Kees, Into the...</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Recently played</h2>
+                    <a href="#" class="show-all">Show all</a>
+                </div>
+
+                <div class="recently-played-grid">
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: radial-gradient(circle, #d4a574 0%, #5d4e37 100%); border-radius: 50%;"></div>
+                        <div class="card-title">Jamiroquai</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #d4a574 0%, #c9b299 100%);"></div>
+                        <div class="card-title">Peaceful Piano</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #b3d9ff 0%, #87ceeb 100%);"></div>
+                        <div class="card-title">White Noise 10 Hours</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);"></div>
+                        <div class="card-title">Spanish Baby Lullabies</div>
+                    </div>
+                    <div class="made-for-you-card">
+                        <div class="mfy-image" style="background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);"></div>
+                        <div class="card-title">instrumental w thursday aftern...</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Now Playing Info -->
-        <div class="now-playing">
-            <div class="now-playing-img"></div>
-            <div class="now-playing-info">
-                <h4>In the Stars</h4>
-                <p>Jeremy Mayfield</p>
+        <div class="player-bar">
+            <div class="now-playing">
+                <div class="album-art"></div>
+                <div class="song-info">
+                    <h4>Virtual Insanity - Remastered 2006</h4>
+                    <p>Jamiroquai</p>
+                </div>
+                <button class="icon-btn">♡</button>
             </div>
-        </div>
 
-        <!-- Player -->
-        <div class="player">
             <div class="player-controls">
-                <button class="player-btn">🔀</button>
-                <button class="player-btn">⏮</button>
-                <button class="play-btn">▶</button>
-                <button class="player-btn">⏭</button>
-                <button class="player-btn">📱</button>
-            </div>
-            <div class="progress-bar">
-                <span class="time">2:15</span>
-                <div class="progress">
-                    <div class="progress-fill"></div>
+                <div class="control-buttons">
+                    <button class="control-btn">🔀</button>
+                    <button class="control-btn">⏮</button>
+                    <button class="play-btn">▶</button>
+                    <button class="control-btn">⏭</button>
+                    <button class="control-btn">🔁</button>
                 </div>
-                <span class="time">2:36</span>
+                <div class="progress-bar">
+                    <span class="time">0:56</span>
+                    <div class="progress">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <span class="time">3:49</span>
+                </div>
             </div>
-        </div>
 
-        <!-- Player Right Controls -->
-        <div class="player-right">
-            <button class="player-btn">▶️</button>
-            <button class="player-btn">🎤</button>
-            <button class="player-btn">📋</button>
-            <button class="player-btn">💻</button>
-            <button class="player-btn">🔊</button>
-            <div class="volume-slider">
-                <div class="volume-fill"></div>
+            <div class="right-controls">
+                <button class="control-btn">📄</button>
+                <button class="control-btn">🎤</button>
+                <button class="control-btn">☰</button>
+                <button class="control-btn">📱</button>
+                <div class="volume-control">
+                    <button class="control-btn">🔊</button>
+                    <div class="volume-bar">
+                        <div class="volume-fill"></div>
+                    </div>
+                </div>
+                <button class="control-btn">⛶</button>
             </div>
-            <button class="player-btn">⛶</button>
-            <button class="player-btn">⤢</button>
         </div>
     </div>
 
     <script>
-        // Play/Pause functionality
-        const playBtn = document.querySelector('.play-btn');
-        let isPlaying = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            const playBtn = document.querySelector('.play-btn');
+            let isPlaying = false;
 
-        playBtn.addEventListener('click', () => {
-            isPlaying = !isPlaying;
-            playBtn.textContent = isPlaying ? '⏸' : '▶';
-        });
-
-        // Progress bar animation
-        const progressFill = document.querySelector('.progress-fill');
-        const timeDisplay = document.querySelectorAll('.time')[0];
-        let currentTime = 135; // 2:15 in seconds
-        const totalTime = 156; // 2:36 in seconds
-
-        setInterval(() => {
-            if (isPlaying && currentTime < totalTime) {
-                currentTime++;
-                const percentage = (currentTime / totalTime) * 100;
-                progressFill.style.width = percentage + '%';
-                
-                const minutes = Math.floor(currentTime / 60);
-                const seconds = currentTime % 60;
-                timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }, 1000);
-
-        // Card hover effects
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-4px)';
-                card.style.transition = 'transform 0.3s';
+            playBtn.addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                this.innerHTML = isPlaying ? '⏸' : '▶';
             });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
+
+            document.querySelectorAll('.content-card, .made-for-you-card, .playlist-item').forEach(card => {
+                card.addEventListener('click', function() {
+                    console.log('Card clicked');
+                });
             });
-        });
 
-        // Filter tabs
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+            const filterTabs = document.querySelectorAll('.filter-tab');
+            filterTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    filterTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
             });
-        });
-
-        // Sidebar tabs
-        const sidebarTabs = document.querySelectorAll('.sidebar-tab');
-        sidebarTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                sidebarTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
-        });
-
-        // Volume control
-        const volumeSlider = document.querySelector('.volume-slider');
-        const volumeFill = document.querySelector('.volume-fill');
-
-        volumeSlider.addEventListener('click', (e) => {
-            const rect = volumeSlider.getBoundingClientRect();
-            const percentage = ((e.clientX - rect.left) / rect.width) * 100;
-            volumeFill.style.width = percentage + '%';
         });
     </script>
 </body>

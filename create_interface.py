@@ -109,7 +109,7 @@ def call_openrouter(
     }
 
     prompt = f"""Generate this {app_name} interface in HTML, CSS and JavaScript.
-Return a single HTML file with embedded CSS and JavaScript."""
+Return a single HTML file with embedded CSS and JavaScript ONLY. Do not return anything else like comments or commentary about the project."""
 
     payload = {
         "model": model,
