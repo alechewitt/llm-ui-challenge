@@ -70,7 +70,9 @@ def encode_image(image_path: str) -> tuple[str, str]:
 
 def extract_html(response_text: str) -> str:
     """Extract HTML code from response, stripping markdown code fences."""
-    # Try to find HTML in code blocks first
+    text = response_text.strip()
+
+    # Try to find HTML in code blocks with closing fence
     patterns = [
         r"```html\s*([\s\S]*?)```",  # ```html ... ```
         r"```\s*(<!DOCTYPE[\s\S]*?)```",  # ``` <!DOCTYPE ... ```
@@ -78,16 +80,16 @@ def extract_html(response_text: str) -> str:
     ]
 
     for pattern in patterns:
-        match = re.search(pattern, response_text, re.IGNORECASE)
+        match = re.search(pattern, text, re.IGNORECASE)
         if match:
             return match.group(1).strip()
 
     # If no code block found, check if response is raw HTML
-    if response_text.strip().startswith(("<!DOCTYPE", "<html", "<HTML")):
-        return response_text.strip()
+    if text.startswith(("<!DOCTYPE", "<html", "<HTML")):
+        return text
 
     # Last resort: return as-is
-    return response_text.strip()
+    return text
 
 
 def call_openrouter(
@@ -130,7 +132,6 @@ Return a single HTML file with embedded CSS and JavaScript ONLY. Do not return a
                 ],
             }
         ],
-        "max_tokens": 16000,
     }
 
     for attempt in range(max_retries):
@@ -206,16 +207,22 @@ def main():
         print(f"Error: {e}")
         return 1
 
-    # Prepare output path
+    # Prepare output paths
     app_dir = app_name_to_dir(args.application_name)
     model_name = model_to_snake_case(args.model)
     output_dir = Path("outputs") / app_dir
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / f"{model_name}.html"
 
+    # Prepare raw output path
+    raw_output_dir = Path("outputs") / "raw" / app_dir
+    raw_output_dir.mkdir(parents=True, exist_ok=True)
+    raw_output_file = raw_output_dir / f"{model_name}.txt"
+
     print(f"Processing: {args.application_name} with {args.model}")
     print(f"  Image: {args.image_path}")
     print(f"  Output: {output_file}")
+    print(f"  Raw output: {raw_output_file}")
 
     try:
         # Encode image
@@ -230,6 +237,10 @@ def main():
             image_data=image_data,
             media_type=media_type,
         )
+
+        # Save raw output
+        raw_output_file.write_text(response)
+        print(f"  Raw response saved to {raw_output_file}")
 
         # Extract HTML
         html_content = extract_html(response)

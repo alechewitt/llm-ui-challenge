@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,123 +6,166 @@
     <title>VS Code UI Clone</title>
     <style>
         :root {
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-            --font-family-monospace: "Menlo", "Consolas", "Courier New", monospace;
-            --bg-color: #1e1e1e;
-            --sidebar-bg: #252526;
-            --activity-bar-bg: #333333;
-            --title-bar-bg: #3c3c3c;
-            --status-bar-bg: #333333;
-            --tab-active-bg: #1e1e1e;
-            --tab-inactive-bg: #2d2d2d;
-            --editor-line-highlight-bg: #2a2d2e;
-            --text-color: #cccccc;
-            --text-color-dim: #888888;
-            --border-color: #444444;
-            --accent-color: #007acc;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: 'Menlo', 'Consolas', 'Courier New', monospace;
+
+            --bg-window: #1f1f1f;
+            --bg-titlebar: #2d2d2d;
+            --bg-activity-bar: #252525;
+            --bg-sidebar: #1d1d1d;
+            --bg-editor: #191919;
+            --bg-statusbar: #161616;
+            --bg-tab-inactive: #252525;
+            --bg-tab-active: #191919;
+            --bg-input: #3c3c3c;
+
+            --text-primary: #cccccc;
+            --text-secondary: #8e8e8e;
+            --text-disabled: #6d6d6d;
+            --text-bright: #ffffff;
+            --text-link: #3794ff;
+
+            --border-color: #333333;
+
             --syntax-keyword: #c586c0;
-            --syntax-function: #dcdcaa;
-            --syntax-variable: #9cdcfe;
             --syntax-string: #ce9178;
+            --syntax-variable: #dcdcaa;
             --syntax-tag: #569cd6;
-            --syntax-attr: #9cdcfe;
+            --syntax-prop: #9cdcfe;
             --syntax-comment: #6a9955;
-            --file-modified-color: #e5c07b;
-            --git-added-color: #81b88b;
-            --error-color: #f48771;
+            --syntax-punctuation: #d4d4d4;
+            --syntax-function: #dcdcaa;
+            --syntax-number: #b5cea8;
+            --line-number: #858585;
+
+            --activity-bar-active-bg: #333333;
+            --activity-bar-active-border: #cccccc;
+            --notification-badge-bg: #007acc;
         }
 
         body {
-            margin: 0;
-            padding: 2.5rem;
-            background-color: #555;
-            font-family: var(--font-family);
+            background-color: #000;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
             font-size: 13px;
-            color: var(--text-color);
+            margin: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
+            height: calc(100vh - 80px);
         }
 
         .vscode-window {
             width: 1280px;
             height: 800px;
-            background-color: var(--bg-color);
+            background-color: var(--bg-window);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            border: 1px solid #555;
+            border: 1px solid #444;
         }
 
         /* Title Bar */
         .title-bar {
-            background-color: var(--title-bar-bg);
-            height: 30px;
+            background-color: var(--bg-titlebar);
+            height: 38px;
             display: flex;
             align-items: center;
             padding: 0 8px;
             flex-shrink: 0;
+            user-select: none;
         }
 
         .window-controls {
             display: flex;
             gap: 8px;
-            margin-right: 15px;
+            padding: 0 8px;
         }
 
-        .window-controls .dot {
+        .control-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
         }
+        .control-dot.red { background-color: #fc605c; }
+        .control-dot.yellow { background-color: #fdbc40; }
+        .control-dot.green { background-color: #34c749; }
 
-        .dot.red { background-color: #fc605c; }
-        .dot.yellow { background-color: #fdbc40; }
-        .dot.green { background-color: #34c749; }
-
-        .nav-controls, .right-controls {
+        .nav-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
+            margin: 0 10px;
         }
-
-        .nav-controls svg, .right-controls svg {
-            fill: #cccccc;
+        .nav-controls svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-disabled);
         }
-        .nav-controls svg:first-child { fill: #666; }
 
         .search-bar {
             flex-grow: 1;
             display: flex;
             justify-content: center;
-            margin: 0 20px;
+            padding: 0 20px;
+        }
+
+        .search-input-wrapper {
+            background-color: var(--bg-input);
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            width: 500px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        .search-input-wrapper svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-secondary);
+            margin-right: 6px;
         }
 
         .search-input {
-            width: 400px;
-            background-color: #252526;
-            border: 1px solid #444;
-            border-radius: 5px;
-            color: var(--text-color);
-            padding: 3px 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            width: 100%;
+            font-size: 13px;
         }
         
-        .search-input input {
-            background: none;
-            border: none;
-            color: inherit;
-            outline: none;
-            width: 100%;
+        .top-right-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
         }
-        .search-input svg { fill: #888; }
-        .title-bar-right-icons { display: flex; align-items: center; gap: 15px; margin-left: auto; }
+
+        .top-right-bar .icon-button svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        .window-actions {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            border: 1px solid var(--text-disabled);
+            border-radius: 4px;
+            padding: 1px;
+            margin-left: 10px;
+        }
+        .window-actions .icon-button {
+            padding: 2px;
+        }
+        .window-actions svg { fill: var(--text-secondary); width: 14px; height: 14px; }
+
 
         /* Main Content */
         .main-content {
@@ -134,387 +176,615 @@
 
         /* Activity Bar */
         .activity-bar {
+            background-color: var(--bg-activity-bar);
             width: 50px;
-            background-color: var(--activity-bar-bg);
+            padding: 10px 0;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
             flex-shrink: 0;
+            user-select: none;
         }
+        
+        .activity-bar-top { flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 15px; }
 
-        .activity-bar-top svg, .activity-bar-bottom svg {
-            width: 24px;
-            height: 24px;
-            fill: var(--text-color-dim);
-            padding: 8px;
-            cursor: pointer;
-        }
-        .activity-bar-top svg:hover, .activity-bar-bottom svg:hover {
-            fill: var(--text-color);
-        }
-
-        .activity-bar-top .icon-container {
-            position: relative;
-        }
-
-        .activity-bar-top .active {
-            fill: var(--text-color);
-            border-left: 2px solid var(--text-color);
-            padding-left: 6px;
-        }
-        .notification-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--accent-color);
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 10px;
+        .activity-icon {
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        .activity-icon svg { width: 24px; height: 24px; fill: var(--text-secondary); }
+        .activity-icon.active svg { fill: var(--text-bright); }
+        .activity-icon.active { border-left: 2px solid var(--activity-bar-active-border); }
+        .activity-icon.active svg { fill: var(--text-primary); }
+
+        .notification-badge {
+            position: absolute;
+            bottom: -2px;
+            right: 12px;
+            background-color: var(--notification-badge-bg);
+            color: white;
+            border-radius: 50%;
+            font-size: 9px;
             font-weight: bold;
-            border: 1px solid var(--activity-bar-bg);
+            width: 16px;
+            height: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--bg-activity-bar);
+        }
+        .notification-badge.small {
+            width: 10px;
+            height: 10px;
+            font-size: 7px;
+            bottom: 5px;
+            right: 15px;
         }
 
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background-color: var(--sidebar-bg);
-            padding: 0 10px;
+            background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            flex-shrink: 0;
+            user-select: none;
         }
-
         .sidebar-header {
+            padding: 8px 10px 8px 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--text-secondary);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-header svg { width: 16px; height: 16px; fill: var(--text-secondary); }
+
+        .explorer-section, .outline-section {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 4px 10px;
+            cursor: pointer;
             font-size: 11px;
             font-weight: bold;
-            color: var(--text-color-dim);
-            text-transform: uppercase;
         }
-        .sidebar-header svg { fill: var(--text-color-dim); }
-
-        .file-explorer ul {
+        .section-header svg.chevron { width: 16px; height: 16px; fill: var(--text-secondary); margin-right: 2px; }
+        .section-header.collapsed svg.chevron { transform: rotate(-90deg); }
+        
+        .file-tree ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        .file-explorer li {
-            padding: 2px 0 2px 15px;
-            position: relative;
+        .file-tree li {
+            padding: 0;
+        }
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 10px;
             cursor: pointer;
-            align-items: center;
+            font-size: 13px;
         }
-        .file-explorer > ul > li {
-            padding-left: 0;
-        }
+        .tree-item:hover { background-color: rgba(255,255,255,0.05); }
 
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .file-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
+        .tree-item svg { width: 16px; height: 16px; margin-right: 6px; flex-shrink: 0; }
+        .tree-item svg.chevron { fill: var(--text-secondary); }
+        .tree-item svg.chevron.collapsed { transform: rotate(-90deg); }
+        .tree-item svg.file-icon { fill: var(--text-secondary); }
+        .tree-item .file-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .file-item svg {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-        }
-
-        .caret {
-            position: absolute;
-            left: 0;
-            top: 5px;
-            transition: transform 0.1s;
-        }
-        
-        .file-explorer li.collapsed > .file-item > .caret { transform: rotate(-90deg); }
-        .file-explorer li.collapsed > ul { display: none; }
-        
-        .section-header {
-            font-weight: bold;
-            padding: 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-        .section-header .caret { position: static; }
-        
-        .git-status {
-            margin-left: auto;
-            color: var(--file-modified-color);
-            font-weight: normal;
-        }
-
-        .git-dot {
+        .file-tree .sub-tree {  padding-left: 16px; }
+        .file-tree .sub-tree.collapsed { display: none; }
+        .modified-dot {
             width: 6px;
             height: 6px;
-            background-color: var(--file-modified-color);
+            background-color: #c99368;
             border-radius: 50%;
-            margin-left: 10px;
-            opacity: 0.7;
+            display: inline-block;
+            margin-left: 8px;
         }
-
-        .icon-ts { fill: #2b7489; }
-        .icon-css { fill: #563d7c; }
-        .icon-react { fill: #61dafb; }
-        .icon-folder { fill: #a9a9a9; }
-        .icon-folder-erb { fill: #e0b484; }
-        .icon-folder-agent { fill: #7fdbca; }
-        .icon-folder-assets { fill: #e0b484; }
-        .icon-folder-modules { fill: #81b88b; }
-        .icon-folder-release { fill: #f17c67; }
-        .icon-folder-src { fill: #81b88b; }
-        .icon-folder-tests { fill: #bde07f; }
-        .icon-folder-main { fill: #f17c67; }
-        .icon-folder-renderer { fill: #a9a9a9; }
 
         /* Editor Group */
         .editor-group {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            background-color: var(--bg-editor);
         }
 
-        .tabs-bar {
+        .tabs-container {
             display: flex;
+            background-color: var(--bg-activity-bar);
             flex-shrink: 0;
-            background-color: #252526;
         }
-
         .tab {
             display: flex;
             align-items: center;
-            padding: 7px 15px 7px 10px;
-            background-color: var(--tab-inactive-bg);
-            border-right: 1px solid #252526;
+            padding: 8px 12px;
+            background-color: var(--bg-tab-inactive);
+            border-right: 1px solid var(--bg-activity-bar);
             cursor: pointer;
-            gap: 6px;
+            color: var(--text-secondary);
         }
-        
         .tab.active {
-            background-color: var(--tab-active-bg);
-            color: var(--text-color);
+            background-color: var(--bg-tab-active);
+            color: var(--text-primary);
         }
-        .tab:not(.active) { color: var(--text-color-dim); }
-        .tab svg { width: 16px; height: 16px; }
-        .tab .close-icon { fill: var(--text-color-dim); width: 12px; height: 12px; margin-left: 10px; }
-        .tab .close-icon:hover { background-color: rgba(255,255,255,0.1); border-radius: 3px; }
-        .tab.active .close-icon { fill: var(--text-color); }
+        .tab svg { width: 16px; height: 16px; margin-right: 6px; }
+        .tab span { white-space: nowrap; }
+        .tab .close-icon {
+            margin-left: 10px;
+            fill: var(--text-secondary);
+            border-radius: 3px;
+            padding: 2px;
+        }
+        .tab .close-icon:hover { background-color: rgba(255,255,255,0.1); }
+        .tab.active .close-icon { fill: var(--text-primary); }
 
-        .editor-container {
+        .tab-actions {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            margin-left: auto;
+            gap: 4px;
+        }
+        .tab-actions svg { width: 18px; height: 18px; fill: var(--text-secondary); padding: 4px; border-radius: 3px; cursor: pointer; }
+        .tab-actions svg:hover { background-color: rgba(255,255,255,0.1); }
+
+
+        .editor-content {
             flex-grow: 1;
-            background-color: var(--bg-color);
-            font-family: var(--font-family-monospace);
-            font-size: 14px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
-        
-        .editor-header {
-            padding: 5px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
+
         .breadcrumbs {
-            color: var(--text-color-dim);
+            padding: 8px 20px;
+            color: var(--text-secondary);
             font-size: 13px;
         }
-        .breadcrumbs svg { fill: var(--text-color-dim); width: 16px; height: 16px; vertical-align: middle; margin: 0 4px; }
+        .breadcrumbs span { margin: 0 4px; }
+        .breadcrumbs .active-file { color: var(--text-primary); }
         
         .git-info {
-            color: var(--text-color-dim);
+            color: var(--text-secondary);
             font-size: 12px;
-            margin-top: 4px;
+            padding: 2px 20px 10px;
         }
 
-        .editor-content-wrapper {
+        .code-container {
             flex-grow: 1;
             display: flex;
-            overflow-y: scroll;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
         }
-        
+
         .line-numbers {
-            padding: 10px 20px 10px 0;
             text-align: right;
-            color: #858585;
-            flex-shrink: 0;
-        }
-        .line-numbers div {
-            padding-right: 20px;
-            height: 21px; 
-            line-height: 21px;
+            padding: 0 20px 0 20px;
+            color: var(--line-number);
+            user-select: none;
         }
 
-        .code-area {
+        .code-editor {
             flex-grow: 1;
-            padding: 10px 0;
+            position: relative;
+            padding-right: 20px;
+            overflow-y: scroll; /* Show scrollbar */
         }
-
-        pre { margin: 0; }
-        code { white-space: pre; line-height: 21px; }
-
-        .syntax-keyword { color: var(--syntax-keyword); }
-        .syntax-string { color: var(--syntax-string); }
-        .syntax-variable { color: var(--syntax-variable); }
-        .syntax-punct { color: #d4d4d4; }
-        .syntax-tag { color: var(--syntax-tag); }
-        .syntax-attr-name { color: var(--syntax-attr); }
-        .syntax-attr-value { color: var(--syntax-string); }
-        .syntax-component { color: var(--syntax-tag); }
-
-        .editor-tabs-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            padding-right: 10px;
-            gap: 15px;
-        }
-        .editor-tabs-right svg { fill: var(--text-color); }
         
-        /* Custom Scrollbar */
-        .editor-content-wrapper::-webkit-scrollbar { width: 10px; }
-        .editor-content-wrapper::-webkit-scrollbar-track { background: transparent; }
-        .editor-content-wrapper::-webkit-scrollbar-thumb { background: #4e4e4e; }
-        .editor-content-wrapper::-webkit-scrollbar-thumb:hover { background: #5a5a5a; }
+        .code-editor::-webkit-scrollbar {
+          width: 14px;
+        }
+        
+        .code-editor::-webkit-scrollbar-track {
+          background: var(--bg-editor);
+        }
+        
+        .code-editor::-webkit-scrollbar-thumb {
+          background-color: #424242;
+          border: 3px solid var(--bg-editor);
+          border-radius: 10px;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre;
+        }
+        .code-line {
+            position: relative;
+        }
+        
+        .indent-guide {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background-color: #3a3a3a;
+            top: 0;
+        }
+
+        .keyword { color: var(--syntax-keyword); }
+        .string { color: var(--syntax-string); }
+        .variable, .function { color: var(--syntax-variable); }
+        .component { color: var(--syntax-variable); }
+        .tag { color: var(--syntax-tag); }
+        .prop { color: var(--syntax-prop); }
+        .punctuation { color: var(--syntax-punctuation); }
+        .comment { color: var(--syntax-comment); }
 
         /* Status Bar */
         .status-bar {
-            background-color: var(--status-bar-bg);
+            background-color: var(--bg-statusbar);
             height: 24px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             padding: 0 10px;
             font-size: 12px;
             flex-shrink: 0;
+            user-select: none;
         }
 
         .status-bar-left, .status-bar-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
-
-        .status-item {
+        .status-bar-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            padding: 0 4px;
             cursor: pointer;
         }
-        .status-item:hover { background-color: rgba(255,255,255,0.1); }
-        .status-item svg { fill: #fff; width: 14px; height: 14px;}
-        .status-item .no-fill-svg { fill: none; stroke: #fff;}
+        .status-bar-item:hover { background-color: rgba(255,255,255,0.1); }
+
+        .status-bar-item svg { width: 16px; height: 16px; fill: var(--text-primary); }
+
     </style>
 </head>
 <body>
 
-<div class="vscode-window">
-    <!-- Title Bar -->
-    <header class="title-bar">
-        <div class="window-controls">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
-        </div>
-        <div class="nav-controls">
-            <svg viewBox="0 0 16 16"><path d="M7.976 2.524a.5.5 0 0 0-.952 0l-5.5 11a.5.5 0 0 0 .476.726h11a.5.5 0 0 0 .476-.726l-5.5-11z M8 4.25l4.33 8.66H3.67L8 4.25z"/></svg> <!-- Placeholder for Left Arrow -->
-            <svg viewBox="0 0 16 16"><path d="M7.976 2.524a.5.5 0 0 0-.952 0l-5.5 11a.5.5 0 0 0 .476.726h11a.5.5 0 0 0 .476-.726l-5.5-11z M8 4.25l4.33 8.66H3.67L8 4.25z"/></svg> <!-- Placeholder for Right Arrow -->
-        </div>
-        <div class="search-bar">
-            <div class="search-input">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.68 11.74a6 6 0 0 1-7.922-8.568 6 6 0 0 1 8.568 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04zM9.47 10.36a4.5 4.5 0 1 1 .16-6.52 4.5 4.5 0 0 1-.16 6.52z"></path></svg>
-                <input type="text" value="claude-code-sdk-demos" readonly>
+    <div class="vscode-window">
+        <!-- Title Bar -->
+        <header class="title-bar">
+            <div class="window-controls">
+                <div class="control-dot red"></div>
+                <div class="control-dot yellow"></div>
+                <div class="control-dot green"></div>
             </div>
-        </div>
-        <div class="title-bar-right-icons">
-            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 1.5H5v1H1.5V6h-1V1.5a1 1 0 0 1 1-1h4v1H1.5zm11 0a1 1 0 0 1 1 1V6h-1V2.5H11v-1h4V6h1V1.5a1 1 0 0 0-1-1h-4zm-1 14v-1h3.5V10h1v4.5a1 1 0 0 1-1 1h-4v-1H12.5zM1.5 10v4.5H5v1H1.5a1 1 0 0 1-1-1V10h1zm9.293-6.293l1.93-1.929.707.707L9.5 8.414l-2.646 2.647-.708-.707L8.793 7.707l-1.93-1.929-.707.707L8.086 8.414l-2.647-2.647.708-.707L8.793 7l-1.93-1.929.707-.707L9.5 6.293l2.646-2.647.708.707L10.207 7z"/></svg>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="m11.133 2.544-.707-.707L8 4.293V1.5H7v2.793L4.574 1.837l-.707.707L6.293 5H3.5v1h2.793L3.837 8.426l.707.707L7 6.707V9.5H8V6.707l2.426 2.426.707-.707L8.707 6H11.5V5H8.707l2.426-2.456Z"/><path d="M4.574 14.163l.707.707L7.707 12.5H10.5v-1H7.707l2.456-2.426-.707-.707L7 11.293V8.5H6v2.793L3.574 8.837l-.707.707L5.293 12H2.5v1h2.793L2.837 15.426l.707.707L6 13.707V16.5h1v-2.793l2.426 2.456Z"/></svg>
-            <svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M1 3.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V10h-1v2.5H2V3.5h5V9h1V3.5h5v3h1v-3a.5.5 0 0 0-.5-.5H9v-1h5.5a.5.5 0 0 1 .5.5v10a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5H7v1H1.5a.5.5 0 0 0-.5.5z"/></svg>
-            <svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M9.5 2.5h-3V1h3v1.5zm-5 0H1v1.5h3.5v-1.5zm10 0H11v1.5h3.5v-1.5zM1 13.5h3.5V15H1v-1.5zm5.5 0h3.5V15H6.5v-1.5zm5.5 0H15V15h-3.5v-1.5zM1 8h3.5V9.5H1V8zm5.5 0h3.5V9.5H6.5V8zm5.5 0H15V9.5h-3.5V8z"/></svg>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Activity Bar -->
-        <div class="activity-bar">
-            <div class="activity-bar-top">
-                <svg class="active" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 1.75C2 .784 2.784 0 3.75 0h6.5C11.216 0 12 .784 12 1.75v12.5c0 .966-.784 1.75-1.75 1.75h-6.5C2.784 16 2 15.216 2 14.25V1.75zM3.5 1.5a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h6.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25h-6.5zM8.25 4.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V5.25a.75.75 0 0 1 .75-.75zM5.25 6.5a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1a.75.75 0 0 1-.75-.75z"/></svg>
-                <svg viewBox="0 0 16 16" ><path fill-rule="evenodd" d="M10.68 11.74a6 6 0 0 1-7.922-8.568 6 6 0 0 1 8.568 7.922l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04zM9.47 10.36a4.5 4.5 0 1 1 .16-6.52 4.5 4.5 0 0 1-.16 6.52z"></path></svg>
-                <div class="icon-container">
-                    <svg viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 3.125a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 .5.5v3.319a.5.5 0 0 1-.156.368L11.5 9.75v2.368a.5.5 0 0 1-.266.447l-3.25 1.625a.5.5 0 0 1-.468 0L4.266 12.565a.5.5 0 0 1-.266-.447V9.75L1.156 6.812a.5.5 0 0 1-.156-.368V3.125zM11 9.022l2.5-2.794V3.125H2.5v3.103L5 9.022V12.1l2.75 1.375V9.382a.5.5 0 0 1 .156-.368L11 5.978v3.044z"></path></svg>
-                    <div class="notification-badge">3</div>
+            <div class="nav-controls">
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 12.5l-5-4.5 5-4.5.5.5-4.5 4 4.5 4-.5.5z"></path></svg>
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 3.5l5 4.5-5 4.5-.5-.5 4.5-4-4.5-4 .5-.5z"></path></svg>
+            </div>
+            <div class="search-bar">
+                <div class="search-input-wrapper">
+                    <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.146 10.854a.5.5 0 010 .708l-3.536 3.535a.5.5 0 01-.708-.707L9.439 11h-5.29a.5.5 0 010-1h5.29L6.604 7.146a.5.5 0 01.708-.707l3.535 3.535zM3.5 13.5a.5.5 0 01-.5-.5v-10a.5.5 0 01.5-.5h8a.5.5 0 01.5.5v2.75a.5.5 0 01-1 0V3.5h-7v9h7V9.75a.5.5 0 011 0v3.75a.5.5 0 01-.5.5h-8z"></path></svg>
+                    <input type="text" class="search-input" value="claude-code-sdk-demos">
+                    <svg viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.707 11.293a1 1 0 10-1.414 1.414l2.5 2.5a1 1 0 001.414-1.414l-2.5-2.5zM7 11a4 4 0 100-8 4 4 0 000 8zm-5 0a5 5 0 1110 0 5 5 0 01-10 0z"></path></svg>
                 </div>
-                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 2.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 .5.5v.17a3.001 3.001 0 0 0-2.22-1.013H4.22c-.93 0-1.74.553-2.148 1.375A3 3 0 0 0 1.5 2.67V2.5zm0 11V3.33a3 3 0 0 0 .572.648c.408.822 1.218 1.375 2.148 1.375h7.56a3.001 3.001 0 0 0 2.22-1.012V13.5a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5zm10.518-8.248a2 2 0 0 1-1.39 1.39A2 2 0 0 1 9.28 5.25h-2.56a2 2 0 1 1-1.39-1.39 2 2 0 0 1 1.39-1.39h2.56c.92 0 1.737.628 1.958 1.518z"/></svg>
-                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.5 4l-1.66 1.373a.75.75 0 0 1-1.033-.21L8.75 3.5 7.42 5.093a.75.75 0 0 1-1.06.03L4.5 3.328 2.5 5v8.5a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V4zM1.5 4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V4z"/></svg>
-                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 1h10a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 .5-.5zM3 14h9V2H3v12zm1-5.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-1zm-6-4a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1z"/></svg>
-                <svg viewBox="0 0 16 16"><path d="M10.561 10.072c.074.18.11.373.11.578 0 .966-.784 1.75-1.75 1.75s-1.75-.784-1.75-1.75c0-.205.037-.399.11-.578A3.5 3.5 0 0 1 5.929 7.5c0-.967.783-1.75 1.75-1.75s1.75.783 1.75 1.75a3.5 3.5 0 0 1-1.368 2.572z M8.921 5.49a.53.53 0 0 0 .23-.42c0-.495-.403-.895-.895-.895a.896.896 0 0 0-.895.895c0 .16.043.31.12.441a2.5 2.5 0 0 0 1.44 1.44c.13.076.28.119.44.119.495 0 .895-.403.895-.895a.53.53 0 0 0-.199-.401l-.001-.001z M7.679 13.5a1.753 1.753 0 0 1-.951-3.235A3.493 3.493 0 0 1 5.001 7.5a3.493 3.493 0 0 1 1.727-2.765 1.753 1.753 0 0 1 3.234-.952A3.5 3.5 0 0 1 12.5 7.5a3.5 3.5 0 0 1-2.765 3.483 1.753 1.753 0 0 1-2.056 2.518v-.001zM1.5 7.5a6.5 6.5 0 0 1 10.02-5.714.5.5 0 0 0 .445-.863A7.5 7.5 0 1 0 15 7.5a.5.5 0 0 0-1 0 6.5 6.5 0 0 1-12.5 0z"/></svg>
+            </div>
+            <div class="top-right-bar">
+                <div class="icon-button">
+                    <svg viewBox="0 0 16 16"><path d="M14.5 1h-13l-.5.5v2l.5.5h13l.5-.5v-2l-.5-.5zm-1 2h-11v-1h11v1zM1.5 5h13l.5.5v8l-.5.5h-13l-.5-.5v-8l.5-.5zm12 8v-7h-11v7h11z"></path></svg>
+                </div>
+                <div class="window-actions">
+                    <div class="icon-button"><svg viewBox="0 0 16 16"><rect x="1.5" y="7.5" width="13" height="1"></rect></svg></div>
+                    <div class="icon-button"><svg viewBox="0 0 16 16"><path d="M2.5 2.5h11v11h-11v-11zm1 1v9h9v-9h-9z"></path></svg></div>
+                    <div class="icon-button"><svg viewBox="0 0 16 16"><path d="M5.146 10.854l-2.792-2.792h11.292v-1h-11.292l2.792-2.792-.707-.707-3.647 3.646.354.354 3.646 3.646.707-.707z"></path></svg></div>
+                </div>
+            </div>
+        </header>
 
-            </div>
-            <div class="activity-bar-bottom">
-                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12.25 9.75a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1 0-1.5h8.5zM14 12.25a.75.75 0 0 1-.75.75H2.75a.75.75 0 0 1 0-1.5h10.5a.75.75 0 0 1 .75.75z"/></svg>
-                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M12.981 4.965a.25.25 0 0 0-.236-.465H3.255a.25.25 0 0 0-.236.465L5.75 6.452v5.798l-1.5-1.5a.25.25 0 0 0-.354.354l2.25 2.25a.25.25 0 0 0 .354 0l2.25-2.25a.25.25 0 0 0-.354-.354l-1.5 1.5V6.452l2.731-1.487zM1.5 2.5a.5.5 0 0 1 .5-.5h12a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-.5.5h-12a.5.5 0 0 1-.5-.5v-11z"/></svg>
-            </div>
-        </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Activity Bar -->
+            <nav class="activity-bar">
+                <div class="activity-bar-top">
+                    <div class="activity-icon active">
+                        <svg viewBox="0 0 16 16"><path d="M3 1a1 1 0 00-1 1v12a1 1 0 001 1h10a1 1 0 001-1V2a1 1 0 00-1-1H3zm0 13V2h10v12H3zM5.5 3h5a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-5a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5z"></path></svg>
+                    </div>
+                    <div class="activity-icon">
+                        <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.707 11.293a1 1 0 10-1.414 1.414l2.5 2.5a1 1 0 001.414-1.414l-2.5-2.5zM7 11a4 4 0 100-8 4 4 0 000 8zm-5 0a5 5 0 1110 0 5 5 0 01-10 0z"></path></svg>
+                    </div>
+                    <div class="activity-icon">
+                       <div class="notification-badge">3</div>
+                       <svg viewBox="0 0 16 16"><path d="M5 3a2 2 0 012-2h4.5a2.5 2.5 0 012.5 2.5V13a2 2 0 01-2 2h-7a2 2 0 01-2-2v-4.5a2.5 2.5 0 012.5-2.5H5zm-.5 0a1.5 1.5 0 00-1.5 1.5V10h1.5V3zM6 10h1.5V2.5a1.5 1.5 0 00-1.5-1.5H5.8c.2.2.4.5.5 1v8zM7 3v7H4.5V4.5A1.5 1.5 0 016 3h1z"></path><circle cx="11.5" cy="11.5" r="1.5"></circle><circle cx="4.5" cy="11.5" r="1.5"></circle><path d="M11 6.5a1 1 0 100-2 1 1 0 000 2z"></path></svg>
+                    </div>
+                    <div class="activity-icon">
+                       <svg viewBox="0 0 16 16"><path d="M7 4.5v3l-2 1V10h6V8.5l-2-1v-3L7 4.5zM8 12v-1h4v1H8zM6 1l.5.5.5-.5h3l.5.5.5-.5h1l.5.5L12 2v2.5L11.5 5h-7L4 4.5V2l-.5-.5L4 1h2zm4 3H6V2h4v2z"></path></svg>
+                    </div>
+                    <div class="activity-icon">
+                       <svg viewBox="0 0 16 16"><path d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0012.5 1h-9zm9.5 5h-3a.5.5 0 00-.5.5v3a.5.5 0 00.5.5h3v4.5h-9V2.5h9v3.5zM12 7H9.5v2H12V7z"></path></svg>
+                    </div>
+                </div>
 
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <span>Explorer</span>
-                <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
-            </div>
-            <div class="file-explorer">
-                <ul>
-                    <li class="">
-                        <div class="file-item section-header">
-                            <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
-                            CLAUDE-CODE-SDK-DEMOS
+                <div class="activity-bar-bottom">
+                    <div class="activity-icon">
+                       <svg viewBox="0 0 16 16"><path d="M8 8a3 3 0 100-6 3 3 0 000 6zM8 9a4.5 4.5 0 00-4.5 4.5a.5.5 0 00.5.5h8a.5.5 0 00.5-.5A4.5 4.5 0 008 9z"></path></svg>
+                    </div>
+                    <div class="activity-icon">
+                        <div class="notification-badge small">1</div>
+                       <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.91 7.27c.22-.3.35-.66.35-1.04a2.73 2.73 0 00-4.43-1.99 2.73 2.73 0 00-4.44 1.99c0 .38.13.74.35 1.04A4.26 4.26 0 001 11.23a.5.5 0 00.41.77h13.18a.5.5 0 00.41-.77 4.26 4.26 0 00-2.09-3.96zM13 3.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zM7 3.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0zm4.55 7a3.27 3.27 0 01-6.52.75h9.94a3.28 3.28 0 01-3.42-.75z"></path></svg>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <span>Explorer</span>
+                    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"></circle><circle cx="2" cy="8" r="1.5"></circle><circle cx="14" cy="8" r="1.5"></circle></svg>
+                </div>
+                <div class="file-tree">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <svg class="chevron" viewBox="0 0 16 16"><path d="M4.9 6l4.1 4.1.9-.9L5.8 5.1z"></path><path d="M5.8 10.9L10 6.8l-.9-.9L4.9 10z"></path></svg>
+                        <span>CLAUDE-CODE-SDK-DEMOS</span>
+                    </div>
+                    <ul class="file-list">
+                        <li>
+                            <div class="tree-item" id="folder-email-agent">
+                                <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                <svg viewBox="0 0 16 16"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                <span class="file-label">email-agent</span>
+                                <span class="modified-dot"></span>
+                            </div>
+                            <ul class="sub-tree collapsed"></ul>
+                        </li>
+                        <li>
+                            <div class="tree-item" id="folder-excel-demo">
+                                <svg class="chevron" viewBox="0 0 16 16"><path d="M11 6v5L6.5 8.5 11 6z"></path></svg>
+                               <svg viewBox="0 0 16 16"><path d="M1.5 2A1.5 1.5 0 013 3.5v9A1.5 1.5 0 011.5 14h-1A1.5 1.5 0 01-1 12.5v-9A1.5 1.5 0 01.5 2h1zM8 3.5L6.5 2H3v1.5a.5.5 0 00.5.5H8z m5.5 1A1.5 1.5 0 0115 6v7.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 01-1 12.5V5h14.5z' transform='translate(1 0)'></path></svg>
+                                <span class="file-label">excel-demo</span>
+                            </div>
+                            <ul class="sub-tree">
+                                <li>
+                                    <div class="tree-item" id="folder-.erb">
+                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                        <svg viewBox="0 0 16 16"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                        <span class="file-label">.erb</span>
+                                    </div>
+                                    <ul class="sub-tree collapsed"></ul>
+                                </li>
+                                <li>
+                                    <div class="tree-item" id="folder-agent">
+                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                        <svg viewBox="0 0 16 16"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                        <span class="file-label">agent</span>
+                                    </div>
+                                    <ul class="sub-tree collapsed"></ul>
+                                </li>
+                                <li>
+                                    <div class="tree-item" id="folder-assets" style="color:#dcb67a;">
+                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                        <svg viewBox="0 0 16 16" style="fill:#dcb67a;"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                        <span class="file-label">assets</span>
+                                    </div>
+                                    <ul class="sub-tree collapsed"></ul>
+                                </li>
+                                <li >
+                                    <div class="tree-item" id="folder-node_modules" style="color:#85b871;">
+                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                        <svg viewBox="0 0 16 16" style="fill:#85b871;"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                        <span class="file-label">node_modules</span>
+                                    </div>
+                                    <ul class="sub-tree collapsed"></ul>
+                                </li>
+                                <li>
+                                    <div class="tree-item" id="folder-release" style="color:#ce7671;">
+                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                        <svg viewBox="0 0 16 16" style="fill:#ce7671;"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                        <span class="file-label">release</span>
+                                    </div>
+                                    <ul class="sub-tree collapsed"></ul>
+                                </li>
+                                <li>
+                                    <div class="tree-item" id="folder-src" style="color:#71b6c1">
+                                        <svg class="chevron" viewBox="0 0 16 16"><path d="M11 6v5L6.5 8.5 11 6z"></path></svg>
+                                        <svg viewBox="0 0 16 16" style="fill:#71b6c1"><path d="M1.5 2A1.5 1.5 0 013 3.5v9A1.5 1.5 0 011.5 14h-1A1.5 1.5 0 01-1 12.5v-9A1.5 1.5 0 01.5 2h1zM8 3.5L6.5 2H3v1.5a.5.5 0 00.5.5H8z m5.5 1A1.5 1.5 0 0115 6v7.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 01-1 12.5V5h14.5z' transform='translate(1 0)'></path></svg>
+                                        <span class="file-label">src</span>
+                                    </div>
+                                    <ul class="sub-tree">
+                                        <li>
+                                            <div class="tree-item" id="folder-__tests__" style="color:#68b3aa;">
+                                                <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                                <svg viewBox="0 0 16 16" style="fill:#68b3aa"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                                <span class="file-label">__tests__</span>
+                                            </div>
+                                            <ul class="sub-tree collapsed"></ul>
+                                        </li>
+                                        <li>
+                                            <div class="tree-item" id="folder-main" style="color:#ce78a4;">
+                                                 <svg class="chevron" viewBox="0 0 16 16"><path d="M11 6v5L6.5 8.5 11 6z"></path></svg>
+                                                 <svg viewBox="0 0 16 16" style="fill:#ce78a4"><path d="M1.5 2A1.5 1.5 0 013 3.5v9A1.5 1.5 0 011.5 14h-1A1.5 1.5 0 01-1 12.5v-9A1.5 1.5 0 01.5 2h1zM8 3.5L6.5 2H3v1.5a.5.5 0 00.5.5H8z m5.5 1A1.5 1.5 0 0115 6v7.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 01-1 12.5V5h14.5z' transform='translate(1 0)'></path></svg>
+                                                <span class="file-label">main</span>
+                                            </div>
+                                            <ul class="sub-tree">
+                                                <li>
+                                                    <div class="tree-item"><svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg><span class="file-label">main.ts</span></div>
+                                                </li>
+                                                <li>
+                                                    <div class="tree-item"><svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg><span class="file-label">menu.ts</span></div>
+                                                </li>
+                                                <li>
+                                                    <div class="tree-item"><svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg><span class="file-label">preload.ts</span></div>
+                                                </li>
+                                                <li>
+                                                    <div class="tree-item"><svg width="16" height="16" viewBox="0 0 16 16" style="margin-right: 6px;"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg><span class="file-label">util.ts</span></div>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                         <li>
+                                            <div class="tree-item" id="folder-renderer">
+                                                 <svg class="chevron" viewBox="0 0 16 16"><path d="M11 6v5L6.5 8.5 11 6z"></path></svg>
+                                                 <svg viewBox="0 0 16 16"><path d="M1.5 2A1.5 1.5 0 013 3.5v9A1.5 1.5 0 011.5 14h-1A1.5 1.5 0 01-1 12.5v-9A1.5 1.5 0 01.5 2h1zM8 3.5L6.5 2H3v1.5a.5.5 0 00.5.5H8z m5.5 1A1.5 1.5 0 0115 6v7.5a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 01-1 12.5V5h14.5z' transform='translate(1 0)'></path></svg>
+                                                <span class="file-label">renderer</span>
+                                            </div>
+                                            <ul class="sub-tree">
+                                                <li>
+                                                    <div class="tree-item" id="folder-components" style="color:#dcb67a;">
+                                                        <svg class="chevron collapsed" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                                                        <svg viewBox="0 0 16 16" style="fill:#dcb67a;"><path d="M2.5 2A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14h11a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0013.5 4H8.207L6.854 2.646A.5.5 0 006.5 2H2.5z"></path></svg>
+                                                        <span class="file-label">components</span>
+                                                    </div>
+                                                    <ul class="sub-tree collapsed"></ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                 <div class="outline-section">
+                    <div class="section-header collapsed" onclick="toggleSection(this)">
+                        <svg class="chevron" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                        <span>OUTLINE</span>
+                    </div>
+                </div>
+                 <div class="outline-section">
+                    <div class="section-header collapsed" onclick="toggleSection(this)">
+                        <svg class="chevron" viewBox="0 0 16 16"><path d="M10.75 8l-4.5-4.25v8.5L10.75 8z"></path></svg>
+                        <span>TIMELINE</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Editor Group -->
+            <div class="editor-group">
+                <div class="tabs-container">
+                    <div class="tab">
+                         <svg width="16" height="16" viewBox="0 0 16 16"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg>
+                        <span>email-db.ts</span>
+                        <span style="color: #ce9178; margin-left:8px; font-weight:bold;">M</span>
+                        <svg class="close-icon" viewBox="0 0 12 12"><path d="M10 1.5L2 9.5M2 1.5L10 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                    </div>
+                    <div class="tab active">
+                        <svg viewBox="0 0 15 15" width="16" height="16" fill="none"><path d="M7.5 14.5C3.35787 14.5 0 11.1421 0 7C0 2.85786 3.35787 -0.5 7.5 -0.5C11.6421 -0.5 15 2.85786 15 7C15 11.1421 11.6421 14.5 7.5 14.5ZM7.5 1.5C9.57107 1.5 11.3323 2.8533 12.1818 4.75H2.81823C3.66774 2.8533 5.42893 1.5 7.5 1.5ZM2.81823 9.25C3.66774 11.1467 5.42893 12.5 7.5 12.5C9.57107 12.5 11.3323 11.1467 12.1818 9.25H2.81823ZM1.19698 7C1.19698 8.12574 1.63753 9.15571 2.37893 9.875H12.6211C13.3625 9.15571 13.803 8.12574 13.803 7C13.803 5.87426 13.3625 4.84429 12.6211 4.125H2.37893C1.63753 4.84429 1.19698 5.87426 1.19698 7Z" fill="#61DAFB"></path><circle cx="7.5" cy="7" r="1" fill="#61DAFB"></circle></svg>
+                        <span>App.tsx</span>
+                        <svg class="close-icon" viewBox="0 0 12 12"><path d="M10 1.5L2 9.5M2 1.5L10 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                    </div>
+                    <div class="tab">
+                        <svg width="16" height="16" viewBox="0 0 16 16"><g transform="translate(1,0)"><path d="M3.5 1L1.1 3.4l2.5 2.4-1.2 1.2L0 4.6 3.5-2.22e-16l2.3 2.3L4.7 3.4z M10.5 1l2.4 2.4-2.5 2.4 1.2 1.2L14 4.6 10.5 0l-2.3 2.3 1.2 1.1z M7 1.3L4.7 13h1.3l.8-3.3h3.5l.8 3.3h1.3L8.3 1.3H7zm1 1.7L9 1H7.8L7 3zm-.4 4.3L6.1 11h-1z" fill="#569cd6" transform="translate(-1, 2) scale(0.9)"></path></g></svg>
+                        <span>App.css</span>
+                        <svg class="close-icon" viewBox="0 0 12 12"><path d="M10 1.5L2 9.5M2 1.5L10 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                    </div>
+                    <div class="tab">
+                        <svg width="16" height="16" viewBox="0 0 16 16"><text x="0" y="13" font-size="10" font-weight="bold" fill="#519aba">TS</text></svg>
+                        <span>util.ts</span>
+                        <svg class="close-icon" viewBox="0 0 12 12"><path d="M10 1.5L2 9.5M2 1.5L10 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+                    </div>
+                    <div class="tab-actions">
+                         <svg viewBox="0 0 16 16"><path d="M14.5 1h-13l-.5.5v13l.5.5h13l.5-.5v-13l-.5-.5zm-1 13h-5.5v-12h5.5v12zm-6.5 0h-5.5V2h5.5v12z"></path></svg>
+                         <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"></circle><circle cx="2" cy="8" r="1.5"></circle><circle cx="14"cy="8" r="1.5"></circle></svg>
+                    </div>
+                </div>
+                <div class="editor-content">
+                    <div class="breadcrumbs">
+                        <span>excel-demo</span><span class="punctuation">&gt;</span>
+                        <span>src</span><span class="punctuation">&gt;</span>
+                        <span>renderer</span><span class="punctuation">&gt;</span>
+                        <span class="active-file">App.tsx</span><span class="punctuation">&gt;</span>...
+                    </div>
+                    <div class="git-info">Thariq Shihipar, last month | 1 author (Thariq Shihipar)</div>
+                    <div class="code-container">
+                        <div class="line-numbers">
+                            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14
                         </div>
-                        <ul>
-                            <li class="collapsed">
-                                <div class="file-item">
-                                    <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
-                                    <svg viewBox="0 0 16 16" class="icon-folder"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg>
-                                    <span>email-agent</span>
-                                    <div class="git-dot"></div>
-                                </div>
-                            </li>
-                             <li class="">
-                                <div class="file-item">
-                                    <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
-                                    <svg viewBox="0 0 16 16" class="icon-folder"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg>
-                                    <span>excel-demo</span>
-                                </div>
-                                <ul style="padding-left:15px;">
-                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-erb"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>.erb</span></div></li>
-                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-agent"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>agent</span></div></li>
-                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-assets"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>assets</span></div></li>
-                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-modules"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>node_modules</span></div></li>
-                                    <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg><svg viewBox="0 0 16 16" class="icon-folder icon-folder-release"><path d="M2.5 2A1.5 1.5 0 0 0 1 3.5v9A1.5 1.5 0 0 0 2.5 14h11a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 13.5 4H8.207a1.5 1.5 0 0 1-1.06-.44L6.088 2.5H2.5z"/></svg><span>release</span></div></li>
-                                    <li class="">
-                                        <div class="file-item">
-                                            <svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L3.22 7.28a.75.75 0 0 1 1.06-1.06L8 9.94l3.72-3.72a.75.75 0 0 1 1.06 0z"/></svg>
-                                            <svg viewBox="0 0 1024 1024" fill="#81b88b"><path d="M480 320l85.333 170.667h170.667l-128 106.666 42.667 170.667-128-106.667-128 106.667 42.667-170.667-128-106.666h170.667z m298.667-170.667l-298.667-170.667-298.667 170.667 128 469.333 170.667 298.667 170.667-298.667 128-469.333z m-298.667-85.333l234.667 149.333-106.667 384-128-213.333h-213.333z"/></svg>
-                                            <span>src</span>
-                                        </div>
-                                        <ul style="padding-left:15px">
-                                             <li class="collapsed"><div class="file-item"><svg class="caret" width="16" height="16" viewBox="0 0 16 16"><path d="M12.78 6.22a.75.75 0 0 1 0 1.
+                        <div class="code-editor">
+                            <pre><code><div class="code-line"><span class="keyword">import</span> <span class="punctuation">{</span> <span class="component">MemoryRouter</span> <span class="keyword">as</span> <span class="component">Router</span><span class="punctuation">,</span> <span class="component">Routes</span><span class="punctuation">,</span> <span class="component">Route</span> <span class="punctuation">}</span> <span class="keyword">from</span> <span class="string">'react-router-dom'</span><span class="punctuation">;</span></div><div class="code-line"><span class="keyword">import</span> <span class="component">ChatInterface</span> <span class="keyword">from</span> <span class="string">'./components/ChatInterface'</span><span class="punctuation">;</span></div><div class="code-line"><span class="keyword">import</span> <span class="string">'./App.css'</span><span class="punctuation">;</span></div><div class="code-line"></div><div class="code-line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="function">App</span><span class="punctuation">() {</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div>  <span class="keyword">return</span> <span class="punctuation">(</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div><div class="indent-guide" style="left: 4ch;"></div>    <span class="tag">&lt;Router&gt;</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div><div class="indent-guide" style="left: 4ch;"></div><div class="indent-guide" style="left: 6ch; height: 150%;"></div>      <span class="tag">&lt;Routes&gt;</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div><div class="indent-guide" style="left: 4ch;"></div><div class="indent-guide" style="left: 6ch; top: -50%;"></div><div class="indent-guide" style="left: 8ch;"></div>        <span class="tag">&lt;Route</span> <span class="prop">path</span><span class="punctuation">=</span><span class="string">"/"</span> <span class="prop">element</span><span class="punctuation">={&lt;</span><span class="component">ChatInterface</span> <span class="punctuation">/&gt;}</span> <span class="punctuation">/&gt;</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div><div class="indent-guide" style="left: 4ch;"></div><div class="indent-guide" style="left: 6ch; height: 150%;"></div>      <span class="tag">&lt;/Routes&gt;</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div><div class="indent-guide" style="left: 4ch;"></div>    <span class="tag">&lt;/Router&gt;</span></div><div class="code-line"><div class="indent-guide" style="left: 2ch;"></div>  <span class="punctuation">);</span></div><div class="code-line"><span class="punctuation">}</span></div><div class="code-line"></div></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-bar-left">
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M5.5 3.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM6 5.5H5v4.5a.5.5 0 00.5.5h1a.5.5 0 00.5-.5V5.5H6zM8 8a1 1 0 100-2 1 1 0 000 2zM3 8a1 1 0 100-2 1 1 0 000 2z m7.5 3a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM10.5 5a2 2 0 100-4 2 2 0 000 4zM2.5 5a2 2 0 100-4 2 2 0 000 4z M5 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm6.5 1.5a1.5 1.5 0 10-.001-3.001A1.5 1.5 0 0011.5 14z"></path></svg>
+                    main*
+                </div>
+                <div class="status-bar-item">
+                   <svg viewBox="0 0 16 16"><path d="M4.53 1.53l.71-.71 3.53 3.54-3.53 3.54-.71-.71L7.09 5H2.5a.5.5 0 000 1h4.59l-2.56 2.56.71.71L9 5.71V2.5a.5.5 0 10-1 0v2.09L4.53 1.53zM12 11.5a.5.5 0 00-1 0v-2.09l-3.53-3.54.71-.71L11.71 9h1.79a.5.5 0 000-1h-1.79l.56-.56-.71-.71-2 2-1 1-1.29 1.29H8.9l2.57-2.56L14.9 8.21l-3.54-3.54-.7.71 3.06 3.06-.52.52-2-2-.5.5-.32-.32.03-.03H10v2.09l-2.78-2.78-.5-.5.71-.7L12 9.09V11.5z"></path></svg>
+                </div>
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M2.5 1.5l-1 1v11l1 1h11l1-1v-11l-1-1h-11zM3 3h10v10H3V3z"></path></svg>
+                    Launchpad
+                </div>
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M7 4.5v3l-2 1V10h6V8.5l-2-1v-3L7 4.5zM8 12v-1h4v1H8zM6 1l.5.5.5-.5h3l.5.5.5-.5h1l.5.5L12 2v2.5L11.5 5h-7L4 4.5V2l-.5-.5L4 1h2zm4 3H6V2h4v2z" fill="#ffab19"></path></svg>
+                    0
+                    <svg viewBox="0 0 16 16"><path d="M7.5.7L.9 12.5h13.2L7.5.7zm0 3.3l4.5 7.5H3L7.5 4zm-.5 3.5v2h1v-2h-1zm0 3v1h1v-1h-1z"></path></svg>
+                    0
+                </div>
+                <div class="status-bar-item">
+                     <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.07,1.57a6.5,6.5,0,1,0,5.72,9.33.2.2,0,0,1,.18.3l.54.94a.2.2,0,0,1-.07.27l-1,1a.2.2,0,0,1-.28,0l-1.07-1.07a.2.2,0,0,1,0-.28l.19-.19a.2.2,0,0,0,0-.28L11,10.7a.2.2,0,0,1,0-.28l.19-.19a.2.2,0,0,0,0-.28L10.36,9.1a.2.2,0,0,1,0-.28L11,8.19a.2.2,0,0,0,0-.28L9.34,6.25a.2.2,0,0,0-.28,0L8.19,7.12a.2.2,0,0,1-.28,0L7.06,6.25a.2.2,0,0,0-.28,0L5.12,7.91a.2.2,0,0,0,0,.28l.87.87a.2.2,0,0,1,0,.28L5.12,10.7a.2.2,0,0,0,0,.28l.87.87a.2.2,0,0,1,0,.28L4.2,13.91a.2.2,0,0,1-.28,0l-1-1a.2.2,0,0,1,.07-.27l.54-.94a.2.2,0,0,1,.18-.3,6.5,6.5,0,0,0,4.36-9.92Zm2.8,3.54a.89.89,0,0,1-.27.65L9.18,7.18a.2.2,0,0,0,0,.28l.87.87a.2.2,0,0,1,0,.28L9.18,9.5a.2.2,0,0,0,0,.28l.87.87a.2.2,0,0,1,0,.28l-1.42,1.42a.2.2,0,0,1-.28,0l-.87-.87a.2.2,0,0,0-.28,0l-.88.87a.2.2,0,0,1-.28,0L4.51,10.6a.2.2,0,0,1,0-.28l.87-.87a.2.2,0,0,0,0-.28L4.51,8.3a.2.2,0,0,1,0-.28l.87-.87a.2.2,0,0,0,0-.28L4.51,6a.2.2,0,0,1,0-.28L5.93,4.29a.2.2,0,0,1,.28,0l.87.87a.2.2,0,0,0,.28,0L8.23,4.29a.2.2,0,0,1,.28,0l.87.87a.2.2,0,0,0,.28,0l.9-.9A.89.89,0,0,1,10.87,5.11Z"></path></svg>
+                    Amazon Q
+                </div>
+            </div>
+            <div class="status-bar-right">
+                <div class="status-bar-item">-- INSERT --</div>
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M8 5.5a1 1 0 100-2 1 1 0 000 2zm1 3a1 1 0 11-2 0 1 1 0 012 0zm-1 4a1 1 0 100-2 1 1 0 000 2zM14 8a6 6 0 11-12 0 6 6 0 0112 0zm-1 0a5 5 0 10-10 0 5 5 0 0010 0z"></path></svg>
+                </div>
+                <div class="status-bar-item">Ln 14, Col 1</div>
+                <div class="status-bar-item">Spaces: 2</div>
+                <div class="status-bar-item">UTF-8</div>
+                <div class="status-bar-item">LF</div>
+                <div class="status-bar-item">{ } TypeScript JSX</div>
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M8 1a1 1 0 011 1v1.5c1.1.2 2 .5 2.8 1l1-1 .7.7-1 1A6.5 6.5 0 0113 8h1.5v1H13a6.5 6.5 0 01-1.8 3.8l1 1-.7.7-1-1a5.5 5.5 0 01-2.8 1V14a1 1 0 11-1 0v-.5a5.5 5.5 0 01-2.8-1l-1 1-.7-.7 1-1A6.5 6.5 0 013 9H1.5V8H3a6.5 6.5 0 011.8-3.8l-1-1 .7-.7 1 1c.8-.5 1.7-.8 2.8-1V2a1 1 0 011-1zM7 8a1.5 1.5 0 00-1.5 1.5.5.5 0 00.5.5h2a.5.5 0 00.5-.5A1.5 1.5 0 007 8zm2-3a1 1 0 10-2 0 1 1 0 002 0z"></path></svg>
+                </div>
+                <div class="status-bar-item">
+                    <svg viewBox="0 0 16 16"><path d="M12.5 1h-9l-1 1v2.5c0 .2.1.4.2.5l5.2 5.2.6.6h.7l2.8-2.8V2l-1-1zM5 4H4V3h1v1zm1 1H5V4h1v1zm1 1H6V5h1v1zm1 1H7V6h1v1zm5 2.5l-2.5 2.5h-1L3.3 6.3A1.5 1.5 0 013 5.5V2h8.5l.5.5v6.5z"></path><path d="M10 12H8v-1h2v1zm4-1H9v1h5v-1z"></path></svg>
+                </div>
+            </div>
+        </footer>
+    </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const folderItems = document.querySelectorAll('.tree-item');
+
+        folderItems.forEach(item => {
+            const hasSubTree = item.nextElementSibling && item.nextElementSibling.classList.contains('sub-tree');
+            if (hasSubTree) {
+                item.addEventListener('click', () => {
+                    const subTree = item.nextElementSibling;
+                    const chevron = item.querySelector('.chevron');
+                    
+                    subTree.classList.toggle('collapsed');
+                    chevron.classList.toggle('collapsed');
+                });
+            }
+        });
+    });
+
+    function toggleSection(headerElement) {
+        headerElement.classList.toggle('collapsed');
+        const content = headerElement.nextElementSibling;
+        if (content) {
+            content.classList.toggle('collapsed');
+        }
+    }
+</script>
+</body>
+</html>

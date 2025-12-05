@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,524 +6,787 @@
     <title>Untitled spreadsheet</title>
     <style>
         :root {
-            --google-green: #188038;
             --google-blue: #1a73e8;
-            --google-blue-light: #cce0fb;
-            --google-share-blue: #c2e7ff;
+            --google-blue-light: #e8f0fe;
+            --google-blue-share: #c2e7ff;
+            --google-green: #188038;
             --border-color: #dadce0;
-            --header-bg: #f8f9fa;
-            --toolbar-bg: #edf2fa;
             --text-color-primary: #202124;
             --text-color-secondary: #5f6368;
-            --hover-bg: #f1f3f4;
-            --selected-header-bg: #e8f0fe;
-            --selected-cell-border: #1a73e8;
+            --bg-color-primary: #ffffff;
+            --bg-color-secondary: #f8f9fa;
+            --toolbar-height: 36px;
+            --font-family: 'Arial', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: var(--font-family);
             font-size: 14px;
             color: var(--text-color-primary);
-            background-color: #fff;
+            background-color: var(--bg-color-secondary);
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
-            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        button, input, select {
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            padding: 4px;
+            fill: var(--text-color-secondary);
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .icon:hover {
+            background-color: #f1f3f4;
+        }
+
+        .separator {
+            width: 1px;
+            height: 20px;
+            background-color: var(--border-color);
+            margin: 0 4px;
         }
 
         .app-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
-        }
-
-        .header, .toolbar-container, .formula-bar, .sheet-tabs {
-            flex-shrink: 0;
+            height: 100%;
+            width: 100%;
         }
         
         .main-content {
-            flex-grow: 1;
             display: flex;
+            flex-grow: 1;
             overflow: hidden;
-            position: relative;
         }
 
-        .grid-container {
-            flex-grow: 1;
-            overflow: auto;
-            position: relative;
-        }
-
-        .right-sidebar {
-            width: 40px;
-            flex-shrink: 0;
-            border-left: 1px solid var(--border-color);
+        .header-bar {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding-top: 8px;
-            background-color: #fff;
-        }
-
-        .header {
+            justify-content: space-between;
             padding: 4px 8px;
+            background-color: var(--bg-color-secondary);
             border-bottom: 1px solid var(--border-color);
-            background-color: var(--header-bg);
         }
 
-        .header-top {
+        .header-left {
             display: flex;
             align-items: center;
-            height: 48px;
         }
-        
-        .sheets-icon {
+
+        .sheets-logo {
             width: 40px;
             height: 40px;
         }
 
-        .title-section {
-            display: flex;
-            flex-direction: column;
-            margin-left: 4px;
-        }
-        
-        .title-bar {
-             display: flex;
-             align-items: center;
+        .doc-info {
+            margin-left: 8px;
         }
 
-        .doc-title {
+        .doc-title-input {
             font-size: 18px;
-            color: var(--text-color-secondary);
-            padding: 2px 6px;
+            font-weight: 400;
+            border: 1px solid transparent;
             border-radius: 4px;
+            padding: 2px 6px;
         }
-        
-        .doc-title:hover {
-            background-color: var(--hover-bg);
-            cursor: text;
+        .doc-title-input:hover {
+            border: 1px solid var(--border-color);
+        }
+         .doc-title-input:focus {
+            outline: none;
+            border: 2px solid var(--google-blue);
         }
 
-        .header-icons {
+        .doc-actions {
             display: flex;
             align-items: center;
-            margin-left: 12px;
+            margin-top: 2px;
         }
 
-        .header-icons .icon-btn {
-            width: 24px;
-            height: 24px;
-            padding: 4px;
-            border-radius: 50%;
-        }
-        .header-icons .icon-btn:hover {
-            background-color: var(--hover-bg);
-        }
-
-
-        .menu-bar {
+        .main-menu {
             display: flex;
-            margin-top: -4px;
+            list-style: none;
+            margin: 0;
+            padding: 0 0 0 4px;
         }
 
-        .menu-item {
+        .main-menu li {
             padding: 6px 8px;
             font-size: 14px;
             border-radius: 4px;
-            margin-right: 2px;
-            cursor: default;
+            cursor: pointer;
         }
 
-        .menu-item:hover {
-            background-color: var(--hover-bg);
+        .main-menu li:hover {
+            background-color: #e8eaed;
         }
 
         .header-right {
-            margin-left: auto;
             display: flex;
             align-items: center;
+            gap: 8px;
         }
 
-        .header-right .icon-btn {
-            margin: 0 4px;
-            width: 24px;
-            height: 24px;
-            padding: 8px;
-            border-radius: 50%;
-        }
-        
-        .header-right .icon-btn:hover {
-             background-color: var(--hover-bg);
-        }
-
-        .share-btn {
-            background-color: var(--google-share-blue);
-            color: #001d35;
-            padding: 8px 16px;
+        .share-button {
+            display: flex;
+            align-items: center;
+            background-color: var(--google-blue-share);
+            border: 1px solid transparent;
             border-radius: 16px;
-            display: flex;
-            align-items: center;
+            padding: 6px 16px;
             font-weight: 500;
-            margin: 0 12px;
             cursor: pointer;
-            transition: background-color .2s;
-        }
-        .share-btn:hover {
-            box-shadow: 0 1px 2px 0 rgba(0,0,0,.3), 0 1px 3px 1px rgba(0,0,0,.15);
+            gap: 8px;
         }
 
-        .share-btn .icon {
-            margin-right: 8px;
+        .share-button .icon {
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            fill: #001d35;
         }
         
-        .avatar {
+        .share-button:hover {
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,.15), 0 1px 3px 1px rgba(0,0,0,.1);
+        }
+
+        .profile-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             cursor: pointer;
         }
-
-        .toolbar-container {
-            padding: 4px 8px;
-            background-color: var(--toolbar-bg);
-            border-bottom: 1px solid var(--border-color);
+        
+        .toolbar {
             display: flex;
             align-items: center;
-            height: 40px;
+            padding: 4px 8px;
+            background-color: var(--bg-color-primary);
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            height: var(--toolbar-height);
+        }
+        
+        .toolbar .icon, .toolbar-button {
+            height: 28px;
+            width: 28px;
+             padding: 4px;
         }
         
         .toolbar-group {
             display: flex;
             align-items: center;
-            margin-right: 4px;
-            padding-right: 4px;
-            border-right: 1px solid var(--border-color);
-        }
-        .toolbar-group:last-of-type {
-            border-right: none;
         }
 
-        .toolbar-btn {
-            width: 24px;
-            height: 24px;
-            padding: 4px;
-            margin: 0 1px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .toolbar-btn:hover, .toolbar-select:hover {
-            background-color: #dbe7fb;
+        .dropdown-arrow {
+            width: 12px;
+            height: 12px;
+            fill: var(--text-color-secondary);
         }
 
-        .toolbar-select {
+        .zoom-select {
+            border: none;
+            outline: none;
             padding: 4px 8px;
             border-radius: 4px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            margin: 0 2px;
-        }
-        
-        .font-size-control {
-            display: flex;
-            align-items: center;
-            border: 1px solid #b5c4de;
-            border-radius: 4px;
-            margin: 0 2px;
-            height: 28px;
-        }
-
-        .font-size-control button {
-            background: none;
-            border: none;
-            width: 20px;
-            font-size: 16px;
             cursor: pointer;
-        }
-        .font-size-control input {
-            width: 30px;
-            border: none;
-            border-left: 1px solid #b5c4de;
-            border-right: 1px solid #b5c4de;
-            text-align: center;
-            height: 100%;
-            background: none;
-        }
-        .font-size-control input:focus {
-            outline: none;
+            margin-right: 4px;
+            font-weight: 500;
         }
 
-        .icon {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: invert(39%) sepia(9%) saturate(497%) hue-rotate(175deg) brightness(91%) contrast(87%);
+        .zoom-select:hover {
+            background-color: #f1f3f4;
         }
         
-        .toolbar-group .icon, .header-right .icon {
-            width: 24px;
-            height: 24px;
+        .font-select, .font-size-input {
+             border: 1px solid transparent;
+             border-radius: 4px;
+             padding: 4px;
         }
 
-        .toolbar-expand {
-            margin-left: auto;
-            border-radius: 50%;
-            padding: 4px;
+        .font-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 16px;
+            padding-right: 20px;
+            margin-left: 4px;
+            min-width: 90px;
         }
-        .toolbar-expand:hover {
-            background-color: #dbe7fb;
+        .font-select:hover, .font-size-container:hover {
+             background-color: #f1f3f4;
+        }
+
+        .font-size-container {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+        .font-size-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+             padding: 0 4px;
+        }
+        .font-size-input {
+            width: 30px;
+            text-align: center;
+            border: none;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+        .font-size-input::-webkit-inner-spin-button,
+        .font-size-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .toolbar-group .active-button {
+            background-color: var(--google-blue-light);
+        }
+
+        .color-picker {
+            position: relative;
+        }
+        .color-underline {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            height: 3px;
+            background-color: var(--text-color-primary);
+            border-radius: 1px;
         }
 
         .formula-bar {
-            height: 28px;
             display: flex;
             align-items: center;
-            padding: 4px 0;
-            border-bottom: 1px solid var(--border-color);
+            padding: 4px 8px;
+            background-color: var(--bg-color-primary);
+            border-bottom: 2px solid var(--border-color);
         }
 
-        .cell-ref {
-            padding: 0 10px;
+        .cell-ref-input {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 2px 4px;
+            width: 60px;
+            border: none;
+            background-color: #f1f3f4;
+            border-radius: 4px 0 0 4px;
             text-align: center;
-            color: var(--text-color-secondary);
-            border-right: 1px solid var(--border-color);
-            min-width: 70px;
+            outline: none;
+        }
+        
+        .cell-ref-dropdown {
+            width: 20px;
+            height: 25px;
+            cursor: pointer;
+            background-color: #f1f3f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid var(--border-color);
+            border-radius: 0 4px 4px 0;
+            padding-top: 1px;
         }
 
-        .fx-icon {
-            padding: 0 10px;
-            color: var(--text-color-secondary);
-            font-style: italic;
+
+        .formula-input-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            margin-left: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .formula-input-container:focus-within {
+            border: 2px solid var(--google-blue);
+        }
+        .formula-input-container .icon {
+            padding: 2px 4px;
+            fill: #9AA0A6;
         }
 
-        .formula-input {
+        #formula-input {
             flex-grow: 1;
             border: none;
             outline: none;
-            padding: 0 8px;
-            height: 100%;
-            font-family: Arial, sans-serif;
+            padding: 2px 4px;
+            font-family: 'Roboto Mono', monospace, sans-serif;
             font-size: 13px;
         }
 
-        .spreadsheet-table {
+        .grid-area {
+            flex-grow: 1;
+            background-color: var(--bg-color-primary);
+            overflow: auto;
+            position: relative;
+        }
+
+        #spreadsheet-table {
             border-collapse: collapse;
             table-layout: fixed;
         }
 
-        .spreadsheet-table th, .spreadsheet-table td {
+        #spreadsheet-table th, #spreadsheet-table td {
             border: 1px solid var(--border-color);
-            min-width: 70px;
-            height: 21px;
-            box-sizing: border-box;
+            min-width: 75px;
+            height: 22px;
+            padding: 2px 4px;
             font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .spreadsheet-table thead th {
-            background-color: var(--header-bg);
+        #spreadsheet-table td {
+            position: relative;
+        }
+        
+        #spreadsheet-table td > div {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        #spreadsheet-table thead th {
+            background-color: var(--bg-color-secondary);
+            text-align: center;
             font-weight: 500;
             position: sticky;
             top: 0;
             z-index: 2;
         }
         
-        .spreadsheet-table tbody th {
+        #spreadsheet-table tbody th {
+            background-color: var(--bg-color-secondary);
             text-align: center;
-            background-color: var(--header-bg);
-            min-width: 40px;
-            padding: 0 5px;
-            color: var(--text-color-secondary);
+            font-weight: 500;
             position: sticky;
             left: 0;
             z-index: 1;
-        }
-
-        .spreadsheet-table td {
-            padding: 1px 4px;
-            cursor: cell;
-            position: relative;
-            background-color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            min-width: 40px;
         }
         
-        .spreadsheet-table input.cell-editor {
-            position: absolute;
+        #spreadsheet-table thead th:first-child {
+            position: sticky;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            border: 2px solid var(--selected-cell-border);
-            outline: none;
-            margin: -1px;
-            padding: 0px 3px;
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-            z-index: 5;
+            z-index: 3;
         }
 
-        /* Selection styles */
-        .spreadsheet-table th.selected-header, .spreadsheet-table td.selected-header {
-            background-color: var(--selected-header-bg);
+        .col-header.selected, .row-header.selected {
+            background-color: var(--google-blue-light);
         }
         
-        .spreadsheet-table td.selected-cell {
-            border: 2px solid var(--selected-cell-border);
-            padding: 0px 3px;
-            background-color: #fff !important; /* Force BG to be white even if row/col is selected */
+        td.selected {
+            border: 2px solid var(--google-blue) !important;
             z-index: 4;
+            padding: 1px 3px;
         }
 
-        .spreadsheet-table td.selected-cell::after {
-            content: '';
+        .selected-handle {
             position: absolute;
-            right: -4px;
-            bottom: -4px;
-            width: 6px;
-            height: 6px;
-            background-color: var(--selected-cell-border);
-            border: 1px solid white;
+            width: 8px;
+            height: 8px;
+            background-color: var(--google-blue);
+            border: 2px solid white;
             border-radius: 50%;
+            right: -5px;
+            bottom: -5px;
             cursor: crosshair;
             z-index: 5;
         }
-        
-        .top-left-cell {
-            background-color: var(--header-bg) !important;
-            position: sticky !important;
-            top: 0;
-            left: 0;
-            z-index: 3 !important;
-        }
-        
-        .sheet-tabs {
-            height: 36px;
-            display: flex;
-            align-items: flex-end;
-            padding: 0 8px;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--header-bg);
-        }
-        
-        .sheet-tab-btn {
-            height: 28px;
-            width: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-        .sheet-tab-btn:hover {
-            background-color: #e0e0e0;
-        }
-        .sheet-tab {
-            padding: 8px 16px;
-            border: 1px solid transparent;
-            border-bottom: none;
-            display: flex;
-            align-items: center;
-        }
-        .sheet-tab.active {
-            background-color: var(--toolbar-bg);
-            color: var(--google-green);
-            font-weight: 500;
-            border-radius: 8px 8px 0 0;
-            border-color: var(--border-color);
-            position: relative;
-        }
-        .sheet-tab.active::after {
-            content:'';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--google-green);
-        }
-        
-        .sidebar-icon {
-            width: 20px;
-            height: 20px;
-            padding: 10px;
-        }
 
-        .separator {
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 4px;
+            background-color: var(--bg-color-secondary);
+            border-left: 1px solid var(--border-color);
+        }
+        .right-sidebar .icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 24px;
+            padding: 0;
+        }
+        
+        .right-sidebar-separator {
             width: 20px;
             height: 1px;
             background-color: var(--border-color);
-            margin: 8px 0;
+            margin: 0px 0 24px 0;
         }
-       
+
+        .sheets-bar {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            background-color: var(--bg-color-secondary);
+            border-top: 1px solid var(--border-color);
+            height: 32px;
+        }
+        .sheets-bar .icon {
+            width: 32px;
+            height: 32px;
+            padding: 7px;
+        }
+        
+        .sheet-tab {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            height: 100%;
+        }
+        
+        .sheet-tab.active {
+            background-color: var(--bg-color-primary);
+            color: var(--google-green);
+            font-weight: bold;
+            border-bottom: 2px solid var(--google-green);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            top: 1px;
+        }
+        
+        .tab-arrow {
+            width: 12px;
+            height: 12px;
+            margin-left: 4px;
+        }
     </style>
 </head>
 <body>
+
     <div class="app-container">
-        <header class="header">
-            <div class="header-top">
-                <img class="sheets-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj4KICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgPHBhdGggZmlsbD0iIzE4ODAzOCIgZD0iTTIyLjkxIDE2LjY0NVY5LjY5M2EyLjQgMi40IDAgMCAwLTIuNC0yLjRoLTguNDQ0Yy0xLjMyNSAwLTIuNC45NzYtMi40IDIuMTczdjIxLjA3YzAgMS4xOTcuNzI0IDIuNTAzIDEuODQ1IDIuNTAzaDEzLjQ3NWMxLjMyNSAwIDIuNC0xLjA3NSAyLjQtMi40di05LjE1aC00LjQ3NnoiLz4KICAgIDxwYXRoIGZpbGw9IiMyOUEyNCIgZD0iTTIzLjQ4NCAxNi45MzFIMzEuNVY5LjcyNWwtOC4wMTYtLjAzNnoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDY2MjUiIGQ9Ik0yMy40ODQgOS42OTNWNC41aDguNDAzbC0uNDczIDUuMTkzeiIvPgogICAgPHBhdGggZmlsbD0iI0FBQ0ExMiIgZD0iTTMxLjU2MiA5LjY5M2w4LjIyOCA3LjUtLjMyMy4zNTctOC4yMjgtNy41eiIvPgogICAgPHBhdGggZmlsbD0iIzE4ODAzOCIgZD0iTTMzLjUyOSAzMC4zODVjMCAxLjMyNS0xLjA3NSAyLjQtMi40IDIuNGgtMS44ODRjLTEuMzI1IDAtMi40LTEuMDc1LTIuNC0yLjR2LTguNDQ1YzAtMS4zMjUgMS4wNzUtMi40IDIuNC0yLjRoMS44ODRjMS4zMjUgMCAyLjQgMS4wNzUgMi40IDIuNHY4LjQ0NXoiLz4KICAgIDxwYXRoIGZpbGw9IiM2NkFGNzciIGQ9Ik0zMy41MyAzMC42NzhjMCAxLjMyNS0xLjA3NSAyLjQtMi40IDIuNGgtMS44ODRjLTEuMzI1IDAtMi40LTEuMDc1LTIuNC0yLjR2LTguNDQ1YzAtMS4zMjUgMS4wNzUtMi40IDIuNC0yLjRoMS44ODRjMS4zMjUgMCAyLjQgMS4wNzUgMi40IDIuNHY4LjQ0NXoiLz4KICAgIDxwYXRoIGZpbGw9IiNFRkVGRUMiIGQ9Ik0zMy41MyAzMS4yNTlhMy4wNjggMy4wNjggMCAwIDEtMy4wNzIgMy4wNzJoLS41MjVjLTEuNjk4IDAtMy4wNzMtMS4zNzUtMy4wNzMtMy4wNzJ2LTkuNjI0YzAtMS42OTggMS4zNzUtMy4wNzMgMy4wNzMtMy4wNzNoLjUyNWMxLjY5NyAwIDMuMDcyIDEuMzc1IDMuMDcyIDMuMDczdjkuNjI0eiIvPgogICAgPHBhdGggZmlsbD0iIzAwMDAwMCIgZmlsbC1vcGFjaXR5PSIuMiIgZD0iTTMwLjQ1NyAzMy43NTdoLS41MjVjLTEuNjk4IDAtMy4wNzMtMS4zNzUtMy4wNzMtMy4wNzJ2Ljk1YzAgMS42OTcgMS4zNzUgMy4wNzIgMy4wNzMgMy4wNzJoLjUyNWMxLjY5NyAwIDMuMDcyLTEuMzc1IDMuMDcyLTMuMDcydi0uOTVjMCAxLjY5Ny0xLjM3NSAzLjA3Mi0zLjA3MiAzLjA3MnoiLz4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGZpbGwtb3BhY2l0eT0iLjIiIGQ9Ik0zMy41MyAxOC41NjFjMCAxLjY5OC0xLjM3NSAzLjA3My0zLjA3MiAzLjA3M2gtLjUyNWMtMS42OTggMC0zLjA3My0xLjM3NS0zLjA3My0zLjA3M3YuNzgyYzAgLTEuNjk4IDEuMzc1LTMuMDczIDMuMDczLTMuMDczaC41MjVjMS42OTcgMCAzLjA3MiAxLjM3NSAzLjA3MiAzLjA3M3YtLjc4MnoiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDQxNkQiIGQ9Ik0yMy40ODQgMTYuOTNoOC4wMTZ2LS4yOEgyMy40ODR6Ii8+CiAgICA8cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTEuMTM0IDI2LjUzaDEwLjYxOHYtMS44NjdIMTEuMTM0ek0xMS4xMzQgMjIuNDU0aDEwLjYxOHYtMS44NjdIMTEuMTM0ek0xMS4xMzQgMTguMzc4aDEwLjYxOHYxLjg2N0gxMS4xMzR6TTExLjEzNCAxNC4zMDFoNC45NTR2LTEuODY4aC00Ljk1NHpNOS43OSAzMy4yNWMtLjc4IDAtLjYxMy0xLjM5NC0uNjEzLTIuMTczdi0yMS4wN2MwLS43NzktLjE2Ny0yLjE3My42MTMtMi4xNzNoOC40NDRhMS44MSAxLjgxIDAgMCAwIDEuODA2LTEuODAzVjRsLTEuNTIuMDQxYTIuNCAyLjQgMCAwIDAtMi40IDIuMzk2djcuNTQ4SDguNnYyLjEwN2g1LjQ1OHYxNS4wODloLTEuNzAzYy0xLjMyNSAwLTIuMTg3Ljk3Ni0yLjE4NyAyLjUwM3oiLz4KICAgIDxwYXRoIGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iLjE1IiBkPSJNMzEuNTYyIDE3LjE5M2wtOC4wNzgtLjI2MXYtLjI4MWg4LjM5OGwtLjMyLjU0MnptMCAuMzU4bC04LjA3OC0uMjYxLS4zMjEgMi40NTcgOC4zOTktLjAzNnoiLz4KICA8L2c+Cjwvc3ZnPg==" alt="Google Sheets Icon">
-                <div class="title-section">
-                    <div class="title-bar">
-                        <span class="doc-title">Untitled spreadsheet</span>
-                        <div class="header-icons">
-                            <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHptMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTIgMTcuMjhMMTYuNDUgMjAgMTUgMTQuODJsMy42OC0zLjM2LTYuMi0uNTFMMTIgNS40bC0yLjQ4IDUuNTMtNi4yLjUxTDEwIDE0LjgybC0xLjQ1IDIuMTVMNy40IDE3LjA5bDQuNS0yLjI5LjEuNTl6bTAtMTEuNzhMMTYuMjYgOS45IDIzIDEwLjc5bC01LjI5IDQuODggMS41OSA2LjcyTDEyIDE5LjIxIDQuNzEgMjIuMzlsMS41OS02LjcyTDEgMTAuNzlsNi43NC0uODlMMTIgNS41eiIvPjwvc3ZnPg==')"></span></div>
-                            <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjEgMTlsMkAyaHJWLTJ6bS05LThoMnY2aC0yek0xMSAySDJoOXY1em0xMCAwYzEuMSAwIDIgLjkgMiAydjdoLTlWMnoiLz48cGF0aCBkPSJNMTMgMTJ2Mmgydi0yem0wLTR2MmgyVjh6bS05IDEwLjA1bDQgNFYxNnoiLz48cGF0aCBkPSJNMTEgMTZ2LTJoMnYyem0tNCAwdi0yaDJ2MnoiLz48cGF0aCBkPSJNMTMgMTguMDhsNCA0VjE3em0tNi04aDJWN2gtMnoiLz48cGF0aCBkPSJNMTAgM2MxLjEgMCAyIC45IDIgMnYzdjdjMCAxLjEtLjkgMi0yIDJoLTdjLTEuMSAwLTItLjktMi0ydj03TDcgOEw0IDVWM2gxMnptOCA1SDQuNDFsMi4zIDIgLjU4LS41OWMyLjgxLTIuOCAzLjQ0LTMgMy43MS0zWm0tMSA1LjY0VjhIMTAuMTRsLTIgMnptNiA2bC0zLjc4IDMuNzdhNC44OSA0Ljg5IDAgMCAwLTMuNDctMS40MWMtLjM3LTEuNzUtMS4yOS0zLjI5LTIuNTUtNC4zM2wtNC4yIDIuMzRWMjFoMTBsNSA1em0tMTEuMzEtLjYxYy43My42IDEuNTggMSAyLjQ5IDFhMi42NDIgMi42NDIgMCAwIDAgMi42Ny0yLjY2YzAtMS41Mi0xLTIuNjYtMi42Ny0yLjY2LTEuMTEgMC0yLjY3IDEuMTQtMi42NyAyLjY2IDAgLjUzLjEzIDEuMDMuMTggMS40NnoiLz48L3N2Zz4='); display: none;"></span></div>
-                            <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNi41IDE5aDEybC02LTR6IiBvcGFjaXR5PSIuMyIvPjxwYXRoIGQ9Ik0xOC41IDE3SDYuOTNMMTIgOS45Nm04LTE0SDQuMDJDMy40NiAzLjk5IDMgNC40NCAzIDV2MTRjMCAuNTUuNDUgMSAxIDFoMThjLjU1IDAgMS0uNDUgMS0xVjVjMC0uNTYtLjQ2LTEuMDEtMS4wMi0xLjAxei0yLjk4IDE0aC0xMlY1aDEyek0xMiAxMmMtMi43NiAwLTUgMi4yNC01IDVzMi4yNCA1IDUgNSA1LTIuMjQgNS01LTIuMjQtNS01LTV6Ii8+PC9zdmc+'); display: none;"></span></div>
-                            <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNi42MyAxNS45NEw1LjIgMTQuNTNjLjk4LS45OC45OC0yLjU2IDAtMy41NGwxLjQzLTEuNDNjMS41NiAxLjU2IDEuNTYgNC4wOSAwIDUuNjV6bTUuNTItMy41M2MtMS4xIDAtMiAuOS0yIDJoLTVWMTFjMC0xLjEuOS0yIDItMmgzYy41NSAwIDEgLjQ1IDEgMXMtLjQ1IDEtMSAxSDZ2Mmg0LjM3Yy4xLS40Ny4zLTEuMDguNzUtMS41OWExLjg3IDEuODcgMCAwIDEtLjEyLTEuNDF6bTYtOGwtMS40MyAxLjQzYzIuMzQuMjcgNC4zNyAxLjQ0IDUuNDMgMy4wN2wxLjQxLTEuNDFjLTEuNDgtMi4wOS0zLjk5LTMuNDgtNi40MS0zLjg1ek0yIDEyYzAgMi4xNS44MiA0LjxBLTYuOTM1IDYuOTM1IDAgMCAwIDYgMTguNDlsMS40My0xLjQzQzYuNTYgMTYuMTMgNiAxNC42MyA2IDEzSDRjMC0uMzQuMDItLjY4LjA1LTFIMlptMTggMGMwIC41Ni0uMDguMS0uMTkgMS4zN0EyLjc1OCAyLjc1OCAwIDAgMCAxOSAxNWgxYy41NSAwIDEgLjQ1IDEgMXMtLjQ1IDEtMSAxSDEzLjFjLjkyIDEuMjIgMi4xNyAxLjk5IDMuNTggMi40NWwxLjQzLTEuNDNzLTEuNTgtMS4xNC0xLjk3LTIuNTJoMy44NmMuNTUgMCAxIC40NSAxIDEscy0uNDUgMS0xIDFINzEuNGwtMS40MiAxLjQxYy43My4zMyAxLjUgLjUyIDIuMy42IDIgLjIgNC4xMy0uNDggNS41My0xLjkybDQuMiA0LjJDMTkuNDMgMjIgMjAgMjIgMjAgMjJjMy4zMSAwIDYtMi42OSA2LTZ2LTFoLTEuNzJjLTEuMTctMi40Mi0zLjQ0LTQuMzItNi4xMy00Ljg2TDE1LjI4IDlsLjEgMS43OWMuNDIgMCAuOC4wNyAxLjE0LjE4QzE2Ljg3IDEwLjM0IDIxIDEwLjM0IDIxIDE2djRoLTF2LjY1bC0yLjgzLTIuMDFhNy4xMzYgNy4xMzYgMCAwIDEgMS4zMy0xLjg0QTUuNTggNS41OCAwIDAgMSAyMSAxNW0tNi0zaC0zYzAgMS4xLS45IDItMiAyaDQuMTFjLjM0LS42MS44LTEuMTQgMS4zNi0xLjU1TDggOS4xOGMtLjEuMTUtLjIuMy0uMjguNDdDNi44MyA١١LjMzIDUgMTMgNSAxM2MxLjEyIDAgMi4xMi0uNDMgMi44NS0xLjEyTDEwIDkuODhsMy4xNS0zLjE1TDEyLjM0IDhjMS4yOS0uNTYgMy4xNC0xLjIgNC45NS0xLjIgMy4zMSAwIDYgMi42OSA2IDZ2LTFoLTR2MWgtNmMtLjM5IDAtLjc2LS4wNi0xLjEtLjE4WiIvPjwvc3ZnPg==')"></span></div>
-                        </div>
+        <header class="header-bar">
+            <div class="header-left">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDEwMCAxMzAuNzciPjxwYXRoIGZpbGw9IiMyNkFFNzUiIGQ9Ik0yMC4xMSw0MS4zOEg3OS44OHY3NS4yOEgyMC4xMVoiLz48cGF0aCBmaWxsPSIjMTg4MDM4IiBkPSJNMTAwLDEzLjA4Vjk3LjY5YTguNDgsOC40OCwwLDAsMS04LjQ4LDguNDhIMjguNjFMMTAwLDEzLjA4WiIvPjxwYXRoIGZpbGw9IiMxODgwMzgiIGQ9Ik0wLDkzLjI5di40YTguNDgsOC40OCwwLDAsMCw4LjQ4LDguNDhINzEuMzlMMDM3LjY5Vjg0LjhMMCw5My4yOVoiLz48cGF0aCBmaWxsPSIjMzRBODUzIiBkPSJNNzEuMzksMTAxLjY5SDEwMEM5Ny4zNSwxMTMuNjIsODUuMjcsMTIxLDcwLjM5LDEyMWgtNjJBOC40OCw4LjQ4LDAsMCwxLDguNDgsMTA1LjU3VjM3LjY5TDcxLjM5LDEwMS42OVoiLz48cGF0aCBmaWxsPSIjMkZBNTY2IiBkPSJNMCwzNy42OVYxMy4wOEwxMDAsMTA1LjU3VjEzMC43N2wwLDBaIi8+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTc2LjQsOTN2MTRIMjMuN1Y5M2w0LjU2LTEyLjczLDQuNTYsMTIuNzNaTTQ4LjM3LDgxLjQ0bDEyLjUxLTQuNTcsOS4xMy0yMC45TDU5LDQ3LjQ2WiIvPjxwYXRoIGZpbGw9IiMyNkFFNzUiIGQ9Ik04LjQ4LDBBMi44MSwyLjgxLDAsMCwwLDUsMy4yOFYyNS4zMUwzNy42OSwwWiIvPjwvc3ZnPg==" alt="Sheets Logo" class="sheets-logo" />
+                <div class="doc-info">
+                    <input class="doc-title-input" type="text" value="Untitled spreadsheet">
+                    <div class="doc-actions">
+                        <ul class="main-menu">
+                            <li>File</li>
+                            <li>Edit</li>
+                            <li>View</li>
+                            <li>Insert</li>
+                            <li>Format</li>
+                            <li>Data</li>
+                            <li>Tools</li>
+                            <li>Extensions</li>
+                            <li>Help</li>
+                        </ul>
                     </div>
-                   <div class="menu-bar">
-                        <div class="menu-item">File</div>
-                        <div class="menu-item">Edit</div>
-                        <div class="menu-item">View</div>
-                        <div class="menu-item">Insert</div>
-                        <div class="menu-item">Format</div>
-                        <div class="menu-item">Data</div>
-                        <div class="menu-item">Tools</div>
-                        <div class="menu-item">Extensions</div>
-                        <div class="menu-item">Help</div>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTEuOTkgMi4wMWMtNS41MiAwLTEwIDQuNDgtMTAgMTBzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwLTQuNDgtMTAtMTAtMTB6bTAtMThhOCA4IDAgMCAxIDggOHYtMWMwLTQuNDItMy41OC04LTgtOHMtOCAzLjU4LTggOHYxYzAtNC40MiAzLjU4LTggOC04em0uMDggMTZIMTFWMGgxdjEzem0tMy4wMS0xLjhjLTEuNDgtLjQyLTIuNzQtMS4zNC0zLjU0LTIuNTlsMS4zOC0uODVjLjc3IDEuMDggMS44NSAxLjgzIDMuMTQgMi4xM3ptOC44NS0xLjI4bC0xLjM4LS44NWMtLjc4IDEuMjUtMi4wNiAyLjE3LTMuNTQgMi41OXYtMS4wM2ExLjgzNSAxLjgzNSAwIDAgMC0zLjE0LTIuMTNsLTQuMDktMi4zNjFDNC4yNSA2LjQ5IDYgMi45NSA4LjQ3IDJIMTRjMy4zNCAwIDYgMi43MiA2IDYuMDdWMTYuMjN6Ii8+PC9zdmc+');"></span></div>
-                    <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjIgNEgxOGwtMiAySDhjLTEuMSAwLTItLjktMi0ydjEyYzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnoiLz48cGF0aCBkPSJNNCAyYzAgMS4xLjkgMiAyIDJoMTRWMkg0eiIgb3BhY2l0eT0iLjMiLz48cGF0aCBkPSJNMjAgNEgxN2wtMiAySDhjLTEuMSAwLTItLjktMi0ydjE0YzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnoiLz48cGF0aCBkPSJNMjIgNEg0Yy0xLjEgMC0yIC45LTIgMnYdjlYMTZjMCAxLjEgLjkgMiAyIDJoLjA4YzEuMzgtMi4zMyAxLjY1LTUgMS4xOC03LjQxTDggNC41MmwtLjAyLjAxYzEuMDgtMi43OSAzLjg4LTQuNTMgNy4wMi00LjUzaDEuOTJjLTEuMSAwLTItLjktMi0yWiIvPjwvc3ZnPg==');"></span></div>
-                    <div class="icon-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNi41IDEwLjVjMC0uNTUuNDUtMSAxIDFoOHYyaC05di0yek0xNyA3SDhjLTEuMSAwLTItLjktMi0ydi0xaDEzdi41YzAgLjI4LS4yMi41LS41LjV6bTAgOEg3djJjMCAxLjEuOSAyIDIgMmg5YzEuMSAwIDItLjkgMi0ydi0zaC0yek0xNyA1aDEuNWMxLjM4IDAgMi41IDEuMTIgMi41IDIuNVMxOS44OCA١٠IDE4LjUgMTBoLTYuMTdsMi0ySDE3ek0yMCAxMWMtLjQ3IDAtLjg5LjA5LTEuMjguMjRsLTMuMjItMy4yMkMyMCAxMS40NyAyMCA١١IDIwIDExYzAgMS4xLS45IDItMiAyaC0xbC01LTVoMWMyLjQ3IDAgNC41IDIuMDMgNC41IDQuNVMxMC40NyAxNS41IDggMTUuNWgtMS41YzAgLjg1LS4zNCAxLjYxLS45MSAyLjJsMy45MSAzLjkxYy4zNy0uMDYuNzQtLjA5IDEuMTMtLjEgMS4xIDAgMiAuOSAyIDJoNWMxLjEgMCAyLS45IDItMnYtM2MyLjM4LS42MyA0LTEuNzggNC0zLjA2QzIzLjUgMTMuMDkgMjIuMDcgMTEgMjAgMTF6bS0zLjUgNGMtLjgzIDAtMS41LS42Ny0xLjUtMS41czEuNS0xLjUgMS41LTEuNVMxOC4zMyAxNSAxNy41IDE1ek0xOCAxN2gtN2MwIDEuMS45IDIgMiAyaDV2LTJ6Ii8+PC9zdmc+');"></span></div>
-                    <div class="share-btn">
-                         <span class="icon" style="filter: initial; width: 16px; height: 16px; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTggOEgxNlY2YzAtMi43Ni0yLjI0LTUtNS01UzYgMy4yNCA2IDZ2Mkg0YzEuMSAwIDIgLjkgMiAydjEwYzAgMS4xLS45IDItMiAyaDE2YzEuMSAwIDItLjkgMi0yVjEwYzAtMS4xLS45LTItMi0yem0tNiA5Yy0xLjEgMC0yLS45LTItMnMuOS0yIDItMiAyIC45IDIgMi0uOSAyLTItMnptMy4xLTljLTEuNzcgMC0zLjJsLTEuNDMtMy4yLTMyLjg5di0yLjFjMC0xLjQuMS0yLjUuMi0zLjIgMi44OSAwIDUuMiAyLjMzIDUuMiA1LjJ2Mi4xWiIvPjwvc3ZnPg==')"></span>
-                        Share
-                        <span class="icon" style="filter: initial; width: 16px; height: 16px; margin-left: 8px; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNNyAxMGw1IDEgNS01LTUgNS01eiIvPjwvc3ZnPg==')"></span>
-                    </div>
-                    <img class="avatar" src="https://lh3.googleusercontent.com/a/ACg8ocIXoUjGxh38pnp63aRT4i-KOPg_y0WIi4yP33C2R6I5=s96-c-rg-br100" alt="User Avatar">
                 </div>
             </div>
+            <div class="header-right">
+                <div class="icon" title="Last edit was seconds ago"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg></div>
+                <div class="icon" title="Comment history"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
+                <div class="icon" title="Join a call here"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></div>
+                <div class="share-button" title="Private to only me">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    <span>Share</span>
+                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M7 10l5 5 5-5z"/></svg>
+                </div>
+                <img class="profile-avatar" src="https://lh3.googleusercontent.com/a/ACg8ocKw_TfINpIFLq9jGg4xP_jC2EDk1w6ii2y2p0-VXk0=s96-c-rg-br100" alt="User Profile"/>
+            </div>
         </header>
-        <div class="toolbar-container">
-                <div class="toolbar-group">
-                    <div class="toolbar-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNCAxMC4wMmgxNmwzIDN2LTNsLTMgMy4wMSAxLjUgMS41TDIxIDEzdi0zek0xNS41MyA3LjQyYy0xLjUtLjY0LTMuMjQtLjQ1LTYuNzggMS40NWwxLjU0IDEuNTQgMy4wMy0uOTFjMS43NC0uNTcgMi4xNS0uNDUgMi4xNS0uNDVzMS4xNS0xLjMxIDEuMjEtMS40NmMuMTYtLjQxLS42NS0uNjYtMS4xNS0uMTd6TTggMjAuNDloMy43MUwxNiAxNS4yMXYtM0g3VjE3YzAgMS4xLjkgMiAyIDJoMmwtMiAyek0xNy44OCAxMy4zNGMtLjM3LjQ0LS44LjgyLTEuMjkgMS4xNWwxLjMxIDEuMzFjLjQyLS40NC43NS0xLjAzLjk5LTEuNjNsLTEuMDEtLjgzeiIvPjwvc3ZnPg==')"></span></div>
-                    <div class="toolbar-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTQuNSAxNS41bDIuNS0yLjVoLTR2LTNoNHYtMy41bTcuNSAzLjV2MTJoLTZ2LTQuNWwtNCA0LTQgNC00LTQuNWgtNHY0aC0ydjEwaC00di0xMmMwLTEuMS45LTIgMi0yaDE4YzEuMSAwIDIgLjkgMiAyem0tMi0zLjV2LTEuNUgyVjdIMjB2MS41ek0xOCA0aC01djNsNSAzek00IDdoMy41bDUgMiAyLTJoNS41djNINTEuNWwtMi41IDIuNSAyLjUgMi41TDE1LjUgMjBINHYtMy41bTItMS41djNoOVYxNGwtNSA1SDZWMTIuNXoiLz48L3N2Zz4=')"></span></div>
-                     <div class="toolbar-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNy40NyAxMi4xM2MtLjE0LS40LS4xNC0uODUgMC0xLjI0bDEuMjEtMi41OS0xLjg0LTEuODUtMi42IDEuMjFjLS4zNS4xNy0uNzUuMjItMS4xNC4xMy0uNDktLjExLS45LS40Ni0xLjA3LS45NGwtLjYtMi44M0gxLjg1TDEuMjUgNi45Yy0uMTcuNDktLjQ4LjkxLS45NSA١LjA1LS4zOS4wOS0uNzkuMDQtMS4xMy0uMTNsLTIuNTktMS4yMS0xLjg0IDEuODQgMS4yMSAyLjZjLjE2LjM1LjIxLjc1LjEzIDEuMTQtLjA5LjUtLjQ2LjktLjk0IDEuMDdsLTIuODMuNnYxLjc4bDIuODMuNmMuNDkuMTEuOS40NiAxLjA3Ljk0bC42IDIuODNoMS43OGwuNi0yLjg0Yy4xNy0uNDguNDgtLjg5Ljk0LTEuMDcuMzktLjA5Ljc4LS4wNCAxLjE0LjEzbDIuNi0xLjIyek0xMiAxNi41Yy0yLjQ5IDAtNC41LTIuMDEtNC41LTQuNVM5LjUxIDcuNSAxMiA3LjUgMTYuNSA5LjUxIDE2LjUgMTIgMTQuNDkgMTYuNSAxMiAxNi41em02LTNWSDhjLTEuMSAwLTItLjktMi0ydjEyYzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWOGMwLTEuMS0uOS0yLTItMnoiLz48L3N2Zz4='); transform: rotate(90deg);"></span></div>
-                    <div class="toolbar-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTEgOEg0Yy0xLjEgMC0yIC45LTIgMnY0YzAgMS4xLjkgMiAyIDJoNHY0YzAgMS4xLjkgMiAyIDJoNGMxLjEgMCAyLS45IDItMnYtNEgyMHYtNGgtMnYtNGwtMTAgMS4zMXptNy4zMS0xLjQ0bC0yLjgzLTIuODNDMTQuNjUgMy4yNSA١NC4zNCAzIDE0IDMgMTMgMyAxMyAyIDEzIDJjMS42NiAwIDMgMS4zNCAzIDNzLTEuMzQgMy0zIDNoLTRjLS41NSAwLTEgLjQ1LTEgMSAxIC41NS40NSAxIDEgMWgxLjY2bDIuODMtMi44M2MxLjU2LTEuNTYgMS43NC0zLjk3LjQyLTUuMnpNMTYgMTVjMCAxLjQuODggMi42MSAyLjExIDMuMTFMMTkuNSA١OSA0LjgxIDMuNTMgMy40IDQuOTVsMi4xMSAyLjExQzQuNiAyLjU0IDMuMzkgMS42NyAyLjI5IDEuMTlMMSAyaDEuNDNsMS40MiAxLjQxYy43Ny0uMjIgMS41OC0uMzIgMi40LS4zMiAyLjggMCA1LjM3IDEuMDkgNy4yNCAyLjk2bDEuNDgtMS40OC0xLjQyLTEuNDF6bTIuMzcgMS4yM2wtMS40MSAxLjQxYzEuODcgMS44NyAyLjk2IDQuNDQgMi45NiA3LjI0IDAgLjgxLS4xMSAxLjYxLS4zMiAyLjM3bDEuNDEgMS40MmMuNDgtMSAuNzgtMi4wOS45MS0zLjI0aDEuNDRsLjU0LDEuMjFMMjIgOS42NyA٢١Ljc5IDguNDd2MS4zNWgtNS4xNnoiLz48L3N2Zz4=')"></span></div>
-                    <div class="toolbar-btn"><span class="icon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDBWMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNNy41IDE0aDljLTEuMSAwLTItLjktMi0yVjZiOS41TDkuNSA5bDMgM3oiLz48cGF0aCBkPSJNNi4yMSAxMC41NEwzLjY3IDhjMSA1IDEuMTcgNSAyLjUgNWg3LjYybC01LjIgNS4yYTEuNSA١LjUgMCAwIDAtMi4xMi4wMUwxNSA5LjgzbDEtMUwxMi44OCA2LjA0IDkuNSA5LjQxbC0xLjUtLjA0Yy4yNy0uOC4yMS0xLjgxLS4zLTNjLTEtMS43My0yLjU0LTEtMy0xLTEuMSAwLTIgLjktMiAydjJjMCAxLjU2LjcgMyAyIDNoLjI0eiIvPjwvc3ZnPg==')"></span></div>
+
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <div class="icon" title="Search"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></div>
+            </div>
+             <div class="separator"></div>
+            <div class="toolbar-group">
+                <div class="icon" title="Undo"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></div>
+                <div class="icon" title="Redo"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.91 16c1.05-3.19 4.05-5.5 7.59-5.5 1.96 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg></div>
+                <div class="icon" title="Print"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg></div>
+                <div class="icon" title="Paint format"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 4V3c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h12c.55 0 1-.45 1-1V6h1v4H9v11c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-9h8V4h-3z"/></svg></div>
+            </div>
+            <div class="separator"></div>
+            <div class="toolbar-group">
+                <select class="zoom-select"><option>100%</option></select>
+            </div>
+            <div class="separator"></div>
+            <div class="toolbar-group">
+                <div class="icon" title="Format as currency"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
+                <div class="icon" title="Format as percent"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.5 7.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-13 0c.83 0 1.5-.67 1.5-1.5S6.33 4.5 5.5 4.5 4 5.17 4 6s.67 1.5 1.5 1.5zM19 18l-14-14-1.41 1.41L17.59 18 19 19.41l1.41-1.41L19 16.59zM5.5 16.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm13 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/></svg></div>
+                <div class="icon" title="Decrease decimal places"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.71 7.29l-1.42 1.42L13.59 11H5v2h8.59l-2.29 2.29 1.41 1.42L17.41 12 12.71 7.29zM20 6h-3v2h3v2h-2c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h2v2h-3v2h3c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2h-2V8h2V6z"/></svg></div>
+                <div class="icon" title="Increase decimal places"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M11.29 16.71l1.42-1.42L10.41 13H19v-2h-8.59l2.29-2.29-1.41-1.42L6.59 12l4.7 4.71zM3 6h3v2H3v2h2c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2H4v2h2c2.21 0 4-1.79 4-4v-2c0-1.1-.9-2-2-2h2V8H4V6z"/></svg></div>
+            </div>
+            <div class="separator"></div>
+            <div class="toolbar-group">
+                <select class="font-select"><option selected>Arial</option></select>
+            </div>
+             <div class="separator"></div>
+              <div class="toolbar-group">
+                <div class="font-size-container">
+                    <button class="font-size-btn">-</button>
+                    <input type="number" class="font-size-input" value="10">
+                    <button class="font-size-btn">+</button>
                 </div>
-                <div class="toolbar-group">
-                   <div class="toolbar-select">100%<span class="icon" style="width:16px; height:16px; margin-left: 2px; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNNyAxMGw1IDEgNS01LTUgNS01eiIvPjwvc3ZnPg==')"></span></div>
+            </div>
+            <div class="separator"></div>
+            <div class="toolbar-group">
+                <div class="toolbar-button icon" title="Bold"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4.25-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg></div>
+                <div class="toolbar-button icon" title="Italic"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4z"/></svg></div>
+                <div class="toolbar-button icon" title="Strikethrough"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M10 19h4v-3h-4v3zM5 4v3h5v3h4V7h5V4H5zM3 14h18v-2H3v2z"/></svg></div>
+                <div class="toolbar-button icon color-picker" title="Text color">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M5.64 16.36l1.06 1.06c.2.2.51.2.71 0l5.65-5.66-7.42-7.42-5.66 5.66c-.2.2-.2.51 0 .71l1.06 1.06zm11.72-8.49l-1.06-1.06c-.2-.2-.51-.2-.71 0L12 10.44l7.42 7.42 3.63-3.63c.2-.2.2-.51 0-.71l-1.06-1.06zM2 20h20v2H2v-2z" fill-rule="evenodd" opacity=".9"/></svg>
+                    <div class="color-underline"></div>
                 </div>
-                <div class="toolbar-group">
-                    <div class="toolbar-btn" style="font-weight: 500; font-size: 16px;">£</div>
-                    <div class="toolbar-btn" style="font-weight: 500; font-size: 16px;">%</div>
-                    <div class="toolbar-btn" style="font-weight: 500; font-size: 13px;">.0&#x2190;</div>
-                    <div class="toolbar-btn" style="font-weight: 500; font-size: 13px;">.00&#x2192;</div>
-                </div>
-                <div class="toolbar-group">
-                    <div class="toolbar-btn" style="font-weight: 500;">123</div>
-                </div>
-                <div class="toolbar-group">
-                    <div class="toolbar-select">Arial<span class="icon" style="width:16px; height:16px; margin-left: 2px; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNNyAxMGw1IDEgNS01LTUgNS01eiIvPjwvc
+            </div>
+            <div class="separator"></div>
+             <div class="toolbar-group">
+                <div class="icon" title="Fill color"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z"/><path d="M0 0h24v24H0V0z" fill="none" opacity=".87"/></svg></div>
+                <div class="icon" title="Borders"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 3v18h18V3H3zm8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg></div>
+                <div class="icon" title="More formatting options"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></div>
+            </div>
+        </div>
+
+        <div class="formula-bar">
+            <input class="cell-ref-input" type="text" value="A1" readonly>
+             <div class="cell-ref-dropdown">
+                    <svg class="dropdown-arrow" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+            <div class="formula-input-container">
+                <div class="icon" title="Functions"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18 4H6v2l6.5 6L6 18v2h12v-3h-7l5-5-5-5h7z" fill="#757575"/></svg></div>
+                <input id="formula-input" type="text" value="A">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <main class="grid-area">
+                <table id="spreadsheet-table"></table>
+            </main>
+    
+            <aside class="right-sidebar">
+                <img class="icon" src="https://www.gstatic.com/companion/icon_assets/calendar_2020q4_2x.png" alt="Calendar"/>
+                <img class="icon" src="https://www.gstatic.com/companion/icon_assets/keep_2020q4_2x.png" alt="Keep"/>
+                <img class="icon" src="https://www.gstatic.com/companion/icon_assets/tasks2_2x.png" alt="Tasks"/>
+                <img class="icon" src="https://www.gstatic.com/companion/icon_assets/contacts_2x.png" alt="Contacts"/>
+                <img class="icon" src="https://www.gstatic.com/companion/icon_assets/maps_v2_2x.png" alt="Maps"/>
+                <div class="right-sidebar-separator"></div>
+                <div class="icon" title="Get Add-ons"> <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+                <div class="icon" title="Hide side panel" style="margin-top: auto; margin-bottom: 0;"> <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></div>
+            </aside>
+        </div>
+
+
+        <footer class="sheets-bar">
+            <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+            <div class="icon"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></div>
+            <div class="sheet-tab active">
+                <span>Sheet1</span>
+                <svg class="tab-arrow" fill="currentColor" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+        </footer>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const COLS = 26;
+            const ROWS = 100;
+
+            const table = document.getElementById('spreadsheet-table');
+            const formulaInput = document.getElementById('formula-input');
+            const cellRefInput = document.querySelector('.cell-ref-input');
+            
+            let activeCellElement = null;
+            let activeCell = { col: 0, row: 0 };
+
+            function createCellContent(text = '') {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div;
+            }
+
+            function generateGrid() {
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                headerRow.appendChild(document.createElement('th')); 
+                for (let i = 0; i < COLS; i++) {
+                    const th = document.createElement('th');
+                    th.className = 'col-header';
+                    th.textContent = String.fromCharCode(65 + i);
+                    th.dataset.col = i;
+                    headerRow.appendChild(th);
+                }
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                for (let i = 0; i < ROWS; i++) {
+                    const tr = document.createElement('tr');
+                    tr.dataset.row = i;
+
+                    const th = document.createElement('th');
+                    th.className = 'row-header';
+                    th.textContent = i + 1;
+                    th.dataset.row = i;
+                    tr.appendChild(th);
+
+                    for (let j = 0; j < COLS; j++) {
+                        const td = document.createElement('td');
+                        td.dataset.col = j;
+                        td.dataset.row = i;
+                        const cellContent = createCellContent();
+                        td.appendChild(cellContent);
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+                table.appendChild(tbody);
+            }
+
+            function getCell(col, row) {
+                return table.querySelector(`td[data-col='${col}'][data-row='${row}']`);
+            }
+            
+            function updateSelection(target) {
+                if (activeCellElement) {
+                   activeCellElement.classList.remove('selected');
+                   if (activeCellElement.querySelector('.selected-handle')) {
+                       activeCellElement.querySelector('.selected-handle').remove();
+                   }
+                }
+                document.querySelectorAll('.col-header.selected, .row-header.selected').forEach(el => el.classList.remove('selected'));
+
+                activeCellElement = target;
+                if (!activeCellElement) return;
+
+                const col = target.dataset.col;
+                const row = target.dataset.row;
+                
+                activeCell = { col: parseInt(col), row: parseInt(row) };
+                
+                activeCellElement.classList.add('selected');
+                
+                const handle = document.createElement('div');
+                handle.className = 'selected-handle';
+                activeCellElement.appendChild(handle);
+
+                table.querySelector(`.col-header[data-col='${col}']`).classList.add('selected');
+                table.querySelector(`.row-header[data-row='${row}']`).classList.add('selected');
+
+                const colName = String.fromCharCode(65 + parseInt(col));
+                const rowName = parseInt(row) + 1;
+                cellRefInput.value = `${colName}${rowName}`;
+                
+                formulaInput.value = target.querySelector('div').textContent;
+            }
+            
+            table.addEventListener('click', (e) => {
+                const target = e.target.closest('td');
+                if (target && table.contains(target)) {
+                  updateSelection(target);
+                }
+            });
+
+            table.addEventListener('dblclick', (e) => {
+                const target = e.target.closest('td');
+                if (target && table.contains(target)) {
+                    const div = target.querySelector('div');
+                    div.setAttribute('contenteditable', 'true');
+                    div.focus();
+                    
+                    const sel = window.getSelection();
+                    sel.selectAllChildren(div);
+                    sel.collapseToEnd();
+                }
+            });
+
+            table.addEventListener('focusout', (e) => {
+                 const div = e.target.closest('div[contenteditable="true"]');
+                 if (div) {
+                    div.setAttribute('contenteditable', 'false');
+                 }
+            });
+
+            table.addEventListener('input', (e) => {
+                 const div = e.target.closest('div[contenteditable="true"]');
+                 if(div && activeCellElement && div === activeCellElement.querySelector('div')) {
+                    formulaInput.value = div.textContent;
+                 }
+            });
+
+            formulaInput.addEventListener('input', (e) => {
+                if (activeCellElement) {
+                    activeCellElement.querySelector('div').textContent = e.target.value;
+                }
+            });
+            
+            document.body.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' && e.target !== formulaInput) return;
+                
+                const isEditing = document.activeElement.getAttribute('contenteditable') === 'true';
+                if (isEditing && e.key !== 'Escape') return;
+
+                let { col, row } = activeCell;
+                let keyHandled = true;
+
+                switch(e.key) {
+                    case 'ArrowUp': row = Math.max(0, row - 1); break;
+                    case 'ArrowDown':
+                    case 'Enter': row = Math.min(ROWS - 1, row + 1); if(isEditing) document.activeElement.blur(); break;
+                    case 'ArrowLeft': if(!isEditing) col = Math.max(0, col - 1); else keyHandled=false; break;
+                    case 'ArrowRight': if(!isEditing) col = Math.min(COLS - 1, col + 1); else keyHandled=false; break;
+                    case 'Tab': 
+                        if (e.shiftKey) { col = Math.max(0, col - 1); } 
+                        else { col = Math.min(COLS - 1, col + 1); }
+                        break;
+                    case 'Escape': if(isEditing) document.activeElement.blur(); break;
+                    default: keyHandled = false;
+                }
+                
+                if (keyHandled) {
+                    e.preventDefault();
+                    const nextCell = getCell(col, row);
+                    if (nextCell) {
+                        updateSelection(nextCell);
+                        nextCell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                    }
+                }
+            });
+
+
+            generateGrid();
+            const initialCell = getCell(0,0);
+            const initialCellRow1 = getCell(0,1);
+            if(initialCell) {
+                initialCell.querySelector('div').textContent = "A";
+                updateSelection(initialCell);
+            }
+             if(initialCellRow1){
+                updateSelection(initialCellRow1);
+            }
+        });
+    </script>
+</body>
+</html>

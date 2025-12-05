@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,156 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jira Board</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         :root {
-            --jira-blue: #0747A6;
-            --jira-bg-light: #F4F5F7;
-            --text-dark: #172B4D;
-            --text-light: #5E6C84;
-            --border-light: #dfe1e6;
-            --white: #FFFFFF;
-            --active-bg: #E9F2FF;
-            --tag-yellow-bg: #FFF7D6;
-            --tag-yellow-text: #B38600;
-            --tag-orange-bg: #FFEBE5;
-            --tag-orange-text: #C9372C;
-            --tag-teal-bg: #E6FCFF;
-            --tag-teal-text: #00667A;
-            --tag-purple-bg: #EAE6FF;
-            --tag-purple-text: #403294;
-            --icon-red: #DE350B;
+            --blue-dark: #0747A6;
+            --blue-medium: #0952CC;
+            --text-light: #DEEBFF;
+            --text-light-subtle: #B3D4FF;
+            --bg-main: #F4F5F7;
+            --bg-card: #FFFFFF;
+            --text-primary: #172B4D;
+            --text-secondary: #5E6C84;
+            --border-light: #EBECF0;
+            --tag-yellow: #FFC400;
+            --tag-orange: #FF7A00;
+            --tag-cyan: #00A3BF;
+            --tag-purple: #6554C0;
+            --priority-high: #DE350B;
+            --priority-highest: #DE350B;
         }
 
         body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--jira-bg-light);
-            color: var(--text-dark);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-container {
             display: flex;
             height: 100vh;
-            overflow: hidden;
         }
 
-        .icon {
-            width: 24px;
-            height: 24px;
-            stroke-width: 0;
-        }
-
-        /* --- Sidebar --- */
+        /* Sidebar */
         .sidebar {
+            background-color: var(--blue-dark);
+            color: var(--text-light);
             width: 240px;
-            background-color: var(--jira-blue);
-            color: var(--white);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            padding: 16px 0;
         }
 
-        .sidebar-top {
-            padding: 16px;
-            display: flex;
-            justify-content: space-around;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-top .icon {
-            opacity: 0.8;
-            cursor: pointer;
-        }
-        .sidebar-top .icon:hover {
-            opacity: 1;
+        .sidebar-top,
+        .sidebar-bottom {
+            padding: 0 12px;
         }
 
-        .sidebar-main {
-            flex-grow: 1;
-        }
-
-        .project-info {
+        .sidebar-header {
             display: flex;
             align-items: center;
-            padding: 20px 16px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 8px 12px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
-        
+
         .project-icon {
-            width: 42px;
-            height: 42px;
-            margin-right: 12px;
+            width: 40px;
+            height: 40px;
+            background-color: #7955F1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
         }
 
         .project-details h2 {
             font-size: 14px;
-            margin: 0 0 4px 0;
             font-weight: 500;
+            margin: 0;
         }
 
         .project-details p {
             font-size: 12px;
-            margin: 0;
-            opacity: 0.8;
+            color: var(--text-light-subtle);
+            margin: 2px 0 0;
         }
 
-        .sidebar-nav ul {
+        .sidebar-menu {
             list-style: none;
-            padding: 8px 0;
+            padding: 0;
             margin: 0;
+            flex-grow: 1;
         }
 
-        .sidebar-nav li a {
+        .sidebar-menu-item {
+            padding: 0 12px;
+        }
+        
+        .sidebar-menu-button {
             display: flex;
             align-items: center;
-            padding: 8px 16px;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 3px;
+            color: var(--text-light);
             text-decoration: none;
-            color: #DEEBFF;
             font-size: 14px;
             font-weight: 500;
+            border: none;
+            background: transparent;
+            width: 100%;
         }
 
-        .sidebar-nav li a .icon {
-            margin-right: 12px;
-            fill: #DEEBFF;
-        }
-        
-        .sidebar-nav li.active {
-            background-color: #E9F2FF;
-        }
-        
-        .sidebar-nav li.active a {
-            color: var(--jira-blue);
-        }
-        
-        .sidebar-nav li.active a .icon {
-            fill: var(--jira-blue);
-        }
-
-        .sidebar-nav li:not(.active):hover {
+        .sidebar-menu-button:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .sidebar-bottom {
-            padding: 16px;
-            border-top: 1px solid rgba(0, 0, 0, 0.2);
-            margin-top: auto;
-        }
-        
-        .sidebar-bottom .icon {
-            cursor: pointer;
-            opacity: 0.8;
-        }
-        .sidebar-bottom .icon:hover {
-            opacity: 1;
+        .sidebar-menu-item.active .sidebar-menu-button {
+            background-color: var(--blue-medium);
+            color: white;
         }
 
-        /* --- Main Content --- */
-        .main-content {
-            flex-grow: 1;
-            padding: 0 40px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+        .sidebar-menu-button svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
         
+        .sidebar-actions {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+            padding-bottom: 16px;
+
+        }
+
+        .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            color: var(--text-light);
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .action-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-button svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0 48px;
+            overflow-x: hidden;
+        }
+
         .main-header {
             display: flex;
             justify-content: space-between;
@@ -170,41 +193,28 @@
             margin: 0;
         }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .btn {
-            background-color: #F4F5F7;
-            border: none;
+        .header-actions button {
+            background-color: var(--bg-main);
+            border: 1px solid #ccc;
             border-radius: 3px;
             padding: 8px 12px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            color: #42526E;
-        }
-        
-        .btn:hover {
-            background-color: #EBECF0;
+            margin-left: 8px;
         }
 
-        .more-options-btn {
-            background: none;
+        .header-actions button:hover {
+            background-color: #e9e9e9;
+        }
+
+        .header-actions .icon-button {
             border: none;
+            background: transparent;
             padding: 4px;
-            cursor: pointer;
-        }
-        .more-options-btn .icon{
-            fill:#42526E;
-            width: 20px;
-            height: 20px;
         }
 
-        /* --- Filters --- */
-        .filters {
+        .filters-toolbar {
             display: flex;
             align-items: center;
             gap: 16px;
@@ -212,364 +222,478 @@
             flex-shrink: 0;
         }
 
-        .search-filter {
+        .search-input {
             position: relative;
         }
 
-        .search-filter .icon {
+        .search-input svg {
             position: absolute;
             left: 8px;
             top: 50%;
             transform: translateY(-50%);
             width: 16px;
             height: 16px;
-            fill: var(--text-light);
-        }
-        
-        .search-input {
-            background-color: var(--white);
-            border: 1px solid var(--border-light);
-            border-radius: 3px;
-            padding: 8px 12px 8px 32px;
-            font-size: 14px;
-        }
-        .search-input:focus {
-            outline: 2px solid #4C9AFF;
-            border-color: #4C9AFF;
+            color: var(--text-secondary);
         }
 
-        .quick-filters {
+        .search-input input {
+            background-color: var(--bg-card);
+            border: 1px solid #DFE1E6;
+            border-radius: 3px;
+            padding: 8px 8px 8px 32px;
+            font-size: 14px;
+        }
+        .search-input input:focus {
+            outline: none;
+            border-color: #4C9AFF;
+            box-shadow: 0 0 0 1px #4C9AFF;
+        }
+
+        .filter-button {
+             background-color: transparent;
+            border: none;
+            border-radius: 3px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            font-size: 14px;
-            color: var(--text-light);
-            cursor: pointer;
+            gap: 4px;
         }
-        
-        .quick-filters .icon {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-light);
+        .filter-button:hover {
+             background-color: #e9e9e9;
+        }
+        .filter-button svg {
+            width: 16px;
+            height: 16px;
         }
 
-        /* --- Kanban Board --- */
-        .kanban-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+        /* Board */
+        .board-view {
+            display: flex;
             gap: 16px;
             flex-grow: 1;
-            overflow-y: auto;
-            min-height: 0;
+            overflow-x: auto;
+            padding-bottom: 16px; /* For scrollbar */
         }
 
-        .kanban-column {
-            background-color: var(--jira-bg-light);
+        .board-column {
+            width: 280px;
+            flex-shrink: 0;
+            background-color: var(--bg-main);
             border-radius: 3px;
-            display: flex;
-            flex-direction: column;
-            min-width: 280px;
         }
 
         .column-header {
-            padding: 8px 8px 16px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 8px;
+            text-transform: uppercase;
             font-size: 12px;
             font-weight: 600;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--text-secondary);
         }
-
-        .column-cards {
-            flex-grow: 1;
+        
+        .column-content {
             padding: 0 4px;
-            min-height: 100px;
-            
         }
 
-        /* --- Kanban Card --- */
-        .kanban-card {
-            background-color: var(--white);
+        .task-card {
+            background-color: var(--bg-card);
             border-radius: 3px;
-            box-shadow: 0 1px 2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
             padding: 12px;
             margin-bottom: 8px;
+            box-shadow: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 0 rgba(9, 30, 66, 0.31);
+            cursor: pointer;
+        }
+
+        .task-card:hover {
+            background-color: #F4F5F7;
+        }
+
+        .task-card p {
+            margin: 0 0 12px;
             font-size: 14px;
-            cursor: grab;
-        }
-
-        .kanban-card.dragging {
-            opacity: 0.5;
-            box-shadow: 0 4px 8px rgba(9, 30, 66, 0.25);
-        }
-
-        .card-title {
-            margin: 0 0 12px 0;
             line-height: 1.4;
-            font-weight: 400;
         }
-
+        
         .card-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 6px;
             margin-bottom: 12px;
         }
-        
-        .card-tag {
-            font-size: 11px;
-            font-weight: 700;
+
+        .tag {
             padding: 2px 6px;
             border-radius: 3px;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
         }
-        
-        .tag-yellow { background-color: var(--tag-yellow-bg); color: var(--tag-yellow-text); }
-        .tag-orange { background-color: var(--tag-orange-bg); color: var(--tag-orange-text); }
-        .tag-teal   { background-color: var(--tag-teal-bg); color: var(--tag-teal-text); }
-        .tag-purple { background-color: var(--tag-purple-bg); color: var(--tag-purple-text); }
 
+        .tag-yellow { background-color: var(--tag-yellow); color: var(--text-primary); }
+        .tag-orange { background-color: var(--tag-orange); color: var(--bg-card); }
+        .tag-cyan { background-color: var(--tag-cyan); color: var(--bg-card); }
+        .tag-purple { background-color: var(--tag-purple); color: var(--bg-card); }
+        
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .card-priority {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: var(--text-light);
+            margin-top: 12px;
         }
         
-        .card-priority .icon {
+        .card-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .priority-icon, .arrow-icon {
             width: 16px;
             height: 16px;
-            fill: var(--icon-red);
+        }
+        
+        .priority-blocker { color: var(--priority-high); }
+        .priority-highest { color: var(--priority-highest); }
+        .priority-high { color: var(--priority-high); }
+        
+        .story-points {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        .card-id {
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        .card-id {
-            font-size: 12px;
-            color: var(--text-light);
-        }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-top">
-            <svg class="icon" viewBox="0 0 16 16"><path fill="currentColor" d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" fill="currentColor" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7a.5.5 0 0 1-1 0 5 5 0 0 0-1.125-3.231.5.5 0 0 1-.62-1.072A6.005 6.005 0 0 1 8 3zM2.083 9a.5.5 0 0 1 .5.5v1a5 5 0 0 0 1.125 3.231.5.5 0 0 1-.62 1.072A6.005 6.005 0 0 1 8 13c3.314 0 6-2.686 6-6a.5.5 0 0 1 1 0c0 3.866-3.582 7-8 7a8.002 8.002 0 0 1-6.417-3.242.5.5 0 0 1 .636-.772A7.002 7.002 0 0 0 2.083 9z"/></svg>            
-            <svg class="icon" viewBox="0 0 16 16"><path fill="currentColor" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
-            <svg class="icon" viewBox="0 0 16 16"><path fill="currentColor" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-        </div>
-        <div class="sidebar-main">
-            <div class="project-info">
-                <svg class="project-icon" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="50" fill="#6554C0"/>
-                    <path d="M50 25 C55 35, 60 50, 60 50 L70 70 L50 60 L30 70 L40 50 C40 50, 45 35, 50 25 Z" fill="#998dd9"/>
-                    <path d="M60 75 A 15 15 0 0 0 40 75" fill="#FFF"/>
-                    <path d="M50 20 L50 10" stroke="#FFF" stroke-width="4" stroke-linecap="round"/>
-                </svg>
-                <div class="project-details">
-                    <h2>Teams in Space</h2>
-                    <p>Software project</p>
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="sidebar-top">
+                <div class="sidebar-header">
+                    <div class="project-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                           <path d="M10.25 2.75L2.75 10.25a2.5 2.5 0 000 3.5l7.5 7.5a2.5 2.5 0 003.5 0l7.5-7.5a2.5 2.5 0 000-3.5L13.75 2.75a2.5 2.5 0 00-3.5 0zM11.5 8.75a2.75 2.75 0 115.5 0 2.75 2.75 0 01-5.5 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="project-details">
+                        <h2>Teams in Space</h2>
+                        <p>Software project</p>
+                    </div>
+                </div>
+
+                <div class="sidebar-actions">
+                    <button class="action-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                    <button class="action-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </button>
                 </div>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/><path d="M2 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1zm0 3a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z"/></svg> Backlog</a></li>
-                    <li class="active"><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5h-13zM2 2h2.5v12H2V2zm3.5 0H8v12H5.5V2zm3.5 0h2.5v12H9V2zm3.5 0h2.5v12h-2.5V2z"/></svg> Board</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M11 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h1V7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7h1V2zm1 12h2V2h-2v12zm-3 0V7H7v7h2zm-4 0V4H2v10h2z"/></svg> Reports</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5 8 5.961 14.154 3.5 8.186 1.113zM15 4.239l-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923l6.5 2.6zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464L7.443.184z"/></svg> Releases</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M6 .5a.5.5 0 0 1 .5.5v3.793l2.146-2.147a.5.5 0 0 1 .708.708L6.707 5.5H9.5a.5.5 0 0 1 .5.5v3.793l2.146-2.147a.5.5 0 0 1 .708.708L9.707 10.5H12.5a.5.5 0 0 1 .5.5v3.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L12.5 14.207V11.5a.5.5 0 0 1-.5-.5H9.707l3.147-3.146a.5.5 0 0 1-.708-.708L10 9.207V6.5a.5.5 0 0 1-.5-.5H6.707l3.147-3.146a.5.5 0 0 1-.708-.708L7 4.207V1.5a.5.5 0 0 1-.5-.5h-1a.5.5 0 0 1-.5.5v3.793L1.854 2.146a.5.5 0 1 1 .708-.708L5 4.207V1.5a.5.5 0 0 1 .5-.5H6zM1 10.5a.5.5 0 0 1 .5.5v3.793l2.146-2.147a.5.5 0 1 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L3.5 14.207V11.5a.5.5 0 0 1 .5-.5H1z"/></svg> Components</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.05-.012z"/></svg> Issues</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/></svg> Repository</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg> Add item</a></li>
-                    <li><a href="#"><svg class="icon" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413-1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg> Settings</a></li>
-                </ul>
-            </nav>
-        </div>
-        <div class="sidebar-bottom">
-            <svg class="icon" viewBox="0 0 16 16"><path fill="currentColor" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path fill="currentColor" d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></svg>
-        </div>
-    </aside>
 
-    <main class="main-content">
-        <header class="main-header">
-            <h1>Board</h1>
-            <div class="header-actions">
-                <button class="btn">Release</button>
-                <button class="more-options-btn">
-                     <svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="3" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="8"cy="13" r="1.5"/></svg>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                        <span>Backlog</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item active">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v12a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z"></path></svg>
+                        <span>Board</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0115.357-2m0 0H15"></path></svg>
+                        <span>Releases</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path></svg>
+                        <span>Components</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Issues</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                        <span>Repository</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                        <span>Add item</span>
+                    </a>
+                </li>
+                 <li class="sidebar-menu-item">
+                    <a href="#" class="sidebar-menu-button">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Board</h1>
+                <div class="header-actions">
+                    <button>Release</button>
+                    <button class="icon-button">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="filters-toolbar">
+                <div class="search-input">
+                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" placeholder="Search">
+                </div>
+                <button class="filter-button">
+                    <span>Quick Filters</span>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
             </div>
-        </header>
 
-        <div class="filters">
-            <div class="search-filter">
-                <svg class="icon" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
-                <input type="text" class="search-input" placeholder="Search">
-            </div>
-            <div class="quick-filters">
-                <span>Quick Filters</span>
-                <svg class="icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>
-            </div>
-        </div>
-        
-        <div class="kanban-board">
-            <div class="kanban-column">
-                <div class="column-header">TO DO <span>5</span></div>
-                <div class="column-cards">
-                    <div class="kanban-card" id="card-1" draggable="true">
-                        <p class="card-title">Engage Jupiter Express for outer solar system travel</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-yellow">Space Travel Partners</span>
-                        </div>
-                        <div class="card-footer">
-                            <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/></svg>
-                                <span>5</span>
+            <div class="board-view">
+                <div class="board-column">
+                    <div class="column-header"><span>To Do</span><span>5</span></div>
+                    <div class="column-content">
+                        <div class="task-card">
+                            <p>Engage Jupiter Express for outer solar system travel</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
                             </div>
-                            <span class="card-id">TIS-25</span>
-                        </div>
-                    </div>
-                    <div class="kanban-card" id="card-2" draggable="true">
-                        <p class="card-title">Create 90 day plans for all departments in the Mars Office</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-orange">Local Mars Office</span>
-                        </div>
-                        <div class="card-footer">
-                            <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 5.354a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 1 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 5.354z"/></svg>
-                                <span>9</span>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">5</span>
+                                </div>
+                                <span class="card-id">TIS-25</span>
                             </div>
-                            <span class="card-id">TIS-12</span>
                         </div>
-                    </div>
-                    <div class="kanban-card" id="card-3" draggable="true">
-                        <p class="card-title">Engage Saturn's Rings Resort as a preferred provider</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-yellow">Space Travel Partners</span>
-                        </div>
-                        <div class="card-footer">
-                           <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>3</span>
+                        <div class="task-card">
+                            <p>Create 90 day plans for all departments in the Mars Office</p>
+                            <div class="card-tags">
+                                <span class="tag tag-orange">Local Mars Office</span>
                             </div>
-                            <span class="card-id">TIS-17</span>
-                        </div>
-                    </div>
-                    <div class="kanban-card" id="card-4" draggable="true">
-                        <p class="card-title">Enable Speedy SpaceCraft as the preferred</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-teal">SeeSpaceEZ Plus</span>
-                        </div>
-                         <div class="card-footer">
-                            <div class="card-priority">
-                                <svg class="icon" style="fill:#1D7AFC" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0zM8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0z"/><path d="M12 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm-5 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+                            <div class="card-footer">
+                               <div class="card-footer-left">
+                                    <svg class="priority-icon priority-blocker" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm-4-8h8v2H4V7z"/></svg>
+                                    <span class="story-points">9</span>
+                                </div>
+                                <span class="card-id">TIS-12</span>
                             </div>
-                            <span class="card-id">TIS-57</span>
+                        </div>
+                         <div class="task-card">
+                            <p>Engage Saturn's Rings Resort as a preferred provider</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">3</span>
+                                </div>
+                                <span class="card-id">TIS-17</span>
+                            </div>
+                        </div>
+                         <div class="task-card">
+                            <p>Enable Speedy SpaceCraft as the preferred</p>
+                             <div class="card-tags">
+                                <span class="tag tag-cyan">SeeSpaceEZ Plus</span>
+                            </div>
+                            <div class="card-footer">
+                               <div class="card-footer-left">
+                                    <svg class="priority-icon priority-highest" viewBox="0 0 16 16" fill="currentColor"><path d="M8 5l5 6H3l5-6zm0-4l5 6H3l5-6z" transform="rotate(180 8 8)"></path></svg>
+                               </div>
+                                <span class="card-id">TIS-57</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="kanban-column">
-                <div class="column-header">IN PROGRESS <span>5</span></div>
-                <div class="column-cards">
-                    <div class="kanban-card" id="card-5" draggable="true">
-                        <p class="card-title">Requesting available flights is now taking > 5 seconds</p>
-                        <div class="card-tags">
-                             <span class="card-tag tag-teal">SeeSpaceEZ Plus</span>
-                        </div>
-                        <div class="card-footer">
-                           <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>3</span>
+
+                <div class="board-column">
+                    <div class="column-header"><span>In Progress</span><span>5</span></div>
+                     <div class="column-content">
+                        <div class="task-card">
+                            <p>Requesting available flights is now taking > 5 seconds</p>
+                            <div class="card-tags">
+                                <span class="tag tag-cyan">SeeSpaceEZ Plus</span>
                             </div>
-                            <span class="card-id">TIS-8</span>
-                        </div>
-                    </div>
-                    <div class="kanban-card" id="card-6" draggable="true">
-                        <p class="card-title">Engage Saturn Shuttle Lines for group tours</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-yellow">Space Travel Partners</span>
-                        </div>
-                        <div class="card-footer">
-                           <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>4</span>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">3</span>
+                                </div>
+                                <span class="card-id">TIS-8</span>
                             </div>
-                            <span class="card-id">TIS-15</span>
                         </div>
-                    </div>
-                    <div class="kanban-card" id="card-7" draggable="true">
-                        <p class="card-title">Establish a catering vendor to provide meal service</p>
-                        <div class="card-tags">
-                             <span class="card-tag tag-orange">Local Mars Office</span>
-                        </div>
-                        <div class="card-footer">
-                            <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>4</span>
+                         <div class="task-card">
+                            <p>Engage Saturn Shuttle Lines for group tours</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
                             </div>
-                            <span class="card-id">TIS-15</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="kanban-column">
-                <div class="column-header">CODE REVIEW <span>2</span></div>
-                <div class="column-cards">
-                    <div class="kanban-card" id="card-8" draggable="true">
-                        <p class="card-title">Register with the Mars Ministry of Revenue</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-orange">Local Mars Office</span>
-                        </div>
-                        <div class="card-footer">
-                           <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>3</span>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-highest" viewBox="0 0 16 16" fill="currentColor"><path d="M8 5l5 6H3l5-6zm0-4l5 6H3l5-6z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">4</span>
+                                </div>
+                                <span class="card-id">TIS-15</span>
                             </div>
-                            <span class="card-id">TIS-11</span>
                         </div>
-                    </div>
-                     <div class="kanban-card" id="card-9" draggable="true">
-                        <p class="card-title">Draft network plan for Mars Office</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-orange">Local Mars Office</span>
-                        </div>
-                        <div class="card-footer">
-                           <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.707l-6.354 6.353a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z" /><path d="m2.354 4.646.708-.708L8 9.293l4.949-4.95.708.708L8 10.707l-5.646-5.647z"/></svg>
-                                <span>3</span>
+                         <div class="task-card">
+                            <p>Establish a catering vendor to provide meal service</p>
+                            <div class="card-tags">
+                                <span class="tag tag-orange">Local Mars Office</span>
                             </div>
-                            <span class="card-id">TIS-15</span>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-highest" viewBox="0 0 16 16" fill="currentColor"><path d="M8 5l5 6H3l5-6zm0-4l5 6H3l5-6z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">4</span>
+                                </div>
+                                <span class="card-id">TIS-15</span>
+                            </div>
+                        </div>
+                        <div class="task-card">
+                            <p>Engage Saturn Shuttle Lines for group tours</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
+                            </div>
+                            <div class="card-footer">
+                               <div class="card-footer-left">
+                                    <svg class="priority-icon priority-highest" viewBox="0 0 16 16" fill="currentColor"><path d="M8 5l5 6H3l5-6zm0-4l5 6H3l5-6z" transform="rotate(180 8 8)"></path></svg>
+                                </div>
+                                <span class="card-id">TIS-21</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="kanban-column">
-                <div class="column-header">DONE <span>8</span></div>
-                <div class="column-cards">
-                    <div class="kanban-card" id="card-10" draggable="true">
-                        <p class="card-title">Homepage footer uses an inline style - should use a class</p>
-                        <div class="card-tags">
-                            <span class="card-tag tag-purple">Large Team Support</span>
-                        </div>
-                        <div class="card-footer">
-                              <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/></svg>
+
+                <div class="board-column">
+                    <div class="column-header"><span>Code Review</span><span>2</span></div>
+                    <div class="column-content">
+                        <div class="task-card">
+                            <p>Register with the Mars Ministry of Revenue</p>
+                            <div class="card-tags">
+                                <span class="tag tag-orange">Local Mars Office</span>
                             </div>
-                            <span class="card-id">TIS-68</span>
+                             <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">3</span>
+                                </div>
+                                <span class="card-id">TIS-11</span>
+                            </div>
+                        </div>
+                         <div class="task-card">
+                            <p>Draft network plan for Mars Office</p>
+                            <div class="card-tags">
+                                <span class="tag tag-orange">Local Mars Office</span>
+                            </div>
+                             <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">3</span>
+                                </div>
+                                <span class="card-id">TIS-15</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="kanban-card" id="card-11" draggable="true">
-                        <p class="card-title">Engage JetShuttle SpaceWays for travel</p>
-                        <div class="card-tags">
-                             <span class="card-tag tag-yellow">Space Travel Partners</span>
+                </div>
+                
+                <div class="board-column">
+                    <div class="column-header"><span>Done</span><span>8</span></div>
+                    <div class="column-content">
+                        <div class="task-card">
+                            <p>Homepage footer uses an inline style - should use a class</p>
+                            <div class="card-tags">
+                                <span class="tag tag-purple">Large Team Support</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 11L2 5h12L8 11z" transform="rotate(180 8 8)"></path></svg>
+                                </div>
+                                <span class="card-id">TIS-68</span>
+                            </div>
                         </div>
-                        <div class="card-footer">
-                              <div class="card-priority">
-                                <svg class="icon" viewBox="0 0 16 16"><path d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l" /><path d="m1.646 10.646.708.708L8 5.7
+                        <div class="task-card">
+                            <p>Engage JetShuttle SpaceWays for travel</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                    <svg class="priority-icon priority-highest" viewBox="0 0 16 16" fill="currentColor"><path d="M8 5l5 6H3l5-6zm0-4l5 6H3l5-6z" transform="rotate(180 8 8)"></path></svg>
+                                    <span class="story-points">5</span>
+                                </div>
+                                <span class="card-id">TIS-23</span>
+                            </div>
+                        </div>
+                          <div class="task-card">
+                            <p>Engage Saturn Shuttle Lines for group tours</p>
+                            <div class="card-tags">
+                                <span class="tag tag-yellow">Space Travel Partners</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                   <svg class="arrow-icon priority-high" viewBox="0 0 16 16" fill="currentColor"><path d="M8 13.5L8 2.5 M4 6.5L8 2.5L12 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+                                </div>
+                                <span class="card-id">TIS-15</span>
+                            </div>
+                        </div>
+                         <div class="task-card">
+                            <p>Establish a catering vendor to provide meal service</p>
+                            <div class="card-tags">
+                                <span class="tag tag-orange">Local Mars Office</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-footer-left">
+                                </div>
+                                <span class="card-id">TIS-19</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <script>
+        // Minimal JavaScript for demonstration purposes
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButton = document.querySelector('.filter-button');
+            if (filterButton) {
+                filterButton.addEventListener('click', () => {
+                    alert('Quick Filters clicked!');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

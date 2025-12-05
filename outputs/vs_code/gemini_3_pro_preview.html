@@ -3,147 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VS Code Interface</title>
+    <title>VS Code Layout</title>
     <style>
         :root {
             --bg-root: #1e1e1e;
             --bg-sidebar: #252526;
-            --bg-activity: #333333;
-            --bg-title: #3c3c3c; /* Mac title bar blends usually, but VSCode custom */
-            --bg-title-mac: #282828; 
-            --bg-editor: #1f1f1f;
-            --bg-status: #181818;
+            --bg-activity-bar: #333333;
+            --bg-titlebar: #3c3c3c; /* macOS title bar usually blends, sticking to VSCode custom titlebar style */
+            --bg-editor: #1e1e1e;
+            --bg-status-bar: #191919;
+            --bg-panel-header: #252526;
+            --bg-input: #3c3c3c;
             --bg-tab-inactive: #2d2d2d;
-            --bg-tab-active: #1f1f1f;
-            --fg-primary: #cccccc;
-            --fg-secondary: #969696;
-            --fg-accent: #007acc;
-            --border-color: #454545;
-            --item-hover: #2a2d2e;
+            --bg-tab-active: #1e1e1e;
+            --fg-text: #cccccc;
+            --fg-dim: #969696;
+            --border-color: #000000;
+            --accent-blue: #007acc;
             --focus-border: #007fd4;
-            --git-modified: #e2c08d;
+            --folder-blue: #6d9bf1;
+            --folder-green: #8fd1a3;
+            --folder-yellow: #eacb6f;
+            --folder-red: #da7872;
+            --folder-gray: #90a4ae;
             --git-added: #81b88b;
-            --info-blue: #75beff;
+            --git-modified: #e2c08d;
+            --icon-fg: #c5c5c5;
             
-            /* Syntax Highlighting */
+            /* Syntax Colors */
             --syn-keyword: #c586c0;
             --syn-control: #c586c0;
+            --syn-func: #dcdcaa;
+            --syn-var: #9cdcfe;
+            --syn-prop: #9cdcfe;
+            --syn-type: #4ec9b0;
             --syn-string: #ce9178;
-            --syn-function: #dcdcaa;
-            --syn-variable: #9cdcfe;
-            --syn-component: #4ec9b0;
             --syn-comment: #6a9955;
-            --syn-tag: #569cd6;
-            --syn-punct: #d4d4d4;
+            --syn-tag: #4ec9b0; /* React Components often green */
+            --syn-attr: #9cdcfe;
+            --syn-operator: #d4d4d4;
             --syn-number: #b5cea8;
-            --line-num: #858585;
+            --syn-punct: #d4d4d4;
+            --syn-import: #c586c0;
         }
 
         * {
             box-sizing: border-box;
-            user-select: none;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-root);
+            color: var(--fg-text);
             height: 100vh;
-            width: 100vw;
             display: flex;
             flex-direction: column;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
-            background-color: var(--bg-root);
-            color: var(--fg-primary);
             overflow: hidden;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        /* --- Title Bar --- */
+        .title-bar {
+            height: 38px; /* macOS style is taller */
+            background-color: var(--bg-titlebar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
             font-size: 13px;
         }
 
-        /* Title Bar */
-        .title-bar {
-            height: 35px; /* Mac style slightly taller or 28px standard */
-            display: flex;
-            align-items: center;
-            background-color: var(--bg-title-mac);
-            border-bottom: 1px solid #111;
-            padding: 0 10px;
-            justify-content: space-between;
-        }
-
-        .mac-controls {
+        .title-controls {
             display: flex;
             gap: 8px;
-            margin-right: 12px;
+            padding-left: 5px;
         }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .dot.red { background: #ff5f56; }
-        .dot.yellow { background: #ffbd2e; }
-        .dot.green { background: #27c93f; }
-
-        .nav-controls {
-            display: flex;
-            gap: 15px;
-            color: var(--fg-secondary);
-        }
-        
-        .search-bar {
-            flex-grow: 1;
+        .title-search {
+            background-color: #525252;
+            border-radius: 6px;
+            width: 40%;
             max-width: 500px;
             height: 24px;
-            background-color: #3b3b3b;
-            border-radius: 6px;
-            border: 1px solid #484848;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #ccc;
-            font-size: 12px;
-            margin: 0 10px;
+            border: 1px solid #555;
             position: relative;
         }
-        
-        .search-bar svg {
-            margin-right: 6px;
-            fill: #ccc;
-        }
+        .title-search span { margin-left: 6px; font-size: 12px; }
 
-        .window-controls-right {
+        .title-actions {
             display: flex;
             gap: 15px;
-            color: var(--fg-secondary);
-            align-items: center;
+            color: #ccc;
         }
-        
-        .icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            cursor: pointer;
-        }
+        .title-actions svg { width: 16px; height: 16px; fill: currentColor; }
 
-        /* Main Workspace */
+        /* --- Main Layout --- */
         .workspace {
             display: flex;
-            flex-grow: 1;
+            flex: 1;
             overflow: hidden;
         }
 
-        /* Activity Bar */
+        /* --- Activity Bar --- */
         .activity-bar {
             width: 48px;
-            background-color: var(--bg-activity);
+            background-color: var(--bg-activity-bar);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding-top: 10px;
             justify-content: space-between;
-            padding-bottom: 10px;
         }
-
+        .activity-top, .activity-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
         .action-item {
             width: 48px;
             height: 48px;
@@ -152,565 +139,625 @@
             align-items: center;
             cursor: pointer;
             position: relative;
-            color: #858585;
         }
-
-        .action-item.active {
-            color: #fff;
-            border-left: 2px solid #fff;
+        .action-item svg {
+            width: 24px;
+            height: 24px;
+            fill: #858585;
         }
-
-        .action-item:hover {
-            color: #fff;
-        }
-
-        .action-item .badge {
+        .action-item.active { border-left: 2px solid var(--fg-text); }
+        .action-item.active svg { fill: var(--fg-text); }
+        .badge {
             position: absolute;
-            bottom: 8px;
+            bottom: 10px;
             right: 8px;
-            background-color: #007acc;
+            background-color: #0078d4;
             color: white;
-            font-size: 9px;
+            font-size: 10px;
+            border-radius: 50%;
             width: 14px;
             height: 14px;
-            border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             font-weight: bold;
         }
 
-        .ab-top, .ab-bottom {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Sidebar - Explorer */
+        /* --- Sidebar (Explorer) --- */
         .sidebar {
             width: 260px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #111;
+            border-right: 1px solid #000;
         }
-
-        .sb-header {
-            padding: 10px 20px;
+        
+        .sidebar-header {
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
             font-size: 11px;
             letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--fg-secondary);
-            height: 35px;
+            color: var(--fg-text);
         }
+        .sidebar-actions svg { width: 14px; height: 14px; fill: var(--fg-text); margin-left: 5px;}
 
-        .sb-title {
-            font-weight: 500;
-        }
-
-        .tree-view {
-            flex-grow: 1;
+        .sidebar-content {
+            flex: 1;
             overflow-y: auto;
         }
-
+        
+        /* Tree View */
         .tree-item {
             display: flex;
             align-items: center;
-            padding: 3px 0;
+            height: 22px;
             cursor: pointer;
-            color: var(--fg-primary);
+            color: var(--fg-text);
+            padding-right: 10px;
             white-space: nowrap;
         }
+        .tree-item:hover { background-color: #2a2d2e; }
+        .tree-item.selected { background-color: #37373d; color: white; }
         
-        .tree-item:hover {
-            background-color: #2a2d2e;
-        }
-        
-        .tree-item.active-file {
-            background-color: #37373d;
-        }
-
-        .indent { width: 14px; display: inline-block; flex-shrink: 0; }
-        .arrow { 
-            width: 16px; 
-            height: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        .tree-indent { display: inline-block; }
+        .arrow {
+            width: 16px; height: 16px;
+            display: inline-flex; justify-content: center; align-items: center;
             margin-right: 2px;
-            opacity: 0.8;
             transition: transform 0.1s;
         }
-        .rotated { transform: rotate(90deg); }
+        .arrow svg { width: 14px; height: 14px; fill: var(--icon-fg); }
+        .arrow.down { transform: rotate(90deg); }
         
         .file-icon {
-            width: 16px;
-            height: 16px;
+            width: 16px; height: 16px;
             margin-right: 6px;
-            display: inline-block;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            flex-shrink: 0;
+            display: inline-flex; justify-content: center; align-items: center;
         }
+        .file-icon svg { width: 14px; height: 14px; }
 
-        /* File Icon Colors */
-        .fi-ts { fill: #3178c6; }
-        .fi-react { fill: #61dafb; }
-        .fi-folder { fill: #dcb67a; }
-        .fi-folder-open { fill: #dcb67a; }
-        .fi-css { fill: #569cd6; } /* generic blue */
+        .label { font-size: 13px; }
+        .git-mod { color: var(--git-modified); margin-left: 4px; font-size: 12px; }
 
-        /* Editor Area */
-        .editor-container {
-            flex-grow: 1;
+        /* Specific Icon Colors for authenticity */
+        .icon-blue { fill: var(--folder-blue); }
+        .icon-green { fill: var(--folder-green); }
+        .icon-yellow { fill: var(--folder-yellow); }
+        .icon-gray { fill: var(--folder-gray); }
+        .icon-ts { fill: #3178c6; }
+        .icon-tsx { fill: #61dafb; }
+        .icon-css { fill: #42a5f5; }
+        .icon-nav { fill: #c5c5c5; }
+
+        /* Sub-panels in sidebar */
+        .sidebar-section {
+            border-top: 1px solid #3e3e3e;
+        }
+        .section-header {
+            height: 22px;
+            display: flex;
+            align-items: center;
+            padding-left: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            color: var(--fg-text);
+        }
+        .section-header svg { width: 14px; height: 14px; fill: var(--fg-text); margin-right: 4px;}
+
+        /* --- Editor Group --- */
+        .editor-group {
+            flex: 1;
             display: flex;
             flex-direction: column;
             background-color: var(--bg-editor);
         }
 
-        .tabs-header {
-            display: flex;
-            background-color: var(--bg-sidebar);
+        /* Tabs */
+        .tabs-container {
             height: 35px;
+            background-color: var(--bg-activity-bar);
+            display: flex;
             overflow-x: auto;
         }
-
         .tab {
+            height: 100%;
             display: flex;
             align-items: center;
             padding: 0 10px;
             background-color: var(--bg-tab-inactive);
-            color: #969696;
+            color: #929292;
+            border-right: 1px solid #252526;
             min-width: 120px;
-            max-width: 200px;
-            border-right: 1px solid #1e1e1e;
             cursor: pointer;
-            font-size: 13px;
-            position: relative;
         }
-
         .tab.active {
             background-color: var(--bg-tab-active);
             color: #fff;
-            border-top: 1px solid #007acc; /* Slight accent top */
+            border-top: 1px solid var(--accent-blue);
         }
-        
-        .tab-icon {
-            margin-right: 6px;
-            width: 14px;
-            height: 14px;
-        }
+        .tab-icon { margin-right: 6px; width: 16px; height: 16px; display: flex; align-items: center;}
+        .tab-icon svg { width: 14px; height: 14px; }
+        .tab-close { margin-left: auto; width: 16px; opacity: 0; }
+        .tab:hover .tab-close { opacity: 1; }
+        .tab-meta { margin-left: 5px; color: var(--fg-dim); font-size: 11px;}
 
-        .tab-close {
+        .editor-actions {
             margin-left: auto;
-            opacity: 0;
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            padding-right: 10px;
+            background-color: var(--bg-activity-bar);
         }
+        .editor-actions svg { width: 16px; height: 16px; fill: #ccc; cursor: pointer; }
 
-        .tab:hover .tab-close, .tab.active .tab-close {
-            opacity: 1;
-        }
-        
-        .tab-close:hover {
-            background-color: #444;
-            color: white;
-        }
-
-        .editor-breadcrumbs {
+        /* Breadcrumbs */
+        .breadcrumbs {
             height: 22px;
             display: flex;
             align-items: center;
             padding-left: 16px;
-            font-size: 12px;
-            color: #888;
+            font-size: 11px;
+            color: #909090;
+            background-color: var(--bg-editor);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
-        
-        .crumb { 
-            display: flex; 
-            align-items: center; 
-            margin-right: 4px; 
-            cursor: pointer;
-        }
-        .crumb:hover { color: #ccc; }
-        .crumb-sep { margin: 0 4px; }
+        .breadcrumb-item { display: flex; align-items: center; margin-right: 4px; }
+        .breadcrumb-item svg { width: 14px; height: 14px; margin-right: 4px; }
+        .breadcrumb-sep { margin: 0 2px; }
 
-        .editor-main {
-            flex-grow: 1;
-            position: relative;
+        /* Editor Content */
+        .editor-content {
+            flex: 1;
             display: flex;
             font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
             font-size: 13px;
             line-height: 20px;
+            position: relative;
+            overflow: auto;
         }
-        
-        .lens-info {
-            position: absolute;
-            top: -20px; /* Virtual space */
-            left: 50px;
-            color: #666;
-            font-style: italic;
-            font-size: 12px;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        .gutter {
+        .line-numbers {
             width: 50px;
             text-align: right;
             padding-right: 15px;
-            color: var(--line-num);
-            flex-shrink: 0;
+            color: #858585;
+            user-select: none;
         }
-
         .code-area {
-            flex-grow: 1;
-            padding-left: 5px;
+            flex: 1;
             color: #d4d4d4;
-            user-select: text;
         }
-
-        .line {
-            white-space: pre;
-        }
-
-        .code-comp { color: var(--syn-component); }
-        .code-key { color: var(--syn-keyword); }
-        .code-fun { color: var(--syn-function); }
-        .code-str { color: var(--syn-string); }
-        .code-var { color: var(--syn-variable); }
-        .code-punct { color: var(--syn-punct); }
-        .code-tag { color: var(--syn-tag); }
         
-        /* Status Bar */
+        /* GitLens Line */
+        .code-annotation {
+            color: #666;
+            font-style: italic;
+            font-size: 12px;
+            margin-left: 10px;
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+        /* Syntax Highlighting Classes */
+        .kwd { color: var(--syn-keyword); }
+        .func { color: var(--syn-func); }
+        .var { color: var(--syn-var); }
+        .str { color: var(--syn-string); }
+        .tag { color: var(--syn-tag); }
+        .attr { color: var(--syn-attr); }
+        .punct { color: var(--syn-punct); }
+        .op { color: var(--syn-operator); }
+        
+        .cursor {
+            border-left: 2px solid #fff;
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- Status Bar --- */
         .status-bar {
             height: 22px;
-            background-color: var(--bg-status);
+            background-color: var(--bg-status-bar);
             color: #fff;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
             padding: 0 8px;
-            border-top: 1px solid #333;
+            font-size: 11px;
+            border-top: 1px solid #2b2b2b;
         }
-
-        .sb-left, .sb-right {
+        .status-left, .status-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            height: 100%;
         }
-        
-        .sb-item {
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            padding: 0 8px;
             cursor: pointer;
+            height: 100%;
         }
+        .status-item:hover { background-color: rgba(255,255,255,0.1); }
+        .status-bg-blue { background-color: var(--accent-blue); padding: 0 10px; margin-left: -8px; margin-right: 5px; }
+        .status-icon { margin-right: 4px; fill: white; width: 12px; height: 12px; display: flex; align-items: center;}
         
-        .sb-item:hover {
-            color: #fff;
-        }
-
-        /* Utility */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #424242;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4f4f4f;
-        }
-
-        .git-mod { color: var(--git-modified); display: flex; align-items: center; gap: 4px; }
-        .git-add { color: var(--git-added); }
-        
-        .ts-icon {
-            color: #3178c6;
-            font-weight: 800;
-            font-size: 10px;
-            border: 1px solid #3178c6;
-            width: 14px;
-            height: 14px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            background: #1e1e1e;
-        }
-        
-        .react-icon svg { fill: #61dafb; }
-        
-        .lens-overlay {
-            color: #5a5a5a;
-            font-size: 12px;
-            margin-bottom: 2px;
-            display: block;
-        }
-
+        /* Utility for Icons */
+        svg { display: block; }
     </style>
 </head>
 <body>
 
     <!-- Title Bar -->
-    <div class="title-bar">
-        <div class="mac-controls">
+    <header class="title-bar">
+        <div class="title-controls">
             <div class="dot red"></div>
             <div class="dot yellow"></div>
             <div class="dot green"></div>
         </div>
         
-        <div class="nav-controls">
-            <svg class="icon" viewBox="0 0 16 16"><path d="M7 3L2 8l5 5M14 8H2"/></svg>
-            <svg class="icon" style="opacity: 0.5" viewBox="0 0 16 16"><path d="M9 3l5 5-5 5M2 8h12"/></svg>
+        <!-- Navigation Arrows -->
+        <div style="display:flex; gap:10px; margin-left: 15px;">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="#858585"><path d="M7 3L2 8l5 5M2 8h12" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="#858585" style="transform: rotate(180deg);"><path d="M7 3L2 8l5 5M2 8h12" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
         </div>
 
-        <div class="search-bar">
-            <svg style="width:12px; height:12px;" viewBox="0 0 16 16"><path d="M6.5 1a5.5 5.5 0 0 1 4.38 8.82l3.9 3.9a.75.75 0 0 1-1.06 1.06l-3.9-3.9A5.5 5.5 0 1 1 6.5 1zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>
-            claude-code-sdk-demos
+        <div class="title-search">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="#ccc"><circle cx="7" cy="7" r="5"/><path d="M11 11l3 3"/></svg>
+            <span>claude-code-sdk-demos</span>
         </div>
 
-        <div class="window-controls-right">
-            <svg class="icon" viewBox="0 0 16 16"><path d="M2.5 4a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h6a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-6z m-1 9V4a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 10.5 4v9H1.5z M13 2.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0v-8H5a.5.5 0 0 1 0-1h7.5A1.5 1.5 0 0 1 14 3.5v9a.5.5 0 0 1-1 0v-9h-1z"/></svg>
-            <svg class="icon" viewBox="0 0 16 16"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5v-11z m1.5-.5a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-11z M5 1v14h1V1H5z"/></svg>
-            <svg class="icon" viewBox="0 0 16 16"><path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/><path d="M8 0v16M0 11h16"/></svg>
-            <svg class="icon" viewBox="0 0 16 16"><path d="M14.5 1a1.5 1.5 0 0 1 1.5 1.5v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-11A1.5 1.5 0 0 1 1.5 1h13z m0 1h-13a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5z"/></svg>
+        <div class="title-actions">
+           <svg viewBox="0 0 16 16"><path d="M3 2h10v12H3V2zm2 2v8h6V4H5z" fill="currentColor"/></svg> <!-- Split -->
+           <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" fill="none"/><line x1="5" y1="3" x2="5" y2="13" stroke="currentColor"/></svg> <!-- Sidebar -->
+           <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1" stroke="currentColor" fill="none"/><line x1="2" y1="10" x2="14" y2="10" stroke="currentColor"/></svg> <!-- Panel -->
         </div>
-    </div>
+    </header>
 
+    <!-- Main Workspace -->
     <div class="workspace">
         <!-- Activity Bar -->
-        <div class="activity-bar">
-            <div class="ab-top">
+        <aside class="activity-bar">
+            <div class="activity-top">
                 <div class="action-item active">
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M13 3h-2.5L9 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-1 9H4V5h8v7z"/></svg>
+                    <!-- Files -->
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg> 
                 </div>
                 <div class="action-item">
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M15.7 14.3l-3.1-3.1a6 6 0 1 0-1.4 1.4l3.1 3.1a1 1 0 0 0 1.4-1.4zM6 10a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+                    <!-- Search -->
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                 </div>
                 <div class="action-item">
+                    <!-- Source Control -->
                     <div class="badge">3</div>
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M10 1a3 3 0 0 0-3 3c0 .3.04.6.12.87L5.56 6.44A3 3 0 0 0 4 6a3 3 0 0 0-1.78.6l-1.66-1.66A3 3 0 0 0 1 4a3 3 0 0 0 0 6 3 3 0 0 0 1 4c.48 0 .93-.2 1.28-.53l2.36 2.37A3 3 0 0 0 8 16a3 3 0 0 0 3-3c0-.48-.2-.93-.53-1.28l-1.9-1.9A2.96 2.96 0 0 0 10 9a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>
+                    <svg viewBox="0 0 24 24"><circle cx="6.5" cy="18.5" r="2.5"/><circle cx="17.5" cy="5.5" r="2.5"/><path d="M9 18.5h3.5v-8h5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 18.5v-13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
                 </div>
                 <div class="action-item">
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M4.5 2h7V1h-7v1zm7.5 4h1v-1h-1v1zm0 2h1V7h-1v1zm0 2h1V9h-1v1zm-9 0h1V9H3v1zm0-2h1V7H3v1zm0-2h1V5H3v1zm0-2h1V3H3v1z M5 14h6v1H5v-1zm1 2h4v-1H6v1z"/></svg>
+                     <!-- Debug/Run -->
+                     <svg viewBox="0 0 24 24"><path d="M20 12l-8.5-6L3 12h17z" transform="rotate(90 12 12)"/></svg>
                 </div>
                 <div class="action-item">
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M1 2h4v4H1V2zm6 0h4v4H7V2zm6 0h4v4h-4V2zM1 8h4v4H1V8zm6 0h4v4H7V8zm6 0h4v4h-4V8z"/></svg>
+                    <!-- Extensions -->
+                    <svg viewBox="0 0 24 24"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h6v2c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4h2c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/></svg>
                 </div>
-                <div class="action-item"><svg class="icon" viewBox="0 0 16 16"><path d="M3 3h10v8H3z"/></svg></div>
             </div>
-            <div class="ab-bottom">
+            <div class="activity-bottom">
                 <div class="action-item">
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 1c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <!-- Account -->
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                 </div>
                 <div class="action-item">
+                    <!-- Settings -->
                     <div class="badge">1</div>
-                    <svg class="icon" viewBox="0 0 16 16"><path d="M9.1 13.4l.7 2.1c.1.3-.1.6-.4.7l-2.8.9c-.3.1-.6-.1-.7-.4l-.7-2.1c-.5-.2-1-.4-1.4-.7l-2.1.8c-.3.1-.6-.1-.7-.4l-1-2.9c-.1-.3.1-.6.4-.7l2-.8c0-.3-.1-.5-.1-.8s.1-.5.1-.8l-2-.8c-.3-.1-.5-.4-.4-.7l1-2.9c.1-.3.4-.5.7-.4l2.1.8c.4-.3.9-.5 1.4-.7l.7-2.1c.1-.3.4-.5.7-.4l2.8.9c.3.1.5.4.4.7l-.7 2.1c.5.2 1 .4 1.4.7l2.1-.8c.3-.1.6.1.7.4l1 2.9c.1.3-.1.6-.4.7l-2 .8c.1.3.1.5.1.8s-.1.5-.1.8l2 .8c.3.1.5.4.4.7l-1 2.9c-.1.3-.4.5-.7.4l-2.1-.8c-.4.3-.9.5-1.4.7z M8 5c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                 </div>
             </div>
-        </div>
+        </aside>
 
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sb-header">
-                <span class="sb-title">EXPLORER</span>
-                <span style="font-size: 16px; margin-top:-6px;">...</span>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>EXPLORER</span>
+                <div class="sidebar-actions">
+                    <svg viewBox="0 0 16 16"><circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="14" cy="8" r="1.5"/></svg>
+                </div>
             </div>
-            <div class="tree-view">
-                <div class="tree-item"><div class="arrow rotated"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <span style="font-weight:700; font-size:11px;">CLAUDE-CODE-SDK-DEMOS</span></div>
+
+            <div class="sidebar-content">
+                <!-- Project Root -->
+                <div class="tree-item" style="padding-left: 2px;">
+                    <div class="arrow down"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <span style="font-weight: bold; font-size: 11px;">CLAUDE-CODE-SDK-DEMOS</span>
+                </div>
+
+                <!-- Folder: email-agent -->
+                <div class="tree-item" style="padding-left: 14px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">email-agent</span>
+                    <span style="width: 6px; height: 6px; background-color: #a7885b; border-radius: 50%; margin-left: auto; margin-right: 5px;"></span>
+                </div>
+
+                <!-- Folder: excel-demo (Expanded) -->
+                <div class="tree-item" style="padding-left: 14px;">
+                    <div class="arrow down"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">excel-demo</span>
+                </div>
+
+                <!-- excel-demo contents -->
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">.erb</span>
+                </div>
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">agent</span>
+                </div>
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-yellow"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">assets</span>
+                </div>
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-green"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">node_modules</span>
+                </div>
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-red"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">release</span>
+                </div>
                 
-                <div class="tree-item"><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path class="fi-folder" d="M14 4h-4l-1-1H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1z"/></svg> <span style="color:#dcb67a;">email-agent</span><div style="margin-left:auto; width:8px; height:8px; border-radius:50%; background:#dcb67a; margin-right:10px;"></div></div>
+                <!-- SRC folder expanded -->
+                <div class="tree-item" style="padding-left: 28px;">
+                    <div class="arrow down"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-green"><svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" fill="currentColor"/></svg></div>
+                    <span class="label">src</span>
+                </div>
 
-                <div class="tree-item"><div class="indent"></div><div class="arrow rotated"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path class="fi-folder-open" d="M14.5 5h-13a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5z M1 4h3l1-1h6a1 1 0 0 1 1 1v1H1z"/></svg> excel-demo</div>
-                
-                <!-- Expanded folder content -->
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon"><path class="fi-folder" d="M2 3h4l1 1h7v9H2z"/></svg> .erb</div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon"><path class="fi-folder" d="M2 3h4l1 1h7v9H2z"/></svg> agent</div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path class="fi-folder" d="M2 3h4l1 1h7v9H2z"/><rect x="8" y="7" width="4" height="3" fill="#ffbd2e"/></svg> assets</div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path class="fi-folder" fill="#81b88b" d="M2 3h4l1 1h7v9H2z"/></svg> node_modules</div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path class="fi-folder" fill="#ee9d28" d="M2 3h4l1 1h7v9H2z"/></svg> release</div>
+                <div class="tree-item" style="padding-left: 42px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-green"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">__tests__</span>
+                </div>
 
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="arrow rotated"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path fill="#81b88b" d="M14.5 5h-13L1 4h3l1-1h6a1 1 0 0 1 1 1v1z"/><path fill="#81b88b" opacity="0.6" d="M2 5h12v9H2z"/><text x="4" y="11" font-size="6" fill="#fff" font-family="monospace">&lt;/&gt;</text></svg> src</div>
+                <!-- Main folder expanded -->
+                <div class="tree-item" style="padding-left: 42px;">
+                    <div class="arrow down"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-red"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="#ff6b6b"/></svg></div>
+                    <span class="label">main</span>
+                </div>
 
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon"><path class="fi-folder" fill="#4ec9b0" d="M2 3h4l1 1h7v9H2z"/></svg> __tests__</div>
-                
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="arrow rotated"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon" viewBox="0 0 16 16"><path fill="#e05d44" d="M14.5 5h-13L1 4h3l1-1h6a1 1 0 0 1 1 1v1z"/><path fill="#e05d44" opacity="0.6" d="M2 5h12v9H2z"/><path fill="#fff" d="M7 8h2v-2h2v2h-2v2h-2z" transform="scale(0.7) translate(3,3)"/></svg> main</div>
+                <div class="tree-item" style="padding-left: 56px;">
+                    <div class="file-icon icon-ts"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3" fill="currentColor"/><path d="M7 16V8h2v8H7zm4 0V8h2v8h-2z" fill="#fff" opacity="0"/></svg><span style="color:#fff; font-weight:bold; font-size:10px; position:absolute; margin-left:1px; margin-top:2px;">TS</span></div>
+                    <span class="label">main.ts</span>
+                </div>
+                <div class="tree-item" style="padding-left: 56px;">
+                    <div class="file-icon icon-ts"><span style="color:var(--accent-blue); font-weight:700; font-size:9px; border:1px solid; padding:0 1px;">TS</span></div>
+                    <span class="label">menu.ts</span>
+                </div>
+                <div class="tree-item" style="padding-left: 56px;">
+                    <div class="file-icon icon-ts"><span style="color:var(--accent-blue); font-weight:700; font-size:9px; border:1px solid; padding:0 1px;">TS</span></div>
+                    <span class="label">preload.ts</span>
+                </div>
+                <div class="tree-item" style="padding-left: 56px;">
+                    <div class="file-icon icon-ts"><span style="color:var(--accent-blue); font-weight:700; font-size:9px; border:1px solid; padding:0 1px;">TS</span></div>
+                    <span class="label">util.ts</span>
+                </div>
 
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="indent"></div> <div class="ts-icon">TS</div> <span style="margin-left:6px">main.ts</span></div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="indent"></div> <div class="ts-icon">TS</div> <span style="margin-left:6px">menu.ts</span></div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="indent"></div> <div class="ts-icon">TS</div> <span style="margin-left:6px">preload.ts</span></div>
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="indent"></div> <div class="ts-icon">TS</div> <span style="margin-left:6px">util.ts</span></div>
-                
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon"><path class="fi-folder" fill="#ccc" d="M2 3h4l1 1h7v9H2z"/></svg> renderer</div>
-                
-                <div class="tree-item"><div class="indent"></div><div class="indent"></div><div class="indent"></div><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <svg class="file-icon"><path class="fi-folder" fill="#dcb67a" d="M2 3h4l1 1h7v9H2z"/></svg> components</div>
-
-                <div style="margin-top:auto"></div>
-                <!-- Bottom Outlines -->
-                <div class="tree-item" style="border-top:1px solid #333; margin-top:10px;"><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <span style="font-weight:700; font-size:11px;">OUTLINE</span></div>
-                <div class="tree-item" style="border-top:1px solid #333;"><div class="arrow"><svg width="10" height="10" viewBox="0 0 16 16"><path fill="#ccc" d="M6 4l4 4-4 4"/></svg></div> <span style="font-weight:700; font-size:11px;">TIMELINE</span></div>
-
+                <div class="tree-item" style="padding-left: 42px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-gray"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">renderer</span>
+                </div>
+                <div class="tree-item" style="padding-left: 48px;">
+                    <div class="arrow"><svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+                    <div class="file-icon icon-yellow"><svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg></div>
+                    <span class="label">components</span>
+                </div>
             </div>
-        </div>
 
-        <!-- Editor Group -->
-        <div class="editor-container">
+            <!-- Bottom Collapsed Sections -->
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg>
+                    OUTLINE
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="section-header">
+                    <svg viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg>
+                    TIMELINE
+                </div>
+            </div>
+        </aside>
+
+        <!-- Editor Area -->
+        <main class="editor-group">
             <!-- Tabs -->
-            <div class="tabs-header">
+            <div class="tabs-container">
                 <div class="tab">
-                    <div class="ts-icon" style="margin-right:6px;">TS</div>
-                    <span style="color:var(--git-modified)">email-db.ts</span>
-                    <span style="margin-left:6px; font-weight:bold;">M</span>
-                    <div class="tab-close">&#10005;</div>
+                    <div class="tab-icon icon-ts"><span style="color:var(--accent-blue); font-weight:700; font-size:9px; border:1px solid; padding:0 1px;">TS</span></div>
+                    <span>email-db.ts</span> <span class="tab-meta">M</span>
+                    <span class="tab-close">×</span>
                 </div>
                 <div class="tab active">
-                    <span class="react-icon" style="margin-right:6px;"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><ellipse cx="8" cy="8" rx="6" ry="2.5" fill="none" stroke="#61dafb"/><ellipse cx="8" cy="8" rx="6" ry="2.5" transform="rotate(60 8 8)" fill="none" stroke="#61dafb"/><ellipse cx="8" cy="8" rx="6" ry="2.5" transform="rotate(120 8 8)" fill="none" stroke="#61dafb"/></svg></span>
-                    App.tsx
-                    <div class="tab-close">&#10005;</div>
+                    <div class="tab-icon icon-tsx"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61dafb" stroke-width="1.5" fill="none" transform="rotate(30 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61dafb" stroke-width="1.5" fill="none" transform="rotate(-30 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61dafb" stroke-width="1.5" fill="none"/><circle cx="12" cy="12" r="2" fill="#61dafb"/></svg></div>
+                    <span>App.tsx</span>
+                    <span class="tab-close">×</span>
                 </div>
                 <div class="tab">
-                    <span class="file-icon" style="margin-right:6px;"><svg width="14" height="14" viewBox="0 0 16 16"><path class="fi-css" d="M2 2l1 12 5 2 5-2 1-12H2zm9.5 3h-6l.2 1h5.6l-.5 4-2.8.8-2.8-.8-.2-1h1.5l.1.5 1.4.3 1.4-.3.2-2H5.6l.2-1h4.2l.5-1.5z"/></svg></span>
-                    App.css
-                    <div class="tab-close">&#10005;</div>
+                    <div class="tab-icon icon-css" style="color:#d69d85; font-weight:bold; font-size:10px;">#</div>
+                    <span>App.css</span>
+                    <span class="tab-close">×</span>
                 </div>
                 <div class="tab">
-                    <div class="ts-icon" style="margin-right:6px;">TS</div>
-                    util.ts
-                    <div class="tab-close">&#10005;</div>
+                    <div class="tab-icon icon-ts"><span style="color:var(--accent-blue); font-weight:700; font-size:9px; border:1px solid; padding:0 1px;">TS</span></div>
+                    <span>util.ts</span>
+                    <span class="tab-close">×</span>
                 </div>
-                <div style="flex-grow:1; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; gap:8px;">
-                    <svg class="icon" style="fill:#e06c75" viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm1 12H7v-2h2v2zm0-3H7V4h2v5z"/></svg>
-                    <div style="display:flex; gap:10px; color:#cccccc;">
-                        <svg class="icon" viewBox="0 0 16 16"><path d="M1 9v2h2v-2H1zm0-3v2h2V6H1zm0-3v2h2V3H1z M6 3v2h8V3H6zm0 3v2h8V6H6zm0 3v2h8V9H6z"/></svg>
-                        <svg class="icon" viewBox="0 0 16 16"><path d="M7 2L12 7 7 12 5.6 10.6 8.2 8H0V6h8.2L5.6 3.4z"/></svg>
-                        <svg class="icon" viewBox="0 0 16 16"><path d="M2 1h10v12h2V1H2z M1 3v12h12V3H1zm11 11H2V4h10v10z"/></svg>
-                        <svg class="icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="1.5"/><circle cx="13" cy="8" r="1.5"/><circle cx="3" cy="8" r="1.5"/></svg>
-                    </div>
+
+                <div class="editor-actions">
+                    <svg viewBox="0 0 16 16"><path d="M8 3l4 4H4z" fill="none" stroke="currentColor"/><line x1="8" y1="13" x2="8" y2="4" stroke="currentColor"/></svg> <!-- Git Icon Generic -->
+                    <svg viewBox="0 0 16 16"><circle cx="4" cy="8" r="3" stroke="currentColor" fill="none"/><circle cx="12" cy="8" r="3" stroke="currentColor" fill="none"/></svg> <!-- Split -->
+                    <svg viewBox="0 0 16 16"><circle cx="2" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/><circle cx="14" cy="8" r="1.5"/></svg> <!-- More -->
                 </div>
             </div>
 
             <!-- Breadcrumbs -->
-            <div class="editor-breadcrumbs">
-                <span class="crumb">excel-demo</span> <span class="crumb-sep">&gt;</span>
-                <span class="crumb">src</span> <span class="crumb-sep">&gt;</span>
-                <span class="crumb">renderer</span> <span class="crumb-sep">&gt;</span>
-                <span class="react-icon" style="width:14px; height:14px; margin-right:4px;"><svg width="12" height="12" viewBox="0 0 16 16"><ellipse cx="8" cy="8" rx="6" ry="2.5" fill="none" stroke="#61dafb"/></svg></span>
-                <span class="crumb" style="color:#fff;">App.tsx</span> <span class="crumb-sep">&gt;</span>
-                <span class="crumb">...</span>
+            <div class="breadcrumbs">
+                <div class="breadcrumb-item">excel-demo</div> <span class="breadcrumb-sep">›</span>
+                <div class="breadcrumb-item">src</div> <span class="breadcrumb-sep">›</span>
+                <div class="breadcrumb-item">renderer</div> <span class="breadcrumb-sep">›</span>
+                <div class="breadcrumb-item">
+                    <div class="tab-icon icon-tsx" style="margin-right:0;"><svg viewBox="0 0 24 24" width="14" height="14" style="margin-right:2px;"><ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61dafb" stroke-width="1.5" fill="none" transform="rotate(30 12 12)"/></svg></div>
+                    App.tsx
+                </div> <span class="breadcrumb-sep">›</span>
+               <div class="breadcrumb-item">...</div>
+            </div>
+            
+            <div style="padding-left: 20px; font-size: 12px; color: #5d5d5d; margin-top: 2px;">
+                Thariq Shihipar, last month | 1 author (Thariq Shihipar)
             </div>
 
-            <div class="editor-main">
-                <div class="gutter">
-                    <div class="lens-overlay">&nbsp;</div>
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                    <div>5</div>
-                    <div>6</div>
-                    <div>7</div>
-                    <div>8</div>
-                    <div>9</div>
-                    <div>10</div>
-                    <div>11</div>
-                    <div>12</div>
-                    <div>13</div>
-                    <div>14</div>
+            <!-- Code Editor -->
+            <div class="editor-content">
+                <div class="line-numbers">
+                    <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+                    <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+                    <div>11</div><div>12</div><div>13</div><div>14</div>
                 </div>
                 <div class="code-area">
-                    <div class="lens-overlay">Thariq Shihipar, last month | 1 author (Thariq Shihipar)</div>
-                    
-                    <div class="line"><span class="code-key">import</span> <span class="code-punct">{</span> <span class="code-var">MemoryRouter</span> <span class="code-key">as</span> <span class="code-class">Router</span><span class="code-punct">,</span> <span class="code-class">Routes</span><span class="code-punct">,</span> <span class="code-class">Route</span> <span class="code-punct">}</span> <span class="code-key">from</span> <span class="code-str">'react-router-dom'</span><span class="code-punct">;</span></div>
-                    
-                    <div class="line"><span class="code-key">import</span> <span class="code-class">ChatInterface</span> <span class="code-key">from</span> <span class="code-str">'./components/ChatInterface'</span><span class="code-punct">;</span></div>
-                    
-                    <div class="line"><span class="code-key">import</span> <span class="code-str">'./App.css'</span><span class="code-punct">;</span></div>
-                    
-                    <div class="line">&nbsp;</div>
-                    
-                    <div class="line"><span class="code-key">export default function</span> <span class="code-fun">App</span><span class="code-punct">() {</span></div>
-                    
-                    <div class="line">  <span class="code-key">return</span> <span class="code-punct">(</span></div>
-                    
-                    <div class="line">    <span class="code-punct">&lt;</span><span class="code-comp">Router</span><span class="code-punct">&gt;</span></div>
-                    
-                    <div class="line">      <span class="code-punct">&lt;</span><span class="code-comp">Routes</span><span class="code-punct">&gt;</span></div>
-                    
-                    <div class="line">        <span class="code-punct">&lt;</span><span class="code-comp">Route</span> <span class="code-var">path</span><span class="code-punct">=</span><span class="code-str">"/"</span> <span class="code-var">element</span><span class="code-punct">={&lt;</span><span class="code-comp">ChatInterface</span> <span class="code-punct">/&gt;} /&gt;</span></div>
-                    
-                    <div class="line">      <span class="code-punct">&lt;/</span><span class="code-comp">Routes</span><span class="code-punct">&gt;</span></div>
-                    
-                    <div class="line">    <span class="code-punct">&lt;/</span><span class="code-comp">Router</span><span class="code-punct">&gt;</span></div>
-                    
-                    <div class="line">  <span class="code-punct">);</span></div>
-                    
-                    <div class="line"><span class="code-punct">}</span></div>
-                    
-                    <div class="line"><span style="border-left: 2px solid #ccc; margin-left:-1px;"></span></div>
-
+                    <div>
+                        <span class="kwd">import</span> <span class="punct">{</span> <span class="var">MemoryRouter</span> <span class="kwd">as</span> <span class="var">Router</span><span class="punct">,</span> <span class="var">Routes</span><span class="punct">,</span> <span class="var">Route</span> <span class="punct">}</span> <span class="kwd">from</span> <span class="str">'react-router-dom'</span><span class="punct">;</span>
+                    </div>
+                    <div>
+                        <span class="kwd">import</span> <span class="var">ChatInterface</span> <span class="kwd">from</span> <span class="str">'./components/ChatInterface'</span><span class="punct">;</span>
+                    </div>
+                    <div>
+                        <span class="kwd">import</span> <span class="str">'./App.css'</span><span class="punct">;</span>
+                    </div>
+                    <div>&nbsp;</div>
+                    <div>
+                        <span class="kwd">export default function</span> <span class="func">App</span><span class="punct">() {</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;<span class="kwd">return</span> <span class="punct">(</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;Router&gt;</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;Routes&gt;</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;Route</span> <span class="attr">path</span>=<span class="str">"/"</span> <span class="attr">element</span>=<span class="punct">{</span><span class="tag">&lt;ChatInterface</span> <span class="tag">/&gt;</span><span class="punct">}</span> <span class="tag">/&gt;</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/Routes&gt;</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="tag">&lt;/Router&gt;</span>
+                    </div>
+                    <div>
+                        &nbsp;&nbsp;<span class="punct">);</span>
+                    </div>
+                    <div><span class="punct">}</span></div>
+                    <div>
+                        <span class="line-numbers" style="position:absolute; left:0; width:50px; text-align: right; color:#c6c6c6; border-left: 2px solid #ccc; opacity: 0;"></span> <!-- Highlight marker placeholder -->
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <!-- Status Bar -->
-    <div class="status-bar">
-        <div class="sb-left">
-            <div class="sb-item" style="background-color:#1e1e1e; padding: 0 6px; margin-left:-8px; height:22px;">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M1 9h14v2H1zm0-3h14v2H1z"/></svg>
+    <footer class="status-bar">
+        <div class="status-left">
+            <div class="status-item status-bg-blue">
+                <span style="font-size:14px; margin-right:5px;">><</span>
             </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M10 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z m-7-7C2.4 5 2 5.4 2 6v7c0 .6.4 1 1 1h5v-1H3V6h5v1H7V6c0-.6-.4-1-1-1H3z m11 0c-.6 0-1 .4-1 1v2h1V6h3v1h1V6c0-.6-.4-1-1-1h-3z"/></svg> 
+            <div class="status-item">
+                <svg class="status-icon" viewBox="0 0 16 16"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zM4 8l3 3 5-5" fill="none" stroke="currentColor"/></svg>
                 main*
             </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M8.2 11.8l-4 1.5c-.3.1-.6-.2-.4-.5l1.6-3.9a1 1 0 0 1 .4-.5l6-4.5c.2-.2.5-.1.6.2l.6 2.4c.1.3-.1.6-.3.7l-4.5 4.6z"/></svg>
+            <div class="status-item">
+                <svg class="status-icon" viewBox="0 0 16 16"><path d="M12 10a2 2 0 110 4 2 2 0 010-4zm-8 2a2 2 0 100-4 2 2 0 000 4z" fill="none" stroke="currentColor"/></svg>
             </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/><path fill="#fff" d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/></svg>
+            <div class="status-item">
+                <svg class="status-icon" style="fill:#da7872" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="none"/><path d="M7 5h2v4H7zm0 5h2v2H7z" fill="#000"/></svg>
                 0
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M7.4 1.2c.3-.4 1-.4 1.3 0l6 11c.3.5 0 1.2-.6 1.2H1.9c-.6 0-.9-.7-.6-1.2l6.1-11z M8 5a.8.8 0 0 0-.8.8v4.4a.8.8 0 0 0 1.6 0V5.8A.8.8 0 0 0 8 5z"/></svg>
+                <svg class="status-icon" style="fill:#eacb6f; margin-left:8px;" viewBox="0 0 16 16"><path d="M8 2l6 11H2L8 2z" stroke="none"/><path d="M7 6h2v4H7zm0 5h2v2H7z" fill="#000"/></svg>
                 0
-            </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M12.9 3.1l-1.4 1.4c-.2.2-.2.5 0 .7l4.3 4.3c.2.2.5.2.7 0l1.4-1.4c.2-.2.2-.5 0-.7l-4.3-4.3c-.2-.2-.5-.2-.7 0z"/></svg>
-                Launchpad
-            </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z M8 3a5 5 0 1 0 0 10A5 5 0 0 0 8 3z"/></svg>
-                0
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M8.2 2H2.5l-1 1v10l1 1h10l1-1V8.2l-5.3-6.2z"/></svg>
-                0
-            </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M3 3l10 5L3 13V3z" stroke="white" fill="none"/></svg>
-                Amazon Q
-            </div>
-            <div class="sb-item" style="color:#d4d4d4; font-weight:bold;">
-                -- INSERT --
             </div>
         </div>
-
-        <div class="sb-right">
-            <div class="sb-item"><svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M15.5 14h-15l.5-1 4-6h6l4 6 .5 1z M8 6L5.3 11h5.4L8 6z"/></svg></div>
-            <div class="sb-item">Ln 14, Col 1</div>
-            <div class="sb-item">Spaces: 2</div>
-            <div class="sb-item">UTF-8</div>
-            <div class="sb-item">LF</div>
-            <div class="sb-item">{ } TypeScript JSX</div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M3.5 8c0 1.2.3 2.3.9 3.2.6.9 1.4 1.5 2.4 1.8V14c0 1.1.9 2 2 2s2-.9 2-2v-1c1-.3 1.8-.9 2.4-1.8.6-.9.9-2 .9-3.2 0-2.5-2-4.5-5.3-4.5S3.5 5.5 3.5 8z M12 8c0 2-1.7 3.5-4 3.5S4 10 4 8c0-2.3 1.7-3.5 4-3.5 2.3 0 4 1.2 4 3.5z"/></svg>
+        <div class="status-right">
+            <div class="status-item">
+                <svg class="status-icon" viewBox="0 0 16 16"><path d="M3 3l10 5-10 5V3z" stroke="currentColor" fill="none"/></svg>
+                Amazon Q
             </div>
-            <div class="sb-item">
-                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="#fff" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/><path fill="#fff" d="M9.5 8h-3C6.2 8
+            <div class="status-item">
+                -- INSERT --
+            </div>
+            <div class="status-item">
+                <svg class="status-icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor"/><path d="M11 11l3 3" stroke="currentColor"/></svg>
+            </div>
+            <div class="status-item">Ln 14, Col 1</div>
+            <div class="status-item">Spaces: 2</div>
+            <div class="status-item">UTF-8</div>
+            <div class="status-item">LF</div>
+            <div class="status-item">{ } TypeScript JSX</div>
+            <div class="status-item">
+                 <svg class="status-icon" viewBox="0 0 16 16"><path d="M8 2a2 2 0 012 2v2h2v2h-2v2a2 2 0 01-4 0V8H4V6h2V4a2 2 0 012-2z" fill="currentColor"/></svg>
+                 <!-- Double user icon metaphor -->
+            </div>
+            <div class="status-item">
+                <svg class="status-icon" viewBox="0 0 16 16"><path d="M8 2L2 14h12L8 2z" stroke="currentColor" fill="none"/></svg>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Simple script to toggle sidebar folders
+        document.querySelectorAll('.sidebar .tree-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // remove selected class from all
+                document.querySelectorAll('.sidebar .tree-item').forEach(el => el.classList.remove('selected'));
+                // add to clicked
+                item.classList.add('selected');
+
+                // Toggle arrow rotation if arrow exists
+                const arrow = item.querySelector('.arrow');
+                if(arrow) {
+                    if(arrow.classList.contains('down')) {
+                        arrow.classList.remove('down');
+                        // Logic to hide children would go here, 
+                        // but since structure is hardcoded flat for this demo:
+                        // Find next siblings until one has lower padding (indentation)
+                        // toggle display none.
+                        // (Simplified for visual demo)
+                    } else {
+                        arrow.classList.add('down');
+                    }
+                }
+            });
+        });
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
