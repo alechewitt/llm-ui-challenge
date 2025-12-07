@@ -10,11 +10,11 @@ APP_DIMENSIONS = {
     "google_sheets": (2404, 1126),
     "jira": (2048, 1062),
     "microsoft_word": (2400, 1206),
-    "spotify": (2404, 1840),
-    "vs_code": (2404, 1202),
+    "spotify": (1280, 980),
+    "vs_code": (1280, 640),
 }
 
-BASE_URL = "http://localhost:4141"
+BASE_URL = "http://localhost:9876"
 OUTPUTS_DIR = Path("outputs")
 
 
