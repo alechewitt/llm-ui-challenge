@@ -4,11 +4,7 @@ A project that tests how well different large language models can recreate appli
 
 **[View all examples in the full gallery](https://alechewitt.github.io/llm-ui-challenge)**
 
-## About This Project
-
-This project was built using [Claude Code](https://claude.com/claude-code) to benchmark the UI generation capabilities of various frontier LLMs. Each model was given a screenshot of a popular application interface and asked to recreate it in HTML, CSS, and JavaScript.
-
-### The Prompt
+## The Prompt
 
 Each model received the same simple prompt along with a reference screenshot:
 
