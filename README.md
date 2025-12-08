@@ -1,6 +1,7 @@
 # LLM UI Challenge
 
-A project that tests how well different large language models can recreate application interfaces from screenshots.
+How well can LLMs replicate UIs from screenshots?
+This project tests how well different LLMs can recreate application interfaces from screenshots.
 
 **[View all examples in the full gallery](https://alechewitt.github.io/llm-ui-challenge)**
 
@@ -15,7 +16,7 @@ Return a single HTML file with embedded CSS and JavaScript.
 
 ## Highlights
 
-Here are some of the most impressive outputs from the benchmark:
+Here are some of the most impressive outputs:
 
 ---
 
@@ -45,7 +46,7 @@ This looks almost identical to the real Jira interface. What really stands out i
 
 [View the live HTML](https://alechewitt.github.io/llm-ui-challenge/outputs/spotify/gemini_3_pro_preview.html)
 
-If it wasn't for the missing album artwork images, I would have been fooled into thinking this was the real Spotify interface. The visual fidelity is remarkably close to the original. Though it's worth noting there isn't any actual functionality or interactive features beyond the appearance.
+If it wasn't for the missing album artwork images, I would have been fooled into thinking this was the real Spotify interface. The visual fidelity is remarkably close to the original. Though it's worth noting there aren't any actual functionality or interactive features beyond the appearance.
 
 ---
 
