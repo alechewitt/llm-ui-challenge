@@ -1,0 +1,698 @@
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jira Board (Replica)</title>
+  <style>
+    :root{
+      --blue:#0052CC;
+      --bg:#F4F5F7;
+      --panel:#FFFFFF;
+      --text:#172B4D;
+      --muted:#6B778C;
+      --border:#DFE1E6;
+      --shadow:0 1px 2px rgba(9,30,66,.18), 0 0 1px rgba(9,30,66,.31);
+      --shadow2:0 4px 12px rgba(9,30,66,.15);
+      --radius:6px;
+      --pill-radius:4px;
+      --focus:0 0 0 3px rgba(38,132,255,.25);
+      --col-gap:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:#fff;
+    }
+
+    .app{
+      height:100vh;
+      display:flex;
+      overflow:hidden;
+    }
+
+    /* Left rail */
+    .rail{
+      width:64px;
+      background:var(--blue);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:12px 0;
+      gap:14px;
+    }
+    .rail .logo{
+      width:38px;height:38px;border-radius:10px;
+      display:grid;place-items:center;
+      color:#fff;
+    }
+    .rail .iconBtn{
+      width:42px;height:42px;border-radius:12px;
+      display:grid;place-items:center;
+      background:transparent;
+      border:0;
+      color:#DDEBFF;
+      cursor:pointer;
+    }
+    .rail .iconBtn:hover{background:rgba(255,255,255,.14); color:#fff}
+    .rail .spacer{flex:1}
+    .rail .help{
+      width:42px;height:42px;border-radius:21px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.25);
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      cursor:pointer;
+      margin-bottom:8px;
+    }
+
+    /* Side nav */
+    .sidenav{
+      width:290px;
+      background:#F7F8F9;
+      border-right:1px solid var(--border);
+      padding:18px 14px;
+      overflow:auto;
+    }
+    .projHead{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:6px 8px 14px 8px;
+    }
+    .projAvatar{
+      width:44px;height:44px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #7b61ff, #2eccff);
+      display:grid;place-items:center;
+      box-shadow:0 6px 18px rgba(9,30,66,.12);
+      color:#fff;
+    }
+    .projText .name{
+      font-weight:700;
+      letter-spacing:.1px;
+      margin:0;
+      font-size:18px;
+      line-height:1.2;
+    }
+    .projText .sub{
+      margin:2px 0 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .navList{margin-top:8px}
+    .navItem{
+      display:flex;align-items:center;
+      gap:12px;
+      padding:10px 10px;
+      border-radius:6px;
+      color:#253858;
+      cursor:pointer;
+      user-select:none;
+      margin:2px 4px;
+      font-weight:600;
+    }
+    .navItem .nicon{
+      width:28px;height:28px;border-radius:7px;
+      display:grid;place-items:center;
+      color:#344563;
+    }
+    .navItem:hover{background:#EBECF0}
+    .navItem.active{
+      background:#EBECF0;
+      color:var(--blue);
+    }
+    .navItem.active .nicon{color:var(--blue)}
+    .navItem .label{flex:1}
+    .navDivider{height:12px}
+
+    /* Main */
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      background:#fff;
+      min-width:0;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding:20px 22px 10px 22px;
+    }
+    .title{
+      font-size:44px;
+      font-weight:800;
+      letter-spacing:-.5px;
+      margin:0;
+    }
+    .topActions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding-top:4px;
+    }
+    .btn{
+      background:#F4F5F7;
+      border:1px solid #EBECF0;
+      color:#42526E;
+      border-radius:6px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn:hover{background:#EBECF0}
+    .kebab{
+      width:42px;height:42px;border-radius:8px;
+      display:grid;place-items:center;
+      border:0;background:transparent;cursor:pointer;color:#42526E;
+    }
+    .kebab:hover{background:#F4F5F7}
+
+    .controls{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding:0 22px 16px 22px;
+    }
+    .searchWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      width:240px;
+      background:#F4F5F7;
+      border:1px solid #EBECF0;
+      border-radius:6px;
+      padding:10px 12px;
+      color:#42526E;
+    }
+    .searchWrap:focus-within{
+      border-color:#4C9AFF;
+      box-shadow:var(--focus);
+      background:#fff;
+    }
+    .searchWrap input{
+      border:0;
+      outline:0;
+      background:transparent;
+      width:100%;
+      font-weight:600;
+      color:var(--text);
+    }
+
+    .quickFilters{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#253858;
+      font-weight:700;
+      cursor:pointer;
+      padding:10px 10px;
+      border-radius:6px;
+      user-select:none;
+    }
+    .quickFilters:hover{background:#F4F5F7}
+    .quickFilters .caret{transform:translateY(1px)}
+    .qMenu{
+      position:absolute;
+      left:0;
+      top:44px;
+      min-width:260px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:10px;
+      box-shadow:var(--shadow2);
+      padding:8px;
+      z-index:50;
+      display:none;
+    }
+    .qMenu.open{display:block}
+    .qItem{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+      color:#253858;
+    }
+    .qItem:hover{background:#F4F5F7}
+    .qDot{
+      width:10px;height:10px;border-radius:50%;
+      background:#C1C7D0;
+      flex:0 0 auto;
+    }
+    .qItem.active{background:#E9F2FF; color:#0747A6}
+    .qItem.active .qDot{background:#4C9AFF}
+    .qHint{
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px 10px 10px;
+      font-weight:600;
+    }
+
+    /* Board */
+    .boardOuter{
+      flex:1;
+      background:var(--bg);
+      border-top:1px solid #F0F1F3;
+      overflow:auto;
+      padding:16px 18px 18px 18px;
+    }
+    .board{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(280px, 1fr));
+      gap:var(--col-gap);
+      align-items:start;
+      min-width: 1160px;
+    }
+
+    .col{
+      background:transparent;
+      border-radius:10px;
+      min-height:400px;
+    }
+    .colHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+      padding:6px 4px;
+      color:#5E6C84;
+      font-weight:900;
+      letter-spacing:.6px;
+      font-size:13px;
+    }
+    .colHeader .hText{
+      text-transform:uppercase;
+      display:flex;
+      align-items:baseline;
+      gap:8px;
+    }
+    .count{
+      font-weight:900;
+      color:#5E6C84;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      padding:0 2px 6px 2px;
+      min-height:120px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid #EBECF0;
+      border-radius:8px;
+      box-shadow:0 1px 0 rgba(9,30,66,.1);
+      padding:14px 14px 12px 14px;
+      cursor:grab;
+      user-select:none;
+    }
+    .card:active{cursor:grabbing}
+    .card.dragging{
+      opacity:.65;
+      box-shadow:var(--shadow2);
+      transform:rotate(-.15deg);
+    }
+    .cardTitle{
+      margin:0 0 12px 0;
+      font-size:18px;
+      font-weight:500;
+      color:#253858;
+      line-height:1.25;
+    }
+
+    .pillRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 8px;
+      border-radius:var(--pill-radius);
+      font-weight:900;
+      letter-spacing:.2px;
+      font-size:13px;
+      border:1px solid rgba(0,0,0,0.06);
+      white-space:nowrap;
+    }
+    .pill.yellow{background:#FFAB00; color:#172B4D}
+    .pill.orange{background:#FF8B00; color:#fff}
+    .pill.cyan{background:#00B8D9; color:#fff}
+    .pill.purple{background:#6554C0; color:#fff}
+
+    .cardFooter{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:4px;
+    }
+    .metaLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .badge{
+      min-width:26px;
+      height:22px;
+      border-radius:11px;
+      background:#F4F5F7;
+      border:1px solid #EBECF0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:0 8px;
+      color:#42526E;
+      font-weight:900;
+      font-size:12px;
+    }
+    .key{
+      color:#97A0AF;
+      font-weight:900;
+      letter-spacing:.4px;
+    }
+
+    .prio{
+      width:18px;height:18px;display:inline-grid;place-items:center;
+      color:#DE350B;
+    }
+    .blockedIcon{
+      width:18px;height:18px;display:inline-grid;place-items:center;
+      color:#DE350B;
+    }
+    .dropHint{
+      border:2px dashed rgba(76,154,255,.5);
+      background:rgba(76,154,255,.08);
+      border-radius:10px;
+      min-height:90px;
+      padding:10px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background:#172B4D;
+      color:#fff;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:700;
+      box-shadow:var(--shadow2);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s ease, transform .2s ease;
+      z-index:100;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-4px);
+    }
+
+    /* Small utility */
+    .srOnly{
+      position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+      clip:rect(0,0,0,0); white-space:nowrap; border:0;
+    }
+
+    @media (max-width: 1200px){
+      .sidenav{display:none}
+      .board{min-width: 1040px;}
+    }
+    @media (max-width: 860px){
+      .rail{display:none}
+      .board{min-width: 920px;}
+      .title{font-size:38px}
+      .controls{flex-wrap:wrap}
+      .searchWrap{width:min(360px, 100%)}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="rail" aria-label="Primary rail">
+      <div class="logo" title="Jira">
+        <svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M6 6h10.2c0 5.6 4.6 10.2 10.2 10.2V26c-11.3 0-20.4-9.1-20.4-20.4V6z" fill="white" opacity=".95"/>
+          <path d="M26.4 6H16.2c0 5.6-4.6 10.2-10.2 10.2V26c11.3 0 20.4-9.1 20.4-20.4V6z" fill="white" opacity=".75"/>
+          <path d="M16.2 6H11c0 2.9 2.3 5.2 5.2 5.2h5.2c0-2.9-2.3-5.2-5.2-5.2z" fill="white"/>
+        </svg>
+      </div>
+
+      <button class="iconBtn" title="Search" aria-label="Search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="iconBtn" title="Create" aria-label="Create">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="spacer"></div>
+      <button class="help" title="Help" aria-label="Help">?</button>
+    </aside>
+
+    <aside class="sidenav" aria-label="Project navigation">
+      <div class="projHead">
+        <div class="projAvatar" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2c3.5 0 6.5 2.5 6.5 6.5S15.5 20 12 22 5.5 15 5.5 8.5 8.5 2 12 2Z" fill="rgba(255,255,255,.28)"/>
+            <path d="M9.2 12.4 20 4.2c-1.1 7.3-7.1 14-11.9 15.6-1.2-2.1-1.2-4.7 1.1-7.4Z" fill="white"/>
+            <circle cx="14.5" cy="7.8" r="1.3" fill="#2ECCFF"/>
+          </svg>
+        </div>
+        <div class="projText">
+          <p class="name">Teams in Space</p>
+          <p class="sub">Software project</p>
+        </div>
+      </div>
+
+      <nav class="navList">
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h14M7 12h14M7 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M3.5 7h.01M3.5 12h.01M3.5 17h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="label">Backlog</div>
+        </div>
+
+        <div class="navItem active">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect x="3.5" y="5" width="17" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M8.3 5v14M13.7 5v14" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="label">Board</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M4 18V6M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7 14l3-3 3 2 4-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="label">Reports</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h10v14H7z" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 4h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 11h6M9 15h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="label">Releases</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="label">Components</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M5 7h14v14H5z" stroke="currentColor" stroke-width="2"/>
+              <path d="M8 7V5h8v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8.5 12.2 10.8 14.5 15.8 9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="label">Issues</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M7 8 4 12l3 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17 8 20 12l-3 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 19 14 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="label">Repository</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M5 4h10l4 4v12H5V4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M15 4v4h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 11v6M9 14h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="label">Add item</div>
+        </div>
+
+        <div class="navItem">
+          <div class="nicon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M19.4 15a8.2 8.2 0 0 0 .1-2l2-1.2-2-3.5-2.3.7a7.7 7.7 0 0 0-1.7-1l-.3-2.4H11l-.3 2.4a7.7 7.7 0 0 0-1.7 1l-2.3-.7-2 3.5 2 1.2a8.2 8.2 0 0 0 .1 2l-2 1.2 2 3.5 2.3-.7c.5.4 1.1.7 1.7 1l.3 2.4h4.1l.3-2.4c.6-.3 1.2-.6 1.7-1l2.3.7 2-3.5-2-1.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="label">Settings</div>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main" aria-label="Board">
+      <div class="topbar">
+        <h1 class="title">Board</h1>
+        <div class="topActions">
+          <button class="btn" id="releaseBtn">Release</button>
+          <button class="kebab" aria-label="More">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 12h.01M12 12h.01M18 12h.01" stroke="#42526E" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="searchWrap" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="#6B778C" stroke-width="2"/>
+            <path d="M16.5 16.5 21 21" stroke="#6B778C" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" type="text" placeholder="" aria-label="Search issues" />
+        </div>
+
+        <div class="quickFilters" id="quickFiltersBtn" tabindex="0" aria-haspopup="menu" aria-expanded="false">
+          <span>Quick Filters</span>
+          <svg class="caret" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M7 10l5 5 5-5" stroke="#42526E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="qMenu" id="qMenu" role="menu" aria-label="Quick filters menu">
+            <div class="qHint">Filter by label or state</div>
+            <div class="qItem active" data-filter="all" role="menuitem">
+              <span class="qDot"></span>
+              <span>All issues</span>
+            </div>
+            <div class="qItem" data-filter="label:Local Mars Office" role="menuitem">
+              <span class="qDot" style="background:#FF8B00"></span>
+              <span>Local Mars Office</span>
+            </div>
+            <div class="qItem" data-filter="label:Space Travel Partners" role="menuitem">
+              <span class="qDot" style="background:#FFAB00"></span>
+              <span>Space Travel Partners</span>
+            </div>
+            <div class="qItem" data-filter="label:SeeSpaceEZ Plus" role="menuitem">
+              <span class="qDot" style="background:#00B8D9"></span>
+              <span>SeeSpaceEZ Plus</span>
+            </div>
+            <div class="qItem" data-filter="label:Large Team Support" role="menuitem">
+              <span class="qDot" style="background:#6554C0"></span>
+              <span>Large Team Support</span>
+            </div>
+            <div class="qItem" data-filter="blocked" role="menuitem">
+              <span class="qDot" style="background:#DE350B"></span>
+              <span>Blocked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="boardOuter">
+        <div class="board" id="board"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STATUSES = [
+      { id: "todo", name: "TO DO" },
+      { id: "inprogress", name: "IN PROGRESS" },
+      { id: "codereview", name: "CODE REVIEW" },
+      { id: "done", name: "DONE" }
+    ];
+
+    const LABEL_STYLES = {
+      "Space Travel Partners": "yellow",
+      "Local Mars Office": "orange",
+      "SeeSpaceEZ Plus": "cyan",
+      "Large Team Support": "purple"
+    };
+
+    let issues = [
+      { id: "1", status:"todo", title:"Engage Jupiter Express for outer solar system travel", label:"Space Travel Partners", points:5, key:"TIS-25", priority:"high" },
+      { id: "2", status:"todo", title:"Create 90 day plans for all departments in the Mars Office", label:"Local Mars Office", points:9, key:"TIS-12", blocked:true },
+      { id: "3", status:"todo", title:"Engage Saturn's Rings Resort as a preferred provider", label:"Space Travel Partners", points:3, key:"TIS-17", priority:"high" },
+      { id: "4", status:"todo", title:"Enable Speedy SpaceCraft as the preferred provider", label:"SeeSpaceEZ Plus", points:2, key:"TIS-19", priority:"high" },
+      { id: "5", status:"todo", title:"Negotiate Artemis Gateway docking slot discounts", label:"Large Team Support", points:3, key:"TIS-31", priority:"high" },
+
+      { id: "6", status:"inprogress", title:"Requesting available flights is now taking > 5 seconds", label:"SeeSpaceEZ Plus", points:3, key:"TIS-8", priority:"high" },
+      { id: "7", status:"inprogress", title:"Engage Saturn Shuttle Lines for group tours", label:"Space Travel Partners", points:4, key:"TIS-15", priority:"high" },
+      { id: "8", status:"inprogress", title:"Establish a catering vendor to provide meal service", label:"Local Mars Office", points:4, key:"TIS-15", priority:"high" },
+      { id: "9", status:"inprogress", title:"Upgrade onboard comms relay across the Mars Office fleet", label:"Local Mars Office", points:2, key:"TIS-41", priority:"high" },
+      { id: "10", status:"inprogress", title:"Sync baggage check policy with partner carriers", label:"Space Travel Partners", points:2, key:"TIS-22" },
+
+      { id: "11", status:"codereview", title:"Register with the Mars Ministry of Revenue", label:"Local Mars Office", points:3, key:"TIS-11", priority:"high" },
+      { id: "12", status:"codereview", title:"Draft network plan for Mars Office", label:"Local Mars Office", points:3, key:"TIS-15", priority:"high" },
+
+      { id: "13", status:"done", title:"Homepage footer uses an inline style - should use a class", label:"Large Team Support", points:null, key:"TIS-68", priority:"high" },
+      { id: "14", status:"done", title:"Engage JetShuttle SpaceWays for travel", label:"Space Travel Partners", points:5, key:"TIS-23", priority:"high" },
+      { id: "15", status:"done", title:"Engage Saturn Shuttle Lines for group tours", label:"Space Travel Partners", points:null, key:"TIS-15", priority:"high" },
+      { id: "16", status:"done", title:"Establish a catering vendor to provide meal service", label:"Local Mars Office", points:2, key:"TIS-15" },
+      { id: "17", status:"done", title:"Finalize partner onboarding checklist for Jupiter Express", label:"Space Travel Partners", points:3, key:"TIS-29" },
+      { id: "18", status:"done", title:"Update itinerary template for Mars Office", label:"Local Mars Office", points:1, key:"TIS-34" },
+      { id: "19", status:"done", title:"Document support escalation paths", label:"Large Team Support", points:2, key:"TIS-52" },
+      { id: "20", status:"done", title:"Add caching headers for flight results endpoint", label:"SeeSpaceEZ Plus", points:5, key:"TIS-9" }
+    ];
+
+    const state = {
+      filter: "all",
+      search: ""
+    };
+
+    const boardEl = document.getElementById("board");
+    const qBtn =

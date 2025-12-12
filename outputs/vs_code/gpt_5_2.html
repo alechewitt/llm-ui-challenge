@@ -1,0 +1,1156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VS Code Mock</title>
+  <style>
+    :root{
+      --bg:#1e1e1e;
+      --panel:#252526;
+      --panel2:#2a2a2a;
+      --panel3:#2d2d2d;
+      --border:#3a3a3a;
+      --muted:#8b8b8b;
+      --text:#d4d4d4;
+      --accent:#3794ff;
+      --accent2:#4fc1ff;
+      --green:#89d185;
+      --orange:#ce9178;
+      --yellow:#dcdcaa;
+      --purple:#c586c0;
+      --blue:#9cdcfe;
+      --comment:#6a9955;
+      --line:#2b2b2b;
+      --activeTab:#1f1f1f;
+      --inactiveTab:#2b2b2b;
+      --tabBorder:#2a2a2a;
+      --shadow:rgba(0,0,0,.45);
+      --activity:#333;
+      --activityIcon:#c5c5c5;
+      --activityActive:#ffffff;
+      --status:#1a1a1a;
+      --statusBorder:#2d2d2d;
+      --focusOutline: rgba(55,148,255,.25);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:#111;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+    }
+
+    .window{
+      width:min(1580px, 96vw);
+      height:min(860px, 92vh);
+      background:var(--bg);
+      border:1px solid #2b2b2b;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      position:relative;
+    }
+
+    /* Title bar */
+    .titlebar{
+      height:52px;
+      background:linear-gradient(#232323,#202020);
+      border-bottom:1px solid #2b2b2b;
+      display:flex;
+      align-items:center;
+      padding:0 14px;
+      gap:12px;
+    }
+    .mac-controls{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding-right:8px;
+    }
+    .dot{
+      width:12px;height:12px;border-radius:50%;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    .dot.red{background:#ff5f57}
+    .dot.yellow{background:#febc2e}
+    .dot.green{background:#28c840}
+
+    .nav-arrows{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-left:6px;
+      color:#bdbdbd;
+      opacity:.95;
+      user-select:none;
+    }
+    .icon-btn{
+      width:30px;height:30px;
+      border-radius:7px;
+      display:grid;place-items:center;
+      cursor:default;
+      color:#cfcfcf;
+    }
+    .icon-btn:hover{background:rgba(255,255,255,.06)}
+    .icon-btn svg{width:18px;height:18px;opacity:.95}
+
+    .title-search{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:260px;
+    }
+    .searchbar{
+      width:min(720px, 100%);
+      height:34px;
+      background:#2a2a2a;
+      border:1px solid #3b3b3b;
+      border-radius:9px;
+      display:flex;
+      align-items:center;
+      padding:0 12px;
+      gap:10px;
+      color:#d7d7d7;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+    .searchbar .hint{color:#cfcfcf;font-weight:550;letter-spacing:.2px}
+    .searchbar svg{width:16px;height:16px;opacity:.85}
+
+    .title-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#cfcfcf;
+      opacity:.95;
+    }
+    .title-actions .tiny{
+      width:28px;height:28px;border-radius:7px;
+      display:grid;place-items:center;
+    }
+    .title-actions .tiny:hover{background:rgba(255,255,255,.06)}
+    .title-actions svg{width:18px;height:18px}
+
+    /* Layout */
+    .workbench{
+      height:calc(100% - 52px);
+      display:flex;
+      flex-direction:column;
+    }
+    .mainRow{
+      flex:1;
+      display:flex;
+      min-height:0;
+    }
+
+    /* Activity bar */
+    .activityBar{
+      width:56px;
+      background:#191919;
+      border-right:1px solid #2a2a2a;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:8px 0;
+    }
+    .activityGroup{display:flex;flex-direction:column;gap:2px;align-items:center}
+    .actItem{
+      width:44px;height:44px;
+      border-radius:10px;
+      display:grid;place-items:center;
+      color:var(--activityIcon);
+      position:relative;
+      cursor:default;
+      user-select:none;
+    }
+    .actItem:hover{background:rgba(255,255,255,.05)}
+    .actItem.active{
+      color:var(--activityActive);
+    }
+    .actItem.active::before{
+      content:"";
+      position:absolute;left:-6px;top:8px;bottom:8px;
+      width:3px;border-radius:3px;
+      background:var(--accent);
+    }
+    .badge{
+      position:absolute;right:7px;bottom:7px;
+      min-width:18px;height:18px;
+      padding:0 5px;
+      border-radius:999px;
+      background:#007acc;
+      color:#fff;
+      font-size:11px;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 10px rgba(0,0,0,.35);
+    }
+    .actItem svg{width:22px;height:22px;opacity:.95}
+
+    /* Side bar (Explorer) */
+    .sidebar{
+      width:340px;
+      background:var(--panel);
+      border-right:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .sidebarHeader{
+      height:42px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 12px;
+      color:#c9c9c9;
+      font-weight:600;
+      letter-spacing:.4px;
+      border-bottom:1px solid #2b2b2b;
+    }
+    .sidebarHeader .title{opacity:.95}
+    .sidebarHeader .dots{
+      width:30px;height:30px;border-radius:8px;
+      display:grid;place-items:center;color:#cfcfcf;
+    }
+    .sidebarHeader .dots:hover{background:rgba(255,255,255,.06)}
+    .tree{
+      flex:1;
+      overflow:auto;
+      padding:10px 8px 10px 8px;
+    }
+    .tree::-webkit-scrollbar{width:10px}
+    .tree::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:10px;border:2px solid #252526}
+    .tree::-webkit-scrollbar-track{background:#252526}
+
+    .tree .root{
+      font-weight:700;
+      letter-spacing:.4px;
+      padding:6px 8px;
+      border-radius:8px;
+      color:#e6e6e6;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .chev{
+      width:14px;height:14px;display:inline-block;
+      color:#bfbfbf;
+      transform:rotate(90deg);
+    }
+    .folderIcon{
+      width:16px;height:16px;display:inline-block;
+      background:linear-gradient(#e2b04c,#d39a2f);
+      border-radius:3px;
+      position:relative;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    .folderIcon::before{
+      content:"";
+      position:absolute;left:2px;top:-2px;
+      width:8px;height:5px;border-radius:2px 2px 0 0;
+      background:linear-gradient(#f0c06a,#e2b04c);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.18);
+    }
+
+    .treeSection{
+      margin-top:6px;
+      border-top:1px solid rgba(255,255,255,.04);
+      padding-top:6px;
+    }
+    .treeRow{
+      padding:5px 8px;
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#d1d1d1;
+      cursor:default;
+      user-select:none;
+    }
+    .treeRow:hover{background:rgba(255,255,255,.05)}
+    .treeRow.selected{
+      background:rgba(55,148,255,.18);
+      outline:1px solid rgba(55,148,255,.22);
+    }
+    .indent1{padding-left:18px}
+    .indent2{padding-left:36px}
+    .indent3{padding-left:54px}
+    .indent4{padding-left:72px}
+
+    .twisty{
+      width:14px;height:14px;
+      display:inline-grid;place-items:center;
+      color:#bfbfbf;
+      transform:rotate(0deg);
+      transition:transform .12s ease;
+      margin-right:2px;
+    }
+    .folder.open .twisty{transform:rotate(90deg)}
+    .fileIcon{
+      width:16px;height:16px;border-radius:3px;
+      display:inline-grid;place-items:center;
+      font-size:10px;font-weight:800;
+      color:#081018;
+      background:#4fc1ff;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    .fileIcon.ts{background:#2aa7ff}
+    .fileIcon.tsx{background:#4fc1ff}
+    .fileIcon.css{background:#b180ff;color:#160922}
+    .fileIcon.folderMini{
+      background:linear-gradient(#9ad58f,#68b85a);
+      color:#0f1f0f;
+    }
+    .mutedDot{
+      margin-left:auto;
+      width:8px;height:8px;border-radius:50%;
+      background:#a18f60;
+      opacity:.65;
+    }
+    .treeFooter{
+      border-top:1px solid #2b2b2b;
+      background:linear-gradient(#242424,#222);
+    }
+    .collapseRow{
+      padding:8px 10px;
+      font-weight:600;
+      color:#cfcfcf;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border-top:1px solid rgba(255,255,255,.03);
+    }
+    .collapseRow .caret{opacity:.8}
+    .collapseRow:hover{background:rgba(255,255,255,.04)}
+
+    /* Editor area */
+    .editorArea{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      background:var(--bg);
+    }
+
+    .tabbar{
+      height:44px;
+      background:linear-gradient(#1f1f1f,#1d1d1d);
+      border-bottom:1px solid #2b2b2b;
+      display:flex;
+      align-items:flex-end;
+      padding-left:6px;
+      gap:1px;
+      overflow:hidden;
+    }
+    .tab{
+      height:42px;
+      min-width:170px;
+      max-width:240px;
+      padding:0 12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:var(--inactiveTab);
+      border-right:1px solid #232323;
+      border-top:1px solid #232323;
+      color:#cfcfcf;
+      position:relative;
+      cursor:default;
+      user-select:none;
+    }
+    .tab .x{
+      margin-left:auto;
+      width:22px;height:22px;border-radius:6px;
+      display:grid;place-items:center;
+      opacity:.9;
+      color:#cfcfcf;
+    }
+    .tab .x:hover{background:rgba(255,255,255,.06)}
+    .tab.active{
+      background:var(--activeTab);
+      color:#ffffff;
+      border-top:1px solid rgba(255,255,255,.05);
+    }
+    .tab.active::after{
+      content:"";
+      position:absolute;left:0;right:0;bottom:-1px;height:2px;
+      background:transparent;
+    }
+    .tabIcon{
+      width:16px;height:16px;border-radius:3px;
+      display:grid;place-items:center;
+      font-size:10px;font-weight:900;color:#081018;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.22);
+    }
+    .tabIcon.ts{background:#2aa7ff}
+    .tabIcon.tsx{background:#4fc1ff}
+    .tabIcon.css{background:#b180ff;color:#160922}
+
+    .breadcrumb{
+      height:34px;
+      display:flex;
+      align-items:center;
+      padding:0 12px;
+      gap:10px;
+      color:#bfbfbf;
+      border-bottom:1px solid #262626;
+      background:linear-gradient(#202020,#1e1e1e);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .crumb{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .sep{opacity:.55}
+    .crumb .fileBadge{
+      width:18px;height:18px;border-radius:4px;
+      background:#4fc1ff;
+      color:#081018;
+      display:grid;place-items:center;
+      font-size:10px;font-weight:900;
+    }
+    .toolbarRight{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      opacity:.9;
+    }
+    .toolDot{
+      width:28px;height:28px;border-radius:8px;
+      display:grid;place-items:center;
+      color:#d5d5d5;
+    }
+    .toolDot:hover{background:rgba(255,255,255,.06)}
+    .toolDot svg{width:18px;height:18px;opacity:.9}
+    .spark{
+      width:18px;height:18px;
+      position:relative;
+      display:inline-block;
+    }
+    .spark:before{
+      content:"";
+      position:absolute;inset:0;
+      background: conic-gradient(from 0deg, #ff7a59, #ffb86b, #ff7a59);
+      clip-path: polygon(50% 0, 58% 26%, 86% 14%, 74% 42%, 100% 50%, 74% 58%, 86% 86%, 58% 74%, 50% 100%, 42% 74%, 14% 86%, 26% 58%, 0 50%, 26% 42%, 14% 14%, 42% 26%);
+      filter: drop-shadow(0 0 8px rgba(255,145,88,.15));
+      border-radius:2px;
+    }
+
+    /* Editor */
+    .editorWrap{
+      flex:1;
+      min-height:0;
+      display:flex;
+      position:relative;
+      background:var(--bg);
+    }
+
+    .gutter{
+      width:58px;
+      background:linear-gradient(#1e1e1e,#1d1d1d);
+      border-right:1px solid #262626;
+      padding-top:14px;
+      color:#858585;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:15px;
+      line-height:26px;
+      text-align:right;
+      padding-right:12px;
+      user-select:none;
+    }
+    .codePane{
+      flex:1;
+      min-width:0;
+      overflow:auto;
+      padding:12px 0 24px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:15px;
+      line-height:26px;
+      position:relative;
+    }
+    .codePane::-webkit-scrollbar{height:12px;width:12px}
+    .codePane::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:12px;border:2px solid #1e1e1e}
+    .codePane::-webkit-scrollbar-track{background:#1e1e1e}
+
+    .code{
+      padding:0 18px;
+      white-space:pre;
+      color:var(--text);
+      tab-size:2;
+    }
+    .topHint{
+      position:absolute;
+      left:18px; top:8px;
+      color:#8a8a8a;
+      font-size:13px;
+      opacity:.8;
+      pointer-events:none;
+    }
+
+    /* token colors */
+    .t-kw{color:var(--purple)}
+    .t-id{color:var(--text)}
+    .t-fn{color:var(--yellow)}
+    .t-type{color:var(--accent2)}
+    .t-str{color:var(--orange)}
+    .t-com{color:var(--comment)}
+    .t-punc{color:var(--text)}
+    .t-op{color:#d4d4d4}
+    .t-num{color:#b5cea8}
+    .t-tag{color:var(--accent2)}
+    .t-prop{color:var(--blue)}
+    .t-attr{color:var(--yellow)}
+    .t-jsx{color:var(--accent2)}
+
+    .cursor{
+      display:inline-block;
+      width:2px;
+      height:20px;
+      background:#ffffff;
+      vertical-align:-4px;
+      margin-left:1px;
+      box-shadow:0 0 0 1px rgba(0,0,0,.15);
+      animation: blink 1.05s step-end infinite;
+    }
+    @keyframes blink{ 50%{opacity:0} }
+
+    .activeLine{
+      position:absolute;
+      left:0; right:0;
+      height:26px;
+      top: calc(12px + 26px * 13); /* line 14 */
+      background:rgba(255,255,255,.03);
+      border-top:1px solid rgba(255,255,255,.02);
+      border-bottom:1px solid rgba(0,0,0,.2);
+      pointer-events:none;
+    }
+
+    /* Status bar */
+    .statusbar{
+      height:34px;
+      background:linear-gradient(#1b1b1b,#191919);
+      border-top:1px solid var(--statusBorder);
+      display:flex;
+      align-items:center;
+      padding:0 10px;
+      gap:10px;
+      color:#c9c9c9;
+      user-select:none;
+    }
+    .statusLeft, .statusRight{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+    .statusRight{margin-left:auto}
+    .pill{
+      height:24px;
+      padding:0 10px;
+      border-radius:7px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:#d0d0d0;
+      white-space:nowrap;
+    }
+    .pill:hover{background:rgba(255,255,255,.06)}
+    .dotStatus{
+      width:10px;height:10px;border-radius:50%;
+      background:#2aa7ff;
+      opacity:.95;
+    }
+    .warn{
+      width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid #c5c5c5;
+      opacity:.7;
+      transform:translateY(-1px);
+    }
+    .statusItem{
+      padding:3px 8px;border-radius:7px;
+      display:flex;align-items:center;gap:8px;
+      color:#cfcfcf;
+      opacity:.92;
+    }
+    .statusItem:hover{background:rgba(255,255,255,.05)}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      opacity:.85;
+    }
+
+    /* tiny separators */
+    .vsep{
+      width:1px;height:18px;background:rgba(255,255,255,.08);
+      margin:0 2px;
+    }
+
+    /* Focus ring for clickable items */
+    .focusable:focus-visible{
+      outline:2px solid var(--focusOutline);
+      outline-offset:2px;
+      border-radius:10px;
+    }
+
+    /* small helpers */
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .hidden{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="window" id="window">
+    <div class="titlebar">
+      <div class="mac-controls" aria-hidden="true">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+
+      <div class="nav-arrows" aria-hidden="true">
+        <div class="icon-btn" title="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </div>
+        <div class="icon-btn" title="Forward">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="title-search">
+        <div class="searchbar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.2-3.2"></path>
+          </svg>
+          <div class="hint mono">claude-code-sdk-demos</div>
+        </div>
+      </div>
+
+      <div class="title-actions" aria-hidden="true">
+        <div class="tiny" title="Split Editor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="7" height="7" rx="1"></rect>
+            <rect x="13" y="4" width="7" height="7" rx="1"></rect>
+            <rect x="4" y="13" width="7" height="7" rx="1"></rect>
+            <rect x="13" y="13" width="7" height="7" rx="1"></rect>
+          </svg>
+        </div>
+        <div class="tiny" title="Toggle Sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="5" width="16" height="14" rx="2"></rect>
+            <path d="M9 5v14"></path>
+          </svg>
+        </div>
+        <div class="tiny" title="Layout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <path d="M4 10h16"></path>
+          </svg>
+        </div>
+        <div class="tiny" title="More">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="6" cy="12" r="1.6"></circle>
+            <circle cx="12" cy="12" r="1.6"></circle>
+            <circle cx="18" cy="12" r="1.6"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="workbench">
+      <div class="mainRow">
+        <aside class="activityBar">
+          <div class="activityGroup">
+            <div class="actItem active focusable" tabindex="0" title="Explorer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 3v5h5"></path>
+              </svg>
+            </div>
+            <div class="actItem focusable" tabindex="0" title="Search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M20 20l-3.2-3.2"></path>
+              </svg>
+            </div>
+            <div class="actItem focusable" tabindex="0" title="Source Control">
+              <span class="badge">3</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="6" cy="12" r="2"></circle>
+                <circle cx="18" cy="6" r="2"></circle>
+                <circle cx="18" cy="18" r="2"></circle>
+                <path d="M8 12h6a3 3 0 0 0 3-3"></path>
+                <path d="M8 12h6a3 3 0 0 1 3 3"></path>
+              </svg>
+            </div>
+            <div class="actItem focusable" tabindex="0" title="Run and Debug">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 5l10 7-10 7z"></path>
+                <path d="M4 4v16"></path>
+              </svg>
+            </div>
+            <div class="actItem focusable" tabindex="0" title="Extensions">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 12l-2-2V7l-3-3h-3l-2-2-2 2H5L2 7v3l-2 2 2 2v3l3 3h3l2 2 2-2h3l3-3v-3z" opacity=".0"></path>
+                <path d="M12 3l2 2h3l2 2v3l2 2-2 2v3l-2 2h-3l-2 2-2-2H7l-2-2v-3l-2-2 2-2V7l2-2h3l2-2z" opacity=".35"></path>
+                <path d="M12 7v10"></path>
+                <path d="M7 12h10"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="activityGroup">
+            <div class="actItem focusable" tabindex="0" title="Account">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20a8 8 0 0 1 16 0"></path>
+              </svg>
+            </div>
+            <div class="actItem focusable" tabindex="0" title="Manage">
+              <span class="badge" style="background:#2aa7ff; opacity:.95;">1</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+                <path d="M19.4 15a7.8 7.8 0 0 0 .1-2l2-1.2-2-3.5-2.3.7a7.6 7.6 0 0 0-1.7-1L15 5h-6l-.5 3a7.6 7.6 0 0 0-1.7 1L4.5 8.3l-2 3.5 2 1.2a7.8 7.8 0 0 0 .1 2l-2 1.2 2 3.5 2.3-.7a7.6 7.6 0 0 0 1.7 1L9 23h6l.5-3a7.6 7.6 0 0 0 1.7-1l2.3.7 2-3.5z" opacity=".6"></path>
+              </svg>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="sidebar">
+          <div class="sidebarHeader">
+            <div class="title">EXPLORER</div>
+            <div class="dots focusable" tabindex="0" title="More">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="6" cy="12" r="1.6"></circle>
+                <circle cx="12" cy="12" r="1.6"></circle>
+                <circle cx="18" cy="12" r="1.6"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <div class="tree" id="tree">
+            <div class="root">
+              <span class="chev">›</span>
+              <span style="font-weight:800; opacity:.96;">CLAUDE-CODE-SDK-DEMOS</span>
+            </div>
+
+            <div class="treeSection" data-section="workspace">
+              <div class="treeRow folder open" data-folder="email-agent">
+                <span class="twisty">›</span>
+                <span class="folderIcon"></span>
+                <span>email-agent</span>
+                <span class="mutedDot"></span>
+              </div>
+
+              <div class="treeRow folder open" data-folder="excel-demo">
+                <span class="twisty">›</span>
+                <span class="folderIcon" style="background:linear-gradient(#c7d8ff,#9bb8ff)"></span>
+                <span>excel-demo</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder=".erb">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>.erb</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder="agent">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>agent</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder="assets">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>assets</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder="node_modules">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>node_modules</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder="release">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>release</span>
+              </div>
+
+              <div class="treeRow indent1 folder open" data-folder="src">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>src</span>
+              </div>
+
+              <div class="treeRow indent2 folder open" data-folder="__tests__">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>__tests__</span>
+              </div>
+
+              <div class="treeRow indent2 folder open" data-folder="main">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>main</span>
+              </div>
+
+              <div class="treeRow indent3 file" data-file="main.ts">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon ts">TS</span>
+                <span>main.ts</span>
+              </div>
+              <div class="treeRow indent3 file" data-file="menu.ts">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon ts">TS</span>
+                <span>menu.ts</span>
+              </div>
+              <div class="treeRow indent3 file" data-file="preload.ts">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon ts">TS</span>
+                <span>preload.ts</span>
+              </div>
+              <div class="treeRow indent3 file selected" data-file="util.ts">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon ts">TS</span>
+                <span>util.ts</span>
+              </div>
+
+              <div class="treeRow indent2 folder open" data-folder="renderer">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>renderer</span>
+              </div>
+
+              <div class="treeRow indent3 folder open" data-folder="components">
+                <span class="twisty">›</span>
+                <span class="fileIcon folderMini">F</span>
+                <span>components</span>
+              </div>
+
+              <div class="treeRow indent3 file" data-file="App.tsx">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon tsx">TS</span>
+                <span>App.tsx</span>
+              </div>
+              <div class="treeRow indent3 file" data-file="App.css">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon css">CSS</span>
+                <span>App.css</span>
+              </div>
+              <div class="treeRow indent1 file" data-file="email-db.ts">
+                <span style="width:14px; display:inline-block;"></span>
+                <span class="fileIcon ts">TS</span>
+                <span>email-db.ts</span>
+              </div>
+            </div>
+
+            <div class="treeFooter">
+              <div class="collapseRow"><span class="caret">▸</span> OUTLINE</div>
+              <div class="collapseRow"><span class="caret">▸</span> TIMELINE</div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="editorArea">
+          <div class="tabbar" id="tabbar">
+            <div class="tab" data-tab="email-db.ts">
+              <span class="tabIcon ts">TS</span>
+              <span class="mono">email-db.ts</span>
+              <span style="opacity:.8; font-weight:700; letter-spacing:.4px;">M</span>
+              <span class="x">×</span>
+            </div>
+            <div class="tab active" data-tab="App.tsx">
+              <span class="tabIcon tsx">TS</span>
+              <span class="mono">App.tsx</span>
+              <span class="x">×</span>
+            </div>
+            <div class="tab" data-tab="App.css">
+              <span class="tabIcon css">CSS</span>
+              <span class="mono">App.css</span>
+              <span class="x">×</span>
+            </div>
+            <div class="tab" data-tab="util.ts">
+              <span class="tabIcon ts">TS</span>
+              <span class="mono">util.ts</span>
+              <span class="x">×</span>
+            </div>
+          </div>
+
+          <div class="breadcrumb">
+            <div class="crumb">
+              <span style="opacity:.9">excel-demo</span>
+              <span class="sep">›</span>
+              <span style="opacity:.9">src</span>
+              <span class="sep">›</span>
+              <span style="opacity:.9">renderer</span>
+              <span class="sep">›</span>
+              <span class="fileBadge">TS</span>
+              <span style="opacity:.98; color:#e8e8e8;">App.tsx</span>
+              <span class="sep">›</span>
+              <span style="opacity:.7">…</span>
+            </div>
+            <div class="toolbarRight" aria-hidden="true">
+              <span class="spark" title="Amazon Q"></span>
+              <div class="toolDot" title="Sync">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 0 1-9 9 9.7 9.7 0 0 1-6.4-2.4"></path>
+                  <path d="M3 12a9 9 0 0 1 9-9 9.7 9.7 0 0 1 6.4 2.4"></path>
+                  <path d="M7 7H3V3"></path>
+                  <path d="M17 17h4v4"></path>
+                </svg>
+              </div>
+              <div class="toolDot" title="Problems">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v6"></path>
+                  <path d="M12 17h.01"></path>
+                </svg>
+              </div>
+              <div class="toolDot" title="Run">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 5l10 7-10 7z"></path>
+                </svg>
+              </div>
+              <div class="toolDot" title="More">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="6" cy="12" r="1.6"></circle>
+                  <circle cx="12" cy="12" r="1.6"></circle>
+                  <circle cx="18" cy="12" r="1.6"></circle>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="editorWrap">
+            <div class="gutter" id="gutter"></div>
+            <div class="codePane" id="codePane">
+              <div class="topHint" id="topHint">Thariq Shihipar, last month | 1 author (Thariq Shihipar)</div>
+              <div class="activeLine" id="activeLine"></div>
+              <pre class="code" id="code"></pre>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <footer class="statusbar">
+        <div class="statusLeft">
+          <div class="statusItem focusable" tabindex="0" title="Branch">
+            <span class="mono">main*</span>
+          </div>
+          <div class="statusItem focusable" tabindex="0" title="Errors and Warnings">
+            <span class="mono">× 0</span>
+            <span class="warn"></span>
+            <span class="mono">0</span>
+          </div>
+          <div class="pill focusable" tabindex="0" title="Run">
+            <span style="width:0;height:0;border-left:10px solid #cfcfcf;border-top:6px solid transparent;border-bottom:6px solid transparent; opacity:.85"></span>
+            <span class="mono">Amazon Q</span>
+          </div>
+          <div class="statusItem focusable" tabindex="0">
+            <span class="mono">-- INSERT --</span>
+          </div>
+        </div>
+
+        <div class="statusRight">
+          <div class="statusItem focusable" tabindex="0"><span class="mono">Ln 14, Col 1</span></div>
+          <div class="statusItem focusable" tabindex="0"><span class="mono">Spaces: 2</span></div>
+          <div class="statusItem focusable" tabindex="0"><span class="mono">UTF-8</span></div>
+          <div class="statusItem focusable" tabindex="0"><span class="mono">LF</span></div>
+          <div class="statusItem focusable" tabindex="0"><span class="mono">{ } TypeScript JSX</span></div>
+          <div class="statusItem focusable" tabindex="0" title="Notifications">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.8">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const FILES = {
+      "App.tsx": {
+        hint: "Thariq Shihipar, last month | 1 author (Thariq Shihipar)",
+        breadcrumb: ["excel-demo","src","renderer","App.tsx"],
+        lines: 14,
+        html:
+`<span class="t-kw">import</span> <span class="t-punc">{</span> <span class="t-type">MemoryRouter</span> <span class="t-kw">as</span> <span class="t-type">Router</span><span class="t-punc">,</span> <span class="t-type">Routes</span><span class="t-punc">,</span> <span class="t-type">Route</span> <span class="t-punc">}</span> <span class="t-kw">from</span> <span class="t-str">'react-router-dom'</span><span class="t-punc">;</span>
+<span class="t-kw">import</span> <span class="t-type">ChatInterface</span> <span class="t-kw">from</span> <span class="t-str">'./components/ChatInterface'</span><span class="t-punc">;</span>
+<span class="t-kw">import</span> <span class="t-str">'./App.css'</span><span class="t-punc">;</span>
+
+<span class="t-kw">export</span> <span class="t-kw">default</span> <span class="t-kw">function</span> <span class="t-fn">App</span><span class="t-punc">(</span><span class="t-punc">)</span> <span class="t-punc">{</span>
+  <span class="t-kw">return</span> <span class="t-punc">(</span>
+    <span class="t-jsx">&lt;</span><span class="t-tag">Router</span><span class="t-jsx">&gt;</span>
+      <span class="t-jsx">&lt;</span><span class="t-tag">Routes</span><span class="t-jsx">&gt;</span>
+        <span class="t-jsx">&lt;</span><span class="t-tag">Route</span> <span class="t-attr">path</span><span class="t-op">=</span><span class="t-jsx">"</span><span class="t-jsx">/</span><span class="t-jsx">"</span> <span class="t-attr">element</span><span class="t-op">=</span><span class="t-punc">{</span><span class="t-jsx">&lt;</span><span class="t-tag">ChatInterface</span> <span class="t-jsx">/&gt;</span><span class="t-punc">}</span> <span class="t-jsx">/&gt;</span>
+      <span class="t-jsx">&lt;/</span><span class="t-tag">Routes</span><span class="t-jsx">&gt;</span>
+    <span class="t-jsx">&lt;/</span><span class="t-tag">Router</span><span class="t-jsx">&gt;</span>
+  <span class="t-punc">)</span><span class="t-punc">;</span>
+<span class="t-punc">}</span><span class="cursor" id="cursor"></span>`
+      },
+      "util.ts": {
+        hint: "Local changes",
+        breadcrumb: ["excel-demo","src","main","util.ts"],
+        lines: 22,
+        html:
+`<span class="t-com">// Utility helpers</span>
+<span class="t-kw">export</span> <span class="t-kw">function</span> <span class="t-fn">sleep</span><span class="t-punc">(</span><span class="t-id">ms</span><span class="t-punc">:</span> <span class="t-type">number</span><span class="t-punc">)</span> <span class="t-punc">{</span>
+  <span class="t-kw">return</span> <span class="t-kw">new</span> <span class="t-type">Promise</span><span class="t-punc">(</span><span class="t-id">resolve</span> <span class="t-op">=&gt;</span> <span class="t-id">setTimeout</span><span class="t-punc">(</span><span class="t-id">resolve</span><span class="t-punc">,</span> <span class="t-id">ms</span><span class="t-punc">)</span><span class="t-punc">)</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>
+
+<span class="t-kw">export</span> <span class="t-kw">function</span> <span class="t-fn">clamp</span><span class="t-punc">(</span><span class="t-id">n</span><span class="t-punc">:</span> <span class="t-type">number</span><span class="t-punc">,</span> <span class="t-id">min</span><span class="t-punc">:</span> <span class="t-type">number</span><span class="t-punc">,</span> <span class="t-id">max</span><span class="t-punc">:</span> <span class="t-type">number</span><span class="t-punc">)</span> <span class="t-punc">{</span>
+  <span class="t-kw">return</span> <span class="t-id">Math</span><span class="t-punc">.</span><span class="t-id">min</span><span class="t-punc">(</span><span class="t-id">max</span><span class="t-punc">,</span> <span class="t-id">Math</span><span class="t-punc">.</span><span class="t-id">max</span><span class="t-punc">(</span><span class="t-id">min</span><span class="t-punc">,</span> <span class="t-id">n</span><span class="t-punc">)</span><span class="t-punc">)</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>`
+      },
+      "App.css": {
+        hint: "Local changes",
+        breadcrumb: ["excel-demo","src","renderer","App.css"],
+        lines: 24,
+        html:
+`<span class="t-com">/* App styles */</span>
+<span class="t-id">:root</span> <span class="t-punc">{</span>
+  <span class="t-id">color-scheme</span><span class="t-punc">:</span> <span class="t-id">dark</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>
+
+<span class="t-id">body</span> <span class="t-punc">{</span>
+  <span class="t-id">margin</span><span class="t-punc">:</span> <span class="t-num">0</span><span class="t-punc">;</span>
+  <span class="t-id">font-family</span><span class="t-punc">:</span> <span class="t-str">system-ui</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>
+
+<span class="t-id">.container</span> <span class="t-punc">{</span>
+  <span class="t-id">display</span><span class="t-punc">:</span> <span class="t-id">grid</span><span class="t-punc">;</span>
+  <span class="t-id">gap</span><span class="t-punc">:</span> <span class="t-num">12</span><span class="t-id">px</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>`
+      },
+      "email-db.ts": {
+        hint: "Local changes",
+        breadcrumb: ["email-agent","email-db.ts"],
+        lines: 26,
+        html:
+`<span class="t-com">// email-db.ts</span>
+<span class="t-kw">export</span> <span class="t-kw">type</span> <span class="t-type">Email</span> <span class="t-op">=</span> <span class="t-punc">{</span>
+  <span class="t-id">id</span><span class="t-punc">:</span> <span class="t-type">string</span><span class="t-punc">;</span>
+  <span class="t-id">from</span><span class="t-punc">:</span> <span class="t-type">string</span><span class="t-punc">;</span>
+  <span class="t-id">subject</span><span class="t-punc">:</span> <span class="t-type">string</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>
+
+<span class="t-kw">export</span> <span class="t-kw">function</span> <span class="t-fn">query</span><span class="t-punc">(</span><span class="t-id">q</span><span class="t-punc">:</span> <span class="t-type">string</span><span class="t-punc">)</span><span class="t-punc">:</span> <span class="t-type">Email</span><span class="t-punc">[</span><span class="t-punc">]</span> <span class="t-punc">{</span>
+  <span class="t-com">// mock data</span>
+  <span class="t-kw">return</span> <span class="t-punc">[</span>
+    <span class="t-punc">{</span> <span class="t-id">id</span><span class="t-punc">:</span> <span class="t-str">'1'</span><span class="t-punc">,</span> <span class="t-id">from</span><span class="t-punc">:</span> <span class="t-str">'demo@acme.co'</span><span class="t-punc">,</span> <span class="t-id">subject</span><span class="t-punc">:</span> <span class="t-str">'Hello'</span> <span class="t-punc">}</span>
+  <span class="t-punc">]</span><span class="t-punc">;</span>
+<span class="t-punc">}</span>`
+      }
+    };
+
+    const gutterEl = document.getElementById('gutter');
+    const codeEl = document.getElementById('code');
+    const topHintEl = document.getElementById('topHint');
+    const activeLineEl = document.getElementById('activeLine');
+    const codePaneEl = document.getElementById('codePane');
+
+    function setGutter(lines){
+      let out = "";
+      for(let i=1;i<=lines;i++) out += i + "\n";
+      gutterEl.textContent = out;
+    }
+
+    function setActiveLine(lineIndex1Based){
+      // 1-based line number
+      const topPadding = 12; // codePane padding-top
+      const lineH = 26;
+      activeLineEl.style.top = `calc(${topPadding}px + ${lineH}px * ${Math.max(0, lineIndex1Based-1)})`;
+    }
+
+    function openTab(file){
+      const data = FILES[file] || FILES["App.tsx"];
+      topHintEl.textContent = data.hint || "";
+      codeEl.innerHTML = data.html;
+      setGutter(data.lines || 1);
+      // Match screenshot: active line around line 14 in App.tsx
+      setActiveLine(file === "App.tsx" ? 14 : 1);
+
+      // tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === file));
+
+      // tree selection
+      document.querySelectorAll('.treeRow.file').forEach(r => r.classList.toggle('selected', r.dataset.file === file));
+
+      // breadcrumb text (minimal, keep layout)
+      const crumb = data.breadcrumb || [];
+      const bc = document.querySelector('.breadcrumb .crumb');
+      if (bc){
+        const fileName = crumb[crumb.length-1] || file;
+        const parts = crumb.slice(0, Math.max(0, crumb.length-1));
+        let html = '';
+        for (let i=0;i<parts.length;i++){
+          html += `<span style="opacity:.9">${escapeHtml(parts[i])}</span><span class="sep">›</span>`;
+        }
+        html += `<span class="fileBadge">${file.endsWith('.css') ? 'CSS' : 'TS'}</span>
+                 <span style="opacity:.98; color:#e8e8e8;">${escapeHtml(fileName)}</span>
+                 <span class="sep">›</span><span style="opacity:.7">…</span>`;
+        bc.innerHTML = html;
+      }
+
+      // Scroll to top similar to screenshot
+      codePaneEl.scrollTop = 0;
+      codePaneEl.scrollLeft = 0;
+    }
+
+    function escapeHtml(s){
+      return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
+    }
+
+    // Tree interactions (folders twisty)
+    document.getElementById('tree').addEventListener('click', (e) => {
+      const row = e.target.closest('.treeRow');
+      if(!row) return;
+
+      if(row.classList.contains('folder')){
+        row.classList.toggle('open');
+        // purely visual (mock), no collapsing of children for simplicity
+        return;
+      }
+
+      if(row.classList.contains('file')){
+        const file = row.dataset.file;
+        if(file) openTab(file);
+      }
+    });
+
+    // Tab interactions
+    document.getElementById('tabbar').addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab');
+      if(!tab) return;
+      const file = tab.dataset.tab;
+      if(file) openTab(file);
+    });
+
+    // Gentle cursor relocation (visual) when clicking inside editor
+    codePaneEl.addEventListener('mousedown', (e) => {
+      const cursor = document.getElementById('cursor');
+      if(!cursor) return;
+      // keep cursor at end of file as in screenshot; just ensure it's visible
+      cursor.scrollIntoView({block:'nearest', inline:'nearest'});
+    });
+
+    // Initialize to App.tsx like screenshot
+    openTab("App.tsx");
+  </script>
+</body>
+</html>

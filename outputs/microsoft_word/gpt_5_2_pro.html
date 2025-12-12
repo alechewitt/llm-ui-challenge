@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Word UI Mock</title>
+  <style>
+    :root{
+      --blue:#0b63ce;
+      --blue2:#0a56b5;
+      --bg:#f2f2f4;
+      --panel:#ffffff;
+      --panel2:#f7f7f9;
+      --border:#d6d6d8;
+      --border2:#e6e6e9;
+      --text:#1c1c1e;
+      --muted:#6b6b73;
+      --shadow:0 10px 28px rgba(0,0,0,.12), 0 2px 6px rgba(0,0,0,.08);
+      --radius:10px;
+      --ribbonH:86px;
+      --menuH:42px;
+      --titleH:46px;
+      --statusH:36px;
+      --pageW:860px;
+      --pageH:1080px;
+      --pagePad:92px;
+      --uiFont: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:#0a0a0a;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:var(--uiFont);
+      color:var(--text);
+    }
+
+    .window{
+      width:min(1700px, calc(100vw - 24px));
+      height:min(940px, calc(100vh - 24px));
+      background:var(--panel);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 30px 90px rgba(0,0,0,.45);
+      border:1px solid rgba(255,255,255,.12);
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* TITLE BAR */
+    .titlebar{
+      height:var(--titleH);
+      background:linear-gradient(180deg, var(--blue), var(--blue2));
+      color:#fff;
+      display:grid;
+      grid-template-columns: 220px 1fr 420px;
+      align-items:center;
+      padding:0 12px;
+      gap:10px;
+      position:relative;
+    }
+
+    .traffic{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .dot{
+      width:13px;height:13px;border-radius:50%;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.15);
+    }
+    .dot.red{background:#ff5f57}
+    .dot.yellow{background:#febc2e}
+    .dot.green{background:#28c840}
+
+    .titleLeft{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .autosave{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:rgba(255,255,255,.92);
+      font-weight:600;
+      user-select:none;
+    }
+    .toggle{
+      width:44px;height:22px;border-radius:999px;
+      background:rgba(255,255,255,.26);
+      position:relative;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .toggle:after{
+      content:"";
+      width:18px;height:18px;border-radius:50%;
+      background:#fff;
+      position:absolute;
+      top:2px; left:2px;
+      transition:all .18s ease;
+      box-shadow:0 1px 3px rgba(0,0,0,.25);
+    }
+    .toggle.on{
+      background:rgba(255,255,255,.42);
+    }
+    .toggle.on:after{
+      left:24px;
+      background:#fff;
+    }
+
+    .quickIcons{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      opacity:.95;
+    }
+    .qi{
+      width:28px;height:28px;border-radius:8px;
+      display:grid;place-items:center;
+      cursor:pointer;
+      transition:background .12s ease, transform .12s ease;
+    }
+    .qi:hover{background:rgba(255,255,255,.16)}
+    .qi:active{transform:translateY(1px)}
+    .qi svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.95}
+
+    .titleCenter{
+      text-align:center;
+      font-weight:700;
+      letter-spacing:.1px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .titleCenter .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-left:10px;
+      font-weight:700;
+      color:rgba(255,255,255,.95);
+      opacity:.95;
+    }
+    .shield{
+      width:16px;height:16px;
+      display:inline-block;
+      transform:translateY(2px);
+    }
+    .shield svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+
+    .titleRight{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .search{
+      width:100%;
+      max-width:410px;
+      height:30px;
+      border-radius:9px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(0,0,0,.12);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:0 10px;
+      color:rgba(255,255,255,.95);
+      min-width:240px;
+    }
+    .search svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;opacity:.92}
+    .search input{
+      width:100%;
+      height:100%;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:#fff;
+      font-weight:600;
+      font-size:14px;
+    }
+    .search input::placeholder{color:rgba(255,255,255,.78); font-weight:600}
+
+    /* MENU BAR (tabs + actions) */
+    .menubar{
+      height:var(--menuH);
+      background:var(--panel);
+      border-bottom:1px solid var(--border2);
+      display:flex;
+      align-items:flex-end;
+      padding:0 12px;
+      gap:10px;
+    }
+    .tabs{
+      display:flex;
+      gap:18px;
+      align-items:flex-end;
+      flex:1 1 auto;
+      padding-bottom:6px;
+      overflow:hidden;
+    }
+    .tab{
+      border:0;
+      background:transparent;
+      padding:8px 2px 6px;
+      font-weight:700;
+      color:#2c2c30;
+      cursor:pointer;
+      position:relative;
+      font-size:18px;
+      line-height:1;
+    }
+    .tab:not(.active){font-weight:650; color:#33343a; opacity:.95}
+    .tab.active:after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:-7px;
+      height:3px;
+      background:#0b63ce;
+      border-radius:3px;
+    }
+
+    .menuActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-bottom:6px;
+      flex:0 0 auto;
+    }
+    .btn{
+      height:30px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:9px;
+      padding:0 10px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-weight:650;
+      color:#1f1f22;
+      cursor:pointer;
+      box-shadow:0 1px 0 rgba(0,0,0,.02);
+    }
+    .btn:hover{background:#fbfbfc}
+    .btn:active{transform:translateY(1px)}
+    .btn svg{width:16px;height:16px;stroke:#1f1f22;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+    .btn.primary{
+      background:#0b63ce;
+      border-color:#0b63ce;
+      color:#fff;
+    }
+    .btn.primary:hover{background:#0a5bbe}
+    .btn.primary svg{stroke:#fff}
+
+    .dropdown{
+      position:relative;
+    }
+    .caret{
+      width:0;height:0;
+      border-left:5px solid transparent;
+      border-right:5px solid transparent;
+      border-top:6px solid currentColor;
+      opacity:.8;
+      transform:translateY(1px);
+    }
+    .menu{
+      position:absolute;
+      right:0;
+      top:34px;
+      width:210px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      box-shadow:0 18px 50px rgba(0,0,0,.18);
+      padding:8px;
+      display:none;
+      z-index:30;
+    }
+    .menu.open{display:block}
+    .menu .item{
+      padding:10px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-weight:650;
+      color:#242428;
+    }
+    .menu .item:hover{background:#f2f5ff}
+    .pill{
+      font-size:12px;
+      color:#4b4b55;
+      border:1px solid var(--border2);
+      padding:2px 8px;
+      border-radius:999px;
+      background:#fafafb;
+    }
+    .item.active .pill{
+      border-color:#0b63ce;
+      color:#0b63ce;
+      background:#ecf3ff;
+    }
+
+    /* RIBBON */
+    .ribbon{
+      height:var(--ribbonH);
+      background:var(--panel2);
+      border-bottom:1px solid var(--border2);
+      display:flex;
+      align-items:stretch;
+      padding:8px 12px;
+      gap:10px;
+      overflow:hidden;
+    }
+    .group{
+      background:transparent;
+      border-right:1px solid #e2e2e6;
+      padding-right:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .group:last-child{border-right:0}
+    .gcol{display:flex; flex-direction:column; gap:6px; justify-content:center}
+    .label{
+      font-size:12px;
+      color:#666670;
+      font-weight:700;
+      text-align:center;
+      margin-top:4px;
+    }
+    .iconBtn{
+      width:36px;height:36px;
+      border:1px solid var(--border2);
+      background:#fff;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      transition:background .12s ease, transform .12s ease;
+    }
+    .iconBtn:hover{background:#fbfbfc}
+    .iconBtn:active{transform:translateY(1px)}
+    .iconBtn svg{width:20px;height:20px;stroke:#2c2c32;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .iconBtn .fill{fill:#2c2c32;stroke:none}
+
+    .big{
+      width:58px;
+      height:58px;
+      border-radius:12px;
+    }
+    .big svg{width:26px;height:26px}
+    .miniRow{display:flex; gap:8px; align-items:center}
+    .field{
+      height:30px;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:8px;
+      padding:0 8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+    }
+    .select{
+      border:0;
+      outline:0;
+      font-weight:650;
+      color:#232328;
+      background:transparent;
+      font-size:16px;
+      width:165px;
+    }
+    .select.small{width:60px}
+    .field .chev{
+      width:0;height:0;
+      border-left:5px solid transparent;
+      border-right:5px solid transparent;
+      border-top:6px solid #55555f;
+      opacity:.85;
+    }
+
+    .toolstrip{
+      display:flex; gap:8px; align-items:center; flex-wrap:nowrap;
+    }
+    .dividerV{
+      width:1px; height:52px; background:#e2e2e6; margin:0 4px;
+    }
+    .mutedIcon svg{stroke:#2b71d3}
+    .accentBlue{border-color:#cfe2ff}
+
+    /* WORKSPACE */
+    .workspace{
+      flex:1 1 auto;
+      background:linear-gradient(#ededf0, #f4f4f6);
+      position:relative;
+      overflow:hidden;
+    }
+    .scroller{
+      height:100%;
+      overflow:auto;
+      padding:26px 0 24px;
+      scrollbar-gutter: stable both-edges;
+    }
+    .canvas{
+      width:100%;
+      display:flex;
+      justify-content:center;
+      padding:0 22px;
+    }
+    .pageWrap{
+      transform-origin: top center;
+      will-change:transform;
+    }
+    .page{
+      width:var(--pageW);
+      height:var(--pageH);
+      background:#fff;
+      border:1px solid #d7d7db;
+      box-shadow:0 1px 2px rgba(0,0,0,.06);
+      position:relative;
+    }
+    .editor{
+      position:absolute;
+      left:var(--pagePad);
+      right:var(--pagePad);
+      top:var(--pagePad);
+      bottom:var(--pagePad);
+      outline:none;
+      font-family: "Calibri", "Segoe UI", var(--uiFont);
+      font-size:16px;
+      line-height:1.35;
+      color:#111114;
+      white-space:pre-wrap;
+      overflow:hidden;
+      caret-color:#111;
+    }
+    .editor:empty:before{
+      content:"";
+      display:block;
+      height:1em;
+    }
+
+    /* Custom-ish scrollbar */
+    .scroller::-webkit-scrollbar{width:12px}
+    .scroller::-webkit-scrollbar-track{background:rgba(0,0,0,.04)}
+    .scroller::-webkit-scrollbar-thumb{
+      background:rgba(0,0,0,.25);
+      border-radius:999px;
+      border:3px solid rgba(0,0,0,0);
+      background-clip:padding-box;
+    }
+    .scroller::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.32); border:3px solid rgba(0,0,0,0)}
+
+    /* STATUS BAR */
+    .statusbar{
+      height:var(--statusH);
+      border-top:1px solid var(--border2);
+      background:#fafafb;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items:center;
+      padding:0 10px;
+      gap:8px;
+      font-weight:650;
+      color:#5c5c66;
+      user-select:none;
+    }
+    .statusLeft, .statusMid, .statusRight{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .statusMid{justify-content:center}
+    .statusRight{justify-content:flex-end; gap:10px}
+
+    .statusIcon{
+      width:32px;height:24px;border-radius:8px;
+      display:grid;place-items:center;
+      border:1px solid transparent;
+      cursor:pointer;
+      color:#5c5c66;
+      background:transparent;
+    }
+    .statusIcon:hover{background:#f1f1f4; border-color:#e2e2e7}
+    .statusIcon.active{background:#e9eefc; border-color:#cfe2ff; color:#0b63ce}
+    .statusIcon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+    .zoom{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:320px;
+      justify-content:flex-end;
+    }
+    .zoom .pct{min-width:52px; text-align:right}
+    .zoom .minus, .zoom .plus{
+      width:30px;height:24px;border-radius:8px;
+      border:1px solid #e2e2e7;
+      background:#fff;
+      display:grid;place-items:center;
+      cursor:pointer;
+      color:#44444c;
+    }
+    .zoom .minus:hover, .zoom .plus:hover{background:#fbfbfc}
+    .zoom input[type="range"]{
+      width:180px;
+      accent-color:#0b63ce;
+    }
+
+    /* Small helpers */
+    .sepDot{
+      width:4px;height:4px;border-radius:999px;background:#c7c7cd;
+      display:inline-block; transform:translateY(-1px);
+    }
+
+    /* Focus ring subtle */
+    .focusRing:focus-visible{outline:2px solid #7db2ff; outline-offset:2px; border-radius:10px}
+  </style>
+</head>
+<body>
+  <div class="window" id="window">
+    <div class="titlebar">
+      <div class="titleLeft">
+        <div class="traffic" aria-hidden="true">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+
+        <div class="autosave">
+          <span>AutoSave</span>
+          <div class="toggle on" id="autosaveToggle" role="switch" aria-checked="true" tabindex="0" title="AutoSave"></div>
+        </div>
+
+        <div class="quickIcons" aria-label="Quick Access Toolbar">
+          <div class="qi" title="Home">
+            <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M6.5 10.5V20h11V10.5"/></svg>
+          </div>
+          <div class="qi" title="Save">
+            <svg viewBox="0 0 24 24"><path d="M5 4h12l2 2v14H5z"/><path d="M8 4v6h8V4"/><path d="M8 20v-6h8v6"/></svg>
+          </div>
+          <div class="qi" title="Undo">
+            <svg viewBox="0 0 24 24"><path d="M9 10H5V6"/><path d="M5 10c2-3 5-5 9-5 4.5 0 8 3.2 8 8"/></svg>
+          </div>
+          <div class="qi" title="Redo">
+            <svg viewBox="0 0 24 24"><path d="M15 10h4V6"/><path d="M19 10c-2-3-5-5-9-5-4.5 0-8 3.2-8 8"/></svg>
+          </div>
+          <div class="qi" title="Print">
+            <svg viewBox="0 0 24 24"><path d="M7 8V4h10v4"/><path d="M6 17H4V10h16v7h-2"/><path d="M7 14h10v6H7z"/></svg>
+          </div>
+          <div class="qi" title="More">
+            <svg viewBox="0 0 24 24"><path d="M5 12h.01"/><path d="M12 12h.01"/><path d="M19 12h.01"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="titleCenter" title="Document3">
+        Document3
+        <span class="badge">
+          <span class="shield" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3 20 7v6c0 5-3.5 8-8 8s-8-3-8-8V7z"/></svg>
+          </span>
+          Confidential*
+        </span>
+      </div>
+
+      <div class="titleRight">
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.2-3.2"></path></svg>
+          <input id="searchBox" type="text" placeholder="Search (Cmd + Ctrl + U)" />
+        </div>
+      </div>
+    </div>
+
+    <div class="menubar">
+      <div class="tabs" role="tablist" aria-label="Ribbon Tabs">
+        <button class="tab active" data-tab="Home" role="tab" aria-selected="true">Home</button>
+        <button class="tab" data-tab="Insert" role="tab" aria-selected="false">Insert</button>
+        <button class="tab" data-tab="Draw" role="tab" aria-selected="false">Draw</button>
+        <button class="tab" data-tab="Design" role="tab" aria-selected="false">Design</button>
+        <button class="tab" data-tab="Layout" role="tab" aria-selected="false">Layout</button>
+        <button class="tab" data-tab="References" role="tab" aria-selected="false">References</button>
+        <button class="tab" data-tab="Mailings" role="tab" aria-selected="false">Mailings</button>
+        <button class="tab" data-tab="Review" role="tab" aria-selected="false">Review</button>
+        <button class="tab" data-tab="View" role="tab" aria-selected="false">View</button>
+      </div>
+
+      <div class="menuActions">
+        <button class="btn focusRing" id="commentsBtn" title="Comments">
+          <svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+          Comments
+        </button>
+
+        <div class="dropdown">
+          <button class="btn focusRing" id="editingBtn" aria-haspopup="menu" aria-expanded="false" title="Editing mode">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            <span id="editingModeLabel">Editing</span>
+            <span class="caret" aria-hidden="true"></span>
+          </button>
+          <div class="menu" id="editingMenu" role="menu" aria-label="Editing Modes">
+            <div class="item active" data-mode="Editing" role="menuitem">
+              Editing <span class="pill">Default</span>
+            </div>
+            <div class="item" data-mode="Reviewing" role="menuitem">
+              Reviewing <span class="pill">Track</span>
+            </div>
+            <div class="item" data-mode="Viewing" role="menuitem">
+              Viewing <span class="pill">Read</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn primary focusRing" id="shareBtn" title="Share">
+          <svg viewBox="0 0 24 24"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="M7 7l5-4 5 4"/></svg>
+          Share
+          <span class="caret" aria-hidden="true" style="border-top-color:#fff; opacity:.95"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="ribbon" id="ribbon">
+      <div class="group" style="padding-right:14px;">
+        <div class="gcol" style="align-items:center;">
+          <div class="iconBtn big focusRing" title="Paste">
+            <svg viewBox="0 0 24 24">
+              <path d="M8 4h8v3H8z"></path>
+              <path d="M7 6H5v16h14V6h-2"></path>
+              <path d="M9 13h6"></path><path d="M9 16h6"></path>
+            </svg>
+          </div>
+          <div class="label">Paste</div>
+        </div>
+
+        <div class="gcol">
+          <div class="miniRow">
+            <div class="iconBtn focusRing" title="Cut">
+              <svg viewBox="0 0 24 24"><path d="M4 4l8 8"></path><path d="M12 12l8-8"></path><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M8 16l3-3"></path><path d="M16 16l-3-3"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" title="Copy">
+              <svg viewBox="0 0 24 24"><path d="M9 9h10v10H9z"></path><path d="M5 5h10v10H5z"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" title="Format Painter">
+              <svg viewBox="0 0 24 24"><path d="M4 7h10v4H4z"></path><path d="M14 9l6 6"></path><path d="M16 17l-2 2"></path></svg>
+            </div>
+          </div>
+          <div class="label" style="text-align:left;">Clipboard</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="gcol" style="gap:8px;">
+          <div class="miniRow">
+            <div class="field">
+              <select class="select" id="fontFamily">
+                <option selected>Calibri (Body)</option>
+                <option>Times New Roman</option>
+                <option>Arial</option>
+                <option>Georgia</option>
+                <option>Verdana</option>
+              </select>
+              <span class="chev" aria-hidden="true"></span>
+            </div>
+            <div class="field" style="width:84px; justify-content:space-between;">
+              <select class="select small" id="fontSize">
+                <option>10</option>
+                <option>11</option>
+                <option selected>12</option>
+                <option>14</option>
+                <option>16</option>
+                <option>18</option>
+                <option>20</option>
+                <option>24</option>
+              </select>
+              <span class="chev" aria-hidden="true"></span>
+            </div>
+            <div class="iconBtn focusRing mutedIcon" title="Increase Font">
+              <svg viewBox="0 0 24 24"><path d="M6 20 12 4l6 16"></path><path d="M8.5 14h7"></path><path d="M19 7v6"></path><path d="M16 10h6"></path></svg>
+            </div>
+            <div class="iconBtn focusRing mutedIcon" title="Decrease Font">
+              <svg viewBox="0 0 24 24"><path d="M6 20 12 4l6 16"></path><path d="M8.5 14h7"></path><path d="M16 10h6"></path></svg>
+            </div>
+          </div>
+
+          <div class="toolstrip">
+            <div class="iconBtn focusRing" id="btnBold" title="Bold"><svg viewBox="0 0 24 24"><path d="M8 4h6a4 4 0 0 1 0 8H8z"></path><path d="M8 12h7a4 4 0 0 1 0 8H8z"></path></svg></div>
+            <div class="iconBtn focusRing" id="btnItalic" title="Italic"><svg viewBox="0 0 24 24"><path d="M19 4h-7"></path><path d="M12 20H5"></path><path d="M14 4 10 20"></path></svg></div>
+            <div class="iconBtn focusRing" id="btnUnderline" title="Underline"><svg viewBox="0 0 24 24"><path d="M7 4v7a5 5 0 0 0 10 0V4"></path><path d="M5 20h14"></path></svg></div>
+
+            <div class="dividerV"></div>
+
+            <div class="iconBtn focusRing" title="Text Highlight Color">
+              <svg viewBox="0 0 24 24"><path d="M4 20h16"></path><path d="M8 15l8-8"></path><path d="M7 14l3 3"></path><path d="M16 7l3 3"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" title="Font Color">
+              <svg viewBox="0 0 24 24"><path d="M6 20 12 4l6 16"></path><path d="M8.7 14h6.6"></path><path d="M5 20h14" style="stroke:#d11b1b"></path></svg>
+            </div>
+
+            <div class="dividerV"></div>
+
+            <div class="iconBtn focusRing" id="btnBullets" title="Bullets">
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="7" r="1.5" class="fill"></circle><circle cx="5" cy="12" r="1.5" class="fill"></circle><circle cx="5" cy="17" r="1.5" class="fill"></circle><path d="M9 7h12"></path><path d="M9 12h12"></path><path d="M9 17h12"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" title="Numbering">
+              <svg viewBox="0 0 24 24"><path d="M9 7h12"></path><path d="M9 12h12"></path><path d="M9 17h12"></path><path d="M4 7h2"></path><path d="M4 12h2"></path><path d="M4 17h2"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" id="btnAlignLeft" title="Align Left">
+              <svg viewBox="0 0 24 24"><path d="M4 7h14"></path><path d="M4 12h10"></path><path d="M4 17h14"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" id="btnAlignCenter" title="Center">
+              <svg viewBox="0 0 24 24"><path d="M5 7h14"></path><path d="M7 12h10"></path><path d="M5 17h14"></path></svg>
+            </div>
+            <div class="iconBtn focusRing" id="btnAlignRight" title="Align Right">
+              <svg viewBox="0 0 24 24"><path d="M6 7h14"></path><path d="M10 12h10"></path><path d="M6 17h14"></path></svg>
+            </div>
+          </div>
+
+          <div class="label" style="text-align:left;">Font</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="gcol" style="align-items:center;">
+          <div class="miniRow">
+            <div class="iconBtn big accentBlue focusRing" title="Styles">
+              <svg viewBox="0 0 24 24">
+                <path d="M5 7h9"></path><path d="M5 12h14"></path><path d="M5 17h11"></path>
+                <path d="M17 6h2v12h-2z" class="fill"></path>
+              </svg>
+            </div>
+            <div class="gcol" style="gap:8px;">
+              <div class="iconBtn focusRing" title="Styles Pane">
+                <svg viewBox="0 0 24 24"><path d="M4 6h16"></path><path d="M4 12h10"></path><path d="M4 18h16"></path><path d="M16 10l4 2-4 2z"></path></svg>
+              </div>
+              <div class="iconBtn focusRing" title="Dictate">
+                <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3z"></path><path d="M19 11a7 7 0 0 1-14 0"></path><path d="M12 18v3"></path></svg>
+              </div>
+            </div>
+          </div>
+          <div class="label">Styles</div>
+        </div>
+      </div>
+
+      <div class="group" style="padding-right:0;">
+        <div class="gcol" style="align-items:center;">
+          <div class="miniRow">
+            <div class="iconBtn big focusRing" title="Sensitivity">
+              <svg viewBox="0 0 24 24"><path d="M12 2 20 6v7c0 5-3.6 9-8 9s-8-4-8-9V6z"></path><path d="M9 12l2 2 4-5"></path></svg>
+            </div>
+            <div class="iconBtn big focusRing" title="Add-ins">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"></path><path d="M12 7v10"></path><path d="M7 12h10"></path></svg>
+            </div>
+            <div class="iconBtn big focusRing" title="Editor">
+              <svg viewBox="0 0 24 24"><path d="M4 5h10"></path><path d="M4 9h14"></path><path d="M4 13h10"></path><path d="M4 17h14"></path><path d="M18 5v6"></path><path d="M15 8h6"></path></svg>
+            </div>
+            <div class="iconBtn big focusRing" title="Amazon Quick Suite">
+              <svg viewBox="0 0 24 24">
+                <path d="M7 6h10v12H7z"></path>
+                <path d="M9 9h6"></path><path d="M9 12h6"></path><path d="M9 15h6"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="label">Tools</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <div class="scroller" id="scroller">
+        <div class="canvas">
+          <div class="pageWrap" id="pageWrap">
+            <div class="page" id="page">
+              <div class="editor" id="editor" contenteditable="true" spellcheck="false" aria-label="Document editor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="statusbar">
+      <div class="statusLeft">
+        <span id="pageInfo">Page 1 of 1</span>
+        <span class="sepDot" aria-hidden="true"></span>
+        <span id="wordInfo">0 words</span>
+        <span class="sepDot" aria-hidden="true"></span>
+        <span>English (United States)</span>
+      </div>
+
+      <div class="statusMid">
+        <span title="Accessibility status">Accessibility: Good to go</span>
+      </div>
+
+      <div class="statusRight">
+        <button class="statusIcon focusRing" id="viewFocus" title="Focus">
+          <svg viewBox="0 0 24 24"><path d="M4 9V4h5"></path><path d="M20 9V4h-5"></path><path d="M4 15v5h5"></path><path d="M20 15v5h-5"></path></svg>
+        </button>
+        <button class="statusIcon focusRing active" id="viewPrint" title="Print Layout">
+          <svg viewBox="0 0 24 24"><path d="M6 2h9l3 3v17H6z"></path><path d="M9 12h6"></path><path d="M9 16h6"></path></svg>
+        </button>
+        <button class="statusIcon focusRing" id="viewWeb" title="Web Layout">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3a14 14 0 0 1 0 18"></path><path d="M12 3a14 14 0 0 0 0 18"></path></svg>
+        </button>
+
+        <div class="zoom">
+          <button class="minus focusRing" id="zoomOut" title="Zoom out">−</button>
+          <input id="zoomRange" type="range" min="50" max="200" value="185" />
+          <button class="plus focusRing" id="zoomIn" title="Zoom in">+</button>
+          <span class="pct" id="zoomPct">185%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const editor = document.getElementById('editor');
+      const scroller = document.getElementById('scroller');
+      const pageWrap = document.getElementById('pageWrap');
+      const zoomRange = document.getElementById('zoomRange');
+      const zoomPct = document.getElementById('zoomPct');
+      const wordInfo = document.getElementById('wordInfo');
+
+      const autosaveToggle = document.getElementById('autosaveToggle');
+
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+
+      const editingBtn = document.getElementById('editingBtn');
+      const editingMenu = document.getElementById('editingMenu');
+      const editingModeLabel = document.getElementById('editingModeLabel');
+
+      const btnBold = document.getElementById('btnBold');
+      const btnItalic = document.getElementById('btnItalic');
+      const btnUnderline = document.getElementById('btnUnderline');
+      const btnBullets = document.getElementById('btnBullets');
+
+      const btnAlignLeft = document.getElementById('btnAlignLeft');
+      const btnAlignCenter = document.getElementById('btnAlignCenter');
+      const btnAlignRight = document.getElementById('btnAlignRight');
+
+      const fontFamily = document.getElementById('fontFamily');
+      const fontSize = document.getElementById('fontSize');
+
+      const zoomIn = document.getElementById('zoomIn');
+      const zoomOut = document.getElementById('zoomOut');
+
+      // Initial focus caret placement if clicked on page area
+      document.getElementById('page').addEventListener('mousedown', (e)=>{
+        if(e.target === document.getElementById('page')) editor.focus();
+      });
+
+      function setZoom(v){
+        const z = Math.max(50, Math.min(200, Math.round(v)));
+        zoomRange.value = z;
+        zoomPct.textContent = z + '%';
+        pageWrap.style.transform = `scale(${z/100})`;
+        // Keep centered feel by giving extra bottom padding with larger zoom
+        scroller.style.paddingTop = '26px';
+      }
+      setZoom(+zoomRange.value);
+
+      zoomRange.addEventListener('input', ()=> setZoom(+zoomRange.value));
+      zoomIn.addEventListener('click', ()=> setZoom(+zoomRange.value + 10));
+      zoomOut.addEventListener('click', ()=> setZoom(+zoomRange.value - 10));
+
+      // Ctrl/Cmd + / -
+      window.addEventListener('keydown', (e)=>{
+        const isMac = navigator.platform.toUpperCase().includes('MAC');
+        const mod = isMac ? e.metaKey : e.ctrlKey;
+        if(!mod) return;
+
+        if(e.key === '=' || e.key === '+'){ e.preventDefault(); setZoom(+zoomRange.value + 10); }
+        if(e.key === '-' || e.key === '_'){ e.preventDefault(); setZoom(+zoomRange.value - 10); }
+        if(e.key === '0'){ e.preventDefault(); setZoom(100); }
+      });
+
+      // Tabs
+      tabs.forEach(t=>{
+        t.addEventListener('click', ()=>{
+          tabs.forEach(x=>{ x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+          t.classList.add('active');
+          t.setAttribute('aria-selected','true');
+        });
+      });
+
+      // AutoSave toggle
+      function toggleAutosave(){
+        autosaveToggle.classList.toggle('on');
+        autosaveToggle.setAttribute('aria-checked', autosaveToggle.classList.contains('on') ? 'true' : 'false');
+      }
+      autosaveToggle.addEventListener('click', toggleAutosave);
+      autosaveToggle.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggleAutosave();
+        }
+      });
+
+      // Editing dropdown
+      function setEditingMenu(open){
+        editingMenu.classList.toggle('open', open);
+        editingBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      editingBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        setEditingMenu(!editingMenu.classList.contains('open'));
+      });
+      editingMenu.addEventListener('click', (e)=>{
+        const item = e.target.closest('.item');
+        if(!item) return;
+        const mode = item.dataset.mode;
+        editingModeLabel.textContent = mode;
+
+        Array.from(editingMenu.querySelectorAll('.item')).forEach(i=>i.classList.remove('active'));
+        item.classList.add('active');
+
+        // Simple behavior differences
+        if(mode === 'Viewing'){
+          editor.setAttribute('contenteditable','false');
+          editor.style.userSelect = 'text';
+        } else {
+          editor.setAttribute('contenteditable','true');
+        }
+        setEditingMenu(false);
+        if(mode !== 'Viewing') editor.focus();
+      });
+      window.addEventListener('click', ()=> setEditingMenu(false));
+
+      // Basic formatting buttons (execCommand used for UI mock)
+      function cmd(c, v=null){
+        editor.focus();
+        try{ document.execCommand(c, false, v); }catch(_){}
+        updateToolbarStates();
+        updateWords();
+      }
+      btnBold.addEventListener('click', ()=> cmd('bold'));
+      btnItalic.addEventListener('click', ()=> cmd('italic'));
+      btnUnderline.addEventListener('click', ()=> cmd('underline'));
+
+      btnAlignLeft.addEventListener('click', ()=> cmd('justifyLeft'));
+      btnAlignCenter.addEventListener('click', ()=> cmd('justifyCenter'));
+      btnAlignRight.addEventListener('click', ()=> cmd('justifyRight'));
+
+      btnBullets.addEventListener('click', ()=> cmd('insertUnorderedList'));
+
+      fontFamily.addEventListener('change', ()=>{
+        const v = fontFamily.value;
+        const family = v.replace(/\s*\(.*\)\s*/,'').trim();
+        cmd('fontName', family);
+      });
+      fontSize.addEventListener('change', ()=>{
+        // Map to execCommand fontSize (1..7). Approximate.
+        const px = +fontSize.value || 12;
+        const map = (p)=>{
+          if(p<=10) return 2;
+          if(p<=12) return 3;
+          if(p<=14) return 4;
+          if(p<=18) return 5;
+          if(p<=24) return 6;
+          return 7;
+        };
+        cmd('fontSize', map(px));
+      });
+
+      function updateToolbarStates(){
+        const isBold = document.queryCommandState && document.queryCommandState('bold');
+        const isItalic = document.queryCommandState && document.queryCommandState('italic');
+        const isUnderline = document.queryCommandState && document.queryCommandState('underline');
+
+        [ [btnBold,isBold], [btnItalic,isItalic], [btnUnderline,isUnderline] ].forEach(([btn,on])=>{
+          btn.style.background = on ? '#e9eefc' : '#fff';
+          btn.style.borderColor = on ? '#cfe2ff' : 'var(--border2)';
+        });
+      }
+
+      function updateWords(){
+        const text = (editor.innerText || '').replace(/\u00a0/g,' ').trim();
+        const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+        wordInfo.textContent = `${words} words`;
+      }
+
+      editor.addEventListener('input', ()=>{
+        updateWords();
+        updateToolbarStates();
+      });
+      editor.addEventListener('keyup', updateToolbarStates);
+      editor.addEventListener('mouseup', updateToolbarStates);
+      editor.addEventListener('focus', updateToolbarStates);
+
+      // Search box mock: focus editor on Enter
+      document.getElementById('searchBox').addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter'){
+          e.preventDefault();
+          editor.focus();
+        }
+      });
+
+      // View buttons (status bar)
+      const viewPrint = document.getElementById('viewPrint');
+      const viewWeb = document.getElementById('viewWeb');
+      const viewFocus = document.getElementById('viewFocus');
+
+      function setView(active){
+        [viewPrint, viewWeb, viewFocus].forEach(b=>b.classList.remove('active'));
+        active.classList.add('active');
+
+        if(active === viewFocus){
+          document.querySelector('.ribbon').style.display = 'none';
+          document.querySelector('.menubar').style.display = 'none';
+        } else {
+          document.querySelector('.ribbon').style.display = '';
+          document.querySelector('.menubar').style.display = '';
+        }
+
+        if(active === viewWeb){
+          document.documentElement.style.setProperty('--pageW','980px');
+          document.documentElement.style.setProperty('--pageH','860px');
+          document.documentElement.style.setProperty('--pagePad','70px');
+        } else {
+          document.documentElement.style.setProperty('--pageW','860px');
+          document.documentElement.style.setProperty('--pageH','1080px');
+          document.documentElement.style.setProperty('--pagePad','92px');
+        }
+        // Keep zoom transform applied
+        setZoom(+zoomRange.value);
+      }
+
+      viewPrint.addEventListener('click', ()=> setView(viewPrint));
+      viewWeb.addEventListener('click', ()=> setView(viewWeb));
+      viewFocus.addEventListener('click', ()=> setView(viewFocus));
+
+      // Start clean
+      updateWords();
+
+      // Click anywhere in workspace to focus editor (Word-like)
+      document.querySelector('.workspace').addEventListener('mousedown', (e)=>{
+        const ce = editor.getAttribute('contenteditable') === 'true';
+        if(!ce) return;
+        // only if clicking on empty areas (not buttons)
+        if(e.target.closest('.ribbon') || e.target.closest('.menubar') || e.target.closest('.statusbar')) return;
+        if(e.target.closest('.editor')) return;
+        if(e.target.closest('.page')) editor.focus();
+      });
+
+    })();
+  </script>
+</body>
+</html>

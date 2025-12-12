@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jira Board (Replica)</title>
+  <style>
+    :root{
+      --bg:#F4F5F7;
+      --panel:#FFFFFF;
+      --text:#172B4D;
+      --muted:#6B778C;
+      --line:#DFE1E6;
+      --line2:#EBECF0;
+      --blue:#0052CC;
+      --blue2:#0747A6;
+      --hover:#EBECF0;
+      --shadow:0 1px 2px rgba(9,30,66,.08),0 0 0 1px rgba(9,30,66,.04);
+      --shadow2:0 4px 14px rgba(9,30,66,.16);
+      --radius:10px;
+      --chip-radius:4px;
+      --card-radius:6px;
+      --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    /* App Layout */
+    .app{
+      height:100vh;
+      display:flex;
+      width:100%;
+    }
+
+    /* Blue icon rail */
+    .rail{
+      width:64px;
+      background:var(--blue);
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:10px 0;
+      gap:14px;
+      flex:0 0 64px;
+    }
+    .rail .jira-mark{
+      width:36px;height:36px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      margin-top:4px;
+    }
+    .rail .rail-btn{
+      width:44px;height:44px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      opacity:.95;
+      transition:background .15s ease, transform .08s ease;
+    }
+    .rail .rail-btn:hover{background:rgba(255,255,255,.12)}
+    .rail .rail-btn:active{transform:scale(.98)}
+    .rail .spacer{flex:1}
+    .rail .help{
+      width:44px;height:44px;border-radius:999px;
+      display:grid;place-items:center;
+      cursor:pointer;
+      background:rgba(255,255,255,.12);
+    }
+
+    /* Sidebar */
+    .sidebar{
+      width:280px;
+      background:#F7F8F9;
+      border-right:1px solid var(--line);
+      padding:18px 14px 14px;
+      overflow:auto;
+    }
+    .project{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:8px 10px;
+      border-radius:10px;
+    }
+    .avatar{
+      width:44px;height:44px;border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #45C5FF, #6554C0);
+      display:grid;place-items:center;
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
+      flex:0 0 44px;
+    }
+    .avatar svg{filter:drop-shadow(0 2px 0 rgba(0,0,0,.05))}
+    .project .title{
+      font-weight:700;
+      font-size:18px;
+      line-height:1.1;
+    }
+    .project .sub{
+      font-size:13px;color:var(--muted);margin-top:2px;
+    }
+
+    .nav{
+      margin-top:16px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .nav a{
+      text-decoration:none;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-weight:600;
+      color:#44546F;
+    }
+    .nav a:hover{background:var(--hover)}
+    .nav a.active{
+      background:rgba(9,30,66,.06);
+      color:var(--blue2);
+      position:relative;
+    }
+    .nav a .icon{
+      width:22px;height:22px;display:grid;place-items:center;
+      color:#42526E;
+    }
+    .nav a.active .icon{color:var(--blue2)}
+
+    /* Main */
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .topbar{
+      padding:22px 28px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      background:#fff;
+    }
+    .page-title{
+      font-size:42px;
+      font-weight:700;
+      letter-spacing:-.02em;
+      margin:0;
+    }
+    .top-actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .btn{
+      height:38px;
+      padding:0 14px;
+      border:1px solid var(--line);
+      background:#F7F8F9;
+      color:#44546F;
+      border-radius:4px;
+      font-weight:700;
+      cursor:pointer;
+      transition:background .15s ease, transform .08s ease, box-shadow .15s ease;
+    }
+    .btn:hover{background:#EBECF0}
+    .btn:active{transform:translateY(1px)}
+    .icon-btn{
+      width:40px;height:38px;
+      border:1px solid transparent;
+      background:transparent;
+      border-radius:8px;
+      cursor:pointer;
+      display:grid;place-items:center;
+      color:#42526E;
+    }
+    .icon-btn:hover{background:#F4F5F7}
+
+    .filters{
+      padding:10px 28px 14px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      background:#fff;
+    }
+    .search-wrap{
+      width:150px;
+      height:40px;
+      border:1px solid var(--line);
+      background:#F7F8F9;
+      border-radius:4px;
+      display:flex;
+      align-items:center;
+      padding:0 10px;
+      gap:8px;
+      color:#5E6C84;
+    }
+    .search-wrap input{
+      border:0;
+      outline:0;
+      background:transparent;
+      width:100%;
+      font-weight:600;
+      color:#42526E;
+    }
+    .quick{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#42526E;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      padding:8px 10px;
+      border-radius:8px;
+    }
+    .quick:hover{background:#F4F5F7}
+    .caret{width:14px;height:14px}
+
+    /* Board */
+    .board-wrap{
+      flex:1;
+      background:#fff;
+      overflow:auto;
+      padding:0 18px 18px 18px;
+    }
+    .board{
+      display:flex;
+      gap:18px;
+      padding:8px 10px 18px;
+      min-width:1100px;
+      align-items:flex-start;
+    }
+    .col{
+      width:310px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .col-head{
+      padding:10px 10px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#42526E;
+      font-weight:800;
+      letter-spacing:.06em;
+      font-size:13px;
+      text-transform:uppercase;
+    }
+    .count{
+      font-weight:900;
+      color:#6B778C;
+      margin-left:6px;
+    }
+    .col-body{
+      background:#F4F5F7;
+      border-radius:8px;
+      padding:10px;
+      min-height:580px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      border:1px solid #EEF0F4;
+    }
+    .col-body.drag-over{
+      outline:2px solid rgba(0,82,204,.35);
+      outline-offset:2px;
+      background:#EEF5FF;
+    }
+
+    /* Cards */
+    .card{
+      background:var(--panel);
+      border-radius:var(--card-radius);
+      padding:14px 14px 12px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(9,30,66,.08);
+      cursor:grab;
+      user-select:none;
+    }
+    .card:active{cursor:grabbing}
+    .card.dragging{
+      opacity:.55;
+      transform:rotate(.2deg);
+      box-shadow:var(--shadow2);
+    }
+    .card-title{
+      font-size:18px;
+      line-height:1.25;
+      font-weight:600;
+      color:#253858;
+      margin:0 0 10px 0;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      height:22px;
+      padding:0 8px;
+      border-radius:var(--chip-radius);
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.02em;
+      margin-bottom:10px;
+      border:1px solid rgba(0,0,0,.06);
+      max-width:100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .chip.yellow{background:#FFAB00;color:#172B4D}
+    .chip.orange{background:#FF8B00;color:#fff}
+    .chip.teal{background:#36B37E;color:#fff}
+    .chip.purple{background:#6554C0;color:#fff}
+    .chip.cyan{background:#00B8D9;color:#fff}
+    .chip.gray{background:#DFE1E6;color:#253858}
+
+    .card-foot{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:6px;
+      color:#6B778C;
+      font-weight:700;
+    }
+    .left-meta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color:#42526E;
+      font-weight:800;
+    }
+    .pill{
+      height:18px;
+      min-width:22px;
+      padding:0 7px;
+      border-radius:999px;
+      background:#EBECF0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:900;
+      color:#172B4D;
+    }
+    .issue{
+      font-weight:900;
+      color:#97A0AF;
+      letter-spacing:.02em;
+    }
+
+    /* Priority icons */
+    .prio{
+      width:18px;height:18px;
+      display:inline-grid;
+      place-items:center;
+    }
+    .prio svg{display:block}
+    .prio.high svg path{fill:#DE350B}
+    .prio.med svg path{fill:#FF991F}
+    .prio.block svg circle{fill:#DE350B}
+    .prio.block svg line{stroke:#fff;stroke-width:2.4;stroke-linecap:round}
+    .prio.up svg path{fill:#DE350B}
+
+    /* Small helpers */
+    .muted{color:var(--muted)}
+    .sr{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+
+    /* Scrollbars (subtle) */
+    .sidebar::-webkit-scrollbar,
+    .board-wrap::-webkit-scrollbar{height:10px;width:10px}
+    .sidebar::-webkit-scrollbar-thumb,
+    .board-wrap::-webkit-scrollbar-thumb{background:#C1C7D0;border-radius:10px}
+    .sidebar::-webkit-scrollbar-track,
+    .board-wrap::-webkit-scrollbar-track{background:transparent}
+
+    @media (max-width:1100px){
+      .sidebar{display:none}
+      .rail{display:none}
+      body{overflow:auto}
+      .main{overflow:visible}
+      .board-wrap{overflow:visible}
+      .board{min-width:0;flex-wrap:wrap}
+      .col{width:min(360px, 100%)}
+      .page-title{font-size:34px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Left Icon Rail -->
+    <aside class="rail" aria-label="Jira rail">
+      <div class="jira-mark" title="Jira">
+        <svg width="34" height="34" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#fff" d="M8.6 9.1c0 6.3 5.1 11.4 11.4 11.4h4.9v4.7c0 6.3 5.1 11.4 11.4 11.4V9.1H8.6z" opacity=".92"/>
+          <path fill="#fff" d="M39.5 24.1c0-6.3-5.1-11.4-11.4-11.4h-4.9V8c0-6.3-5.1-11.4-11.4-11.4v27.5h27.7z" opacity=".92"/>
+        </svg>
+      </div>
+
+      <div class="rail-btn" title="Search">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="white" d="M10 4a6 6 0 104.47 10.03l3.75 3.75 1.41-1.41-3.75-3.75A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/>
+        </svg>
+      </div>
+      <div class="rail-btn" title="Create">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="white" d="M11 5h2v14h-2zM5 11h14v2H5z"/>
+        </svg>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="help" title="Help">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="white" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 17a1.3 1.3 0 110-2.6A1.3 1.3 0 0112 19zm2.1-8.2c-.5.5-1 .8-1.3 1.1-.4.3-.5.6-.5 1.2v.3h-2v-.5c0-1 .2-1.7.8-2.2.3-.3.8-.7 1.4-1.2.5-.4.7-.7.7-1.2 0-.8-.6-1.3-1.6-1.3-1 0-1.6.6-1.7 1.6H7.9C8 6.4 9.5 5 11.8 5c2.3 0 3.7 1.2 3.7 3.1 0 1.2-.5 1.9-1.3 2.7z"/>
+        </svg>
+      </div>
+    </aside>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Project navigation">
+      <div class="project">
+        <div class="avatar" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 64 64">
+            <path fill="#fff" opacity=".95" d="M30 10c10 0 18 8 18 18S40 46 30 46 12 38 12 28 20 10 30 10z"/>
+            <path fill="#253858" opacity=".25" d="M16 41c7 3 15 3 22 0 3-1 7-4 10-7-2 10-11 18-23 18-10 0-19-6-22-15 4 2 9 3 13 4z"/>
+            <path fill="#fff" d="M42 18l12-6-6 12-4-2-2-4z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="title">Teams in Space</div>
+          <div class="sub">Software project</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#" class="">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16v3H4zm0 5h16v3H4zm0 5h11v3H4z"/></svg>
+          </span>
+          Backlog
+        </a>
+        <a href="#" class="active">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v16H3V4zm2 2v12h14V6H5zm2 2h4v8H7V8zm6 0h4v5h-4V8z"/></svg>
+          </span>
+          Board
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M4 19h16v2H4v-2zM5 3h2v12H5V3zm6 6h2v6h-2V9zm6-4h2v10h-2V5z"/></svg>
+          </span>
+          Reports
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M7 3h10v2H7V3zm-2 4h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2zm0 2v10h14V9H5z"/></svg>
+          </span>
+          Releases
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M10 2h4v3h-4V2zM4 7h16v15H4V7zm2 2v11h12V9H6z"/></svg>
+          </span>
+          Components
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h14v18H5V3zm2 2v14h10V5H7zm2 2h6v2H9V7zm0 4h6v2H9v-2z"/></svg>
+          </span>
+          Issues
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M10 4H4v16h16v-6h-2v4H6V6h4V4zm4 0v2h3.59L9 14.59 10.41 16 19 7.41V11h2V4h-7z"/></svg>
+          </span>
+          Repository
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h10v2H6v12h12v-8h2v10H4V4zm16 0v6h-2V7.41l-7.29 7.3-1.42-1.42 7.3-7.29H14V4h6z"/></svg>
+          </span>
+          Add item
+        </a>
+        <a href="#">
+          <span class="icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="M19.14 12.94a7.43 7.43 0 000-1.88l2.03-1.58-1.92-3.32-2.39.96a7.63 7.63 0 00-1.63-.94l-.36-2.54H9.13l-.36 2.54c-.57.24-1.12.56-1.63.94l-2.39-.96L2.83 9.48l2.03 1.58a7.43 7.43 0 000 1.88l-2.03 1.58 1.92 3.32 2.39-.96c.51.38 1.06.7 1.63.94l.36 2.54h5.74l.36-2.54c.57-.24 1.12-.56 1.63-.94l2.39.96 1.92-3.32-2.03-1.58zM12 15.5A3.5 3.5 0 1112 8a3.5 3.5 0 010 7.5z"/></svg>
+          </span>
+          Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="topbar">
+        <h1 class="page-title">Board</h1>
+        <div class="top-actions">
+          <button class="btn" type="button">Release</button>
+          <button class="icon-btn" type="button" aria-label="More">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M6 12a2 2 0 114 0 2 2 0 01-4 0zm7-0a2 2 0 114 0 2 2 0 01-4 0zm7-0a2 2 0 114 0 2 2 0 01-4 0z" transform="translate(-4)"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="filters" aria-label="Board filters">
+        <div class="search-wrap" title="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#5E6C84" d="M10 4a6 6 0 104.47 10.03l3.75 3.75 1.41-1.41-3.75-3.75A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/>
+          </svg>
+          <input id="search" placeholder="" aria-label="Search issues" />
+        </div>
+
+        <div class="quick" role="button" tabindex="0" aria-label="Quick Filters">
+          Quick Filters
+          <svg class="caret" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#5E6C84" d="M7 10l5 5 5-5z"/>
+          </svg>
+        </div>
+      </section>
+
+      <section class="board-wrap" aria-label="Kanban board">
+        <div class="board" id="board">
+          <!-- Columns injected by JS -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const data = [
+      {
+        id: "todo",
+        title: "TO DO",
+        items: [
+          {
+            id: "tis-25",
+            title: "Engage Jupiter Express for outer solar system travel",
+            chip: { text: "SPACE TRAVEL PARTNERS", color: "yellow" },
+            prio: { type: "high" },
+            bubble: "5",
+            key: "TIS-25"
+          },
+          {
+            id: "tis-12",
+            title: "Create 90 day plans for all departments in the Mars Office",
+            chip: { text: "Local Mars Office", color: "orange" },
+            prio: { type: "block" },
+            bubble: "9",
+            key: "TIS-12"
+          },
+          {
+            id: "tis-17",
+            title: "Engage Saturn's Rings Resort as a preferred provider",
+            chip: { text: "Space Travel Partners", color: "yellow" },
+            prio: { type: "high" },
+            bubble: "3",
+            key: "TIS-17"
+          },
+          {
+            id: "tis-31",
+            title: "Enable Speedy SpaceCraft as the preferred shuttle provider",
+            chip: { text: "SeeSpaceEZ Plus", color: "cyan" },
+            prio: { type: "med" },
+            bubble: "2",
+            key: "TIS-31"
+          }
+        ]
+      },
+      {
+        id: "inprogress",
+        title: "IN PROGRESS",
+        items: [
+          {
+            id: "tis-8",
+            title: "Requesting available flights is now taking > 5 seconds",
+            chip: { text: "SeeSpaceEZ Plus", color: "cyan" },
+            prio: { type: "high" },
+            bubble: "3",
+            key: "TIS-8"
+          },
+          {
+            id: "tis-15a",
+            title: "Engage Saturn Shuttle Lines for group tours",
+            chip: { text: "Space Travel Partners", color: "yellow" },
+            prio: { type: "high" },
+            bubble: "4",
+            key: "TIS-15"
+          },
+          {
+            id: "tis-15b",
+            title: "Establish a catering vendor to provide meal service",
+            chip: { text: "Local Mars Office", color: "orange" },
+            prio: { type: "high" },
+            bubble: "4",
+            key: "TIS-15"
+          },
+          {
+            id: "tis-22",
+            title: "Finalize passenger manifest import pipeline",
+            chip: { text: "Platform", color: "gray" },
+            prio: { type: "med" },
+            bubble: "1",
+            key: "TIS-22"
+          }
+        ]
+      },
+      {
+        id: "codereview",
+        title: "CODE REVIEW",
+        items: [
+          {
+            id: "tis-11",
+            title: "Register with the Mars Ministry of Revenue",
+            chip: { text: "Local Mars Office", color: "orange" },
+            prio: { type: "high" },
+            bubble: "3",
+            key: "TIS-11"
+          },
+          {
+            id: "tis-15c",
+            title: "Draft network plan for Mars Office",
+            chip: { text: "Local Mars Office", color: "orange" },
+            prio: { type: "high" },
+            bubble: "3",
+            key: "TIS-15"
+          }
+        ]
+      },
+      {
+        id: "done",
+        title: "DONE",
+        items: [
+          {
+            id: "tis-68",
+            title: "Homepage footer uses an inline style - should use a class",
+            chip: { text: "Large Team Support", color: "purple" },
+            prio: { type: "high" },
+            bubble: "",
+            key: "TIS-68"
+          },
+          {
+            id: "tis-23",
+            title: "Engage JetShuttle SpaceWays for travel",
+            chip: { text: "Space Travel Partners", color: "yellow" },
+            prio: { type: "high" },
+            bubble: "5",
+            key: "TIS-23"
+          },
+          {
+            id: "tis-15d",
+            title: "Engage Saturn Shuttle Lines for group tours",
+            chip: { text: "Space Travel Partners", color: "yellow" },
+            prio: { type: "up" },
+            bubble: "",
+            key: "TIS-15"
+          },
+          {
+            id: "tis-15e",
+            title: "Establish a catering vendor to provide meal service",
+            chip: { text: "Local Mars Office", color: "orange" },
+            prio: { type: "high" },
+            bubble: "",
+            key: "TIS-15"
+          }
+        ]
+      }
+    ];
+
+    const prioIcon = (type) => {
+      if(type === "block"){
+        return `
+          <span class="prio block" title="Blocked" aria-label="Blocked">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="8.2" y1="12" x2="15.8" y2="12"></line>
+            </svg>
+          </span>`;
+      }
+      if(type === "up"){
+        return `
+          <span class="prio up" title="Raised" aria-label="Raised">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5h2v10h4l-5 5-5-5h4z"></path>
+            </svg>
+          </span>`;
+      }
+      // high / med both use chevrons; color differs by class
+      return `
+        <span class="prio ${type}" title="${type === "high" ? "High" : "Medium"}" aria-label="${type === "high" ? "High" : "Medium"}">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5l6 6-1.6 1.6L12 8.2 7.6 12.6 6 11l6-6z"></path>
+            <path d="M12 11l6 6-1.6 1.6L12 14.2 7.6 18.6 6 17l6-6z"></path>
+          </svg>
+        </span>`;
+    };
+
+    const boardEl = document.getElementById("board");
+    const searchEl = document.getElementById("search");
+
+    function render(){
+      boardEl.innerHTML = "";
+
+      const q = (searchEl.value || "").trim().toLowerCase();
+
+      data.forEach(col => {
+        const visibleItems = col.items.filter(it => {
+          if(!q) return true;
+          return (it.title + " " + it.key + " " + it.chip.text).toLowerCase().includes(q);
+        });
+
+        const colEl = document.createElement("div");
+        colEl.className = "col";
+        colEl.dataset.col = col.id;
+
+        const head = document.createElement("div");
+        head.className = "col-head";
+        head.innerHTML = `
+          <div>${col.title}<span class="count" id="count-${col.id}">${visibleItems.length}</span></div>
+          <div class="muted" aria-hidden="true"></div>
+        `;
+
+        const body = document.createElement("div");
+        body.className = "col-body";
+        body.dataset.dropzone = col.id;
+
+        // DnD handlers
+        body.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          body.classList.add("drag-over");
+        });
+        body.addEventListener("dragleave", () => body.classList.remove("drag-over"));
+        body.addEventListener("drop", (e) => {
+          e.preventDefault();
+          body.classList.remove("drag-over");
+          const cardId = e.dataTransfer.getData("text/plain");
+          const fromCol = e.dataTransfer.getData("from-col");
+          const toCol = col.id;
+          if(!cardId || !fromCol || fromCol === toCol) return;
+
+          const src = data.find(c => c.id === fromCol);
+          const dst = data.find(c => c.id === toCol);
+          if(!src || !dst) return;
+
+          const idx = src.items.findIndex(i => i.id === cardId);
+          if(idx < 0) return;
+
+          const [moved] = src.items.splice(idx, 1);
+
+          // insert near drop position
+          const afterId = getCardAfterDrop(body, e.clientY);
+          if(!afterId){
+            dst.items.push(moved);
+          }else{
+            const insertIdx = dst.items.findIndex(i => i.id === afterId);
+            dst.items.splice(Math.max(0, insertIdx), 0, moved);
+          }
+
+          render();
+        });
+
+        visibleItems.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.draggable = true;
+          card.dataset.id = item.id;
+          card.dataset.key = item.key;
+
+          card.addEventListener("dragstart", (e) => {
+            card.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", item.id);
+            e.dataTransfer.setData("from-col", col.id);
+            // for Firefox
+            const img = document.createElement("div");
+            img.style.width = "0px";
+            img.style.height = "0px";
+            document.body.appendChild(img);
+            e.dataTransfer.setDragImage(img, 0, 0);
+            setTimeout(() => img.remove(), 0);
+          });
+          card.addEventListener("dragend", () => card.classList.remove("dragging"));
+
+          const bubble = item.bubble ? `<span class="pill">${item.bubble}</span>` : "";
+
+          card.innerHTML = `
+            <p class="card-title">${escapeHTML(item.title)}</p>
+            <div class="chip ${item.chip.color}" title="${escapeHTML(item.chip.text)}">${escapeHTML(item.chip.text)}</div>
+            <div class="card-foot">
+              <div class="left-meta">
+                <span class="badge">
+                  ${prioIcon(item.prio.type)}
+                  ${bubble}
+                </span>
+              </div>
+              <div class="issue">${escapeHTML(item.key)}</div>
+            </div>
+          `;
+
+          // Optional click behavior (no modal, just highlight)
+          card.addEventListener("click", () => {
+            flash(card);
+          });
+
+          body.appendChild(card);
+        });
+
+        colEl.appendChild(head);
+        colEl.appendChild(body);
+        boardEl.appendChild(colEl);
+      });
+    }
+
+    function getCardAfterDrop(container, clientY){
+      const cards = [...container.querySelectorAll(".card:not(.dragging)")];
+      let closest = { offset: Number.NEGATIVE_INFINITY, id: null };
+      for(const c of cards){
+        const rect = c.getBoundingClientRect();
+        const offset = clientY - (rect.top + rect.height / 2);
+        if(offset < 0 && offset > closest.offset){
+          closest = { offset, id: c.dataset.id };
+        }
+      }
+      return closest.id;
+    }
+
+    function escapeHTML(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function flash(el){
+      el.animate(
+        [
+          { boxShadow: "0 0 0 0 rgba(0,82,204,0)" },
+          { boxShadow: "0 0 0 3px rgba(0,82,204,.35)" },
+          { boxShadow: "0 0 0 0 rgba(0,82,204,0)" }
+        ],
+        { duration: 520, easing: "ease-out" }
+      );
+    }
+
+    searchEl.addEventListener("input", render);
+
+    // Keyboard usability for "Quick Filters" (visual only)
+    document.querySelector(".quick").addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        flash(document.querySelector(".quick"));
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

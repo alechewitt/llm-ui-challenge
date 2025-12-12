@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Untitled spreadsheet</title>
+  <style>
+    :root{
+      --bg:#fff;
+      --panel:#f8f9fa;
+      --panel2:#eef2f6;
+      --text:#202124;
+      --muted:#5f6368;
+      --grid:#e0e0e0;
+      --grid2:#dadce0;
+      --blue:#1a73e8;
+      --blue2:#d2e3fc;
+      --shadow:0 1px 0 rgba(60,64,67,.08),0 1px 2px rgba(60,64,67,.16);
+      --font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --cellW: 150px;
+      --cellH: 30px;
+      --rowHdrW: 56px;
+      --colHdrH: 34px;
+      --rightRailW: 64px;
+      --bottomBarH: 54px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%; margin:0; font-family:var(--font); color:var(--text); background:#f1f3f4}
+    .app{
+      height:100%;
+      width:100%;
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      padding:10px;
+    }
+    .window{
+      height:100%;
+      width:min(1900px, 100%);
+      background:var(--bg);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 10px 30px rgba(0,0,0,.12);
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Title row */
+    .top{
+      padding:12px 14px 8px 14px;
+      background:var(--bg);
+      border-bottom:1px solid #eceff1;
+    }
+    .titleRow{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .logo{
+      width:36px;height:36px; flex:0 0 auto;
+      border-radius:8px;
+      display:grid; place-items:center;
+    }
+    .docArea{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:300px;
+      flex:1 1 auto;
+    }
+    .docTitle{
+      font-size:22px;
+      font-weight:500;
+      letter-spacing:.1px;
+      white-space:nowrap;
+    }
+    .iconBtn{
+      width:32px;height:32px;
+      border-radius:50%;
+      border:0;
+      background:transparent;
+      display:grid; place-items:center;
+      color:var(--muted);
+      cursor:pointer;
+    }
+    .iconBtn:hover{background:#f1f3f4}
+    .rightActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:0 0 auto;
+    }
+    .sharePill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      background:#c2e7ff;
+      border-radius:999px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      color:#0b2239;
+      min-width:130px;
+      justify-content:center;
+    }
+    .sharePill .sep{width:1px;height:22px;background:rgba(11,34,57,.25)}
+    .avatar{
+      width:36px;height:36px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ffd38a, #ff8a00 40%, #5c6bc0 70%, #26a69a);
+      border:3px solid #fff;
+      box-shadow:0 0 0 2px #d93025;
+      position:relative;
+    }
+    .avatar:after{
+      content:"";
+      position:absolute; inset:6px;
+      border-radius:50%;
+      background:rgba(255,255,255,.25);
+      mix-blend-mode:overlay;
+    }
+
+    /* Menubar */
+    .menuRow{
+      margin-top:6px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      padding-left:48px;
+      color:var(--text);
+      font-size:18px;
+      user-select:none;
+    }
+    .menuRow span{cursor:default}
+    .menuRow span:hover{color:#1f1f1f}
+
+    /* Toolbar */
+    .toolRow{
+      margin-top:10px;
+      background:var(--panel2);
+      border-radius:24px;
+      padding:8px 10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .toolGroup{display:flex; align-items:center; gap:8px}
+    .toolSep{width:1px; height:22px; background:#d7dbe0; margin:0 4px}
+    .toolPill{
+      display:flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:18px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(218,220,224,.8);
+      color:var(--text);
+      min-width:74px;
+      justify-content:center;
+      user-select:none;
+    }
+    .toolPill.small{min-width:auto;padding:6px 10px}
+    .toolText{color:var(--text); font-weight:500}
+    .toolMuted{color:var(--muted); font-weight:500}
+    .spacer{flex:1 1 auto}
+    .collapseChevron{
+      margin-left:auto;
+      width:34px;height:34px;border-radius:50%;
+      display:grid;place-items:center;
+      color:var(--muted);
+      cursor:pointer;
+    }
+    .collapseChevron:hover{background:#e9eef6}
+
+    /* Formula bar */
+    .formulaRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 0 0 0;
+      background:var(--bg);
+    }
+    .nameBox{
+      width:90px;
+      margin-left:14px;
+      border:1px solid #dadce0;
+      border-radius:6px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 10px;
+      user-select:none;
+    }
+    .nameBox .nm{font-weight:600}
+    .fx{
+      width:34px;height:34px;
+      display:grid;place-items:center;
+      color:var(--muted);
+      user-select:none;
+    }
+    .formulaInputWrap{
+      flex:1 1 auto;
+      margin-right:14px;
+      border:1px solid #dadce0;
+      border-radius:6px;
+      height:34px;
+      display:flex; align-items:center;
+      background:#fff;
+    }
+    #formulaInput{
+      width:100%;
+      border:0;
+      outline:none;
+      padding:0 10px;
+      font-size:14px;
+      font-family:var(--font);
+    }
+
+    /* Main area */
+    .main{
+      flex:1 1 auto;
+      display:flex;
+      min-height:0;
+      background:var(--bg);
+      position:relative;
+    }
+
+    .sheetArea{
+      flex:1 1 auto;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .gridWrap{
+      flex:1 1 auto;
+      min-height:0;
+      position:relative;
+      display:flex;
+      overflow:hidden;
+      border-top:1px solid #eceff1;
+    }
+
+    .gridScroller{
+      flex:1 1 auto;
+      min-width:0;
+      overflow:auto;
+      position:relative;
+      background:#fff;
+    }
+
+    /* Table */
+    table.sheet{
+      border-collapse:separate;
+      border-spacing:0;
+      width:max-content;
+      min-width:100%;
+      table-layout:fixed;
+      font-size:14px;
+      color:var(--text);
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      z-index:3;
+      height:var(--colHdrH);
+      background:#fff;
+      border-bottom:1px solid var(--grid2);
+      border-right:1px solid var(--grid2);
+      text-align:center;
+      font-weight:600;
+      color:#3c4043;
+      user-select:none;
+    }
+    thead th.corner{
+      left:0;
+      z-index:4;
+      position:sticky;
+      width:var(--rowHdrW);
+      min-width:var(--rowHdrW);
+      max-width:var(--rowHdrW);
+      border-right:1px solid var(--grid2);
+      background:#fff;
+    }
+    tbody th{
+      position:sticky;
+      left:0;
+      z-index:2;
+      width:var(--rowHdrW);
+      min-width:var(--rowHdrW);
+      max-width:var(--rowHdrW);
+      height:var(--cellH);
+      border-right:1px solid var(--grid2);
+      border-bottom:1px solid var(--grid);
+      background:#fff;
+      text-align:center;
+      color:#3c4043;
+      font-weight:600;
+      user-select:none;
+    }
+    tbody td{
+      width:var(--cellW);
+      height:var(--cellH);
+      border-right:1px solid var(--grid);
+      border-bottom:1px solid var(--grid);
+      padding:4px 6px;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      position:relative;
+      background:#fff;
+    }
+
+    /* Header highlight */
+    thead th.isColSel{ background:var(--blue2); border-bottom-color:#b6c8fb }
+    tbody th.isRowSel{ background:var(--blue2); border-right-color:#b6c8fb }
+
+    /* Selection overlay */
+    .selection{
+      position:absolute;
+      border:2px solid var(--blue);
+      box-shadow:0 0 0 1px rgba(26,115,232,.15);
+      pointer-events:none;
+      z-index:10;
+      border-radius:1px;
+      background:transparent;
+    }
+    .selection .handle{
+      position:absolute;
+      width:10px;height:10px;
+      border-radius:50%;
+      background:var(--blue);
+      right:-6px; bottom:-6px;
+      border:2px solid #fff;
+    }
+
+    /* in-cell edit input overlay */
+    .cellEditor{
+      position:absolute;
+      z-index:20;
+      display:none;
+      background:#fff;
+      border:2px solid var(--blue);
+      border-radius:2px;
+      box-shadow:0 8px 16px rgba(60,64,67,.18);
+    }
+    .cellEditor input{
+      width:100%;
+      height:100%;
+      border:0;
+      outline:none;
+      padding:4px 6px;
+      font-size:14px;
+      font-family:var(--font);
+    }
+
+    /* Right rail */
+    .rightRail{
+      width:var(--rightRailW);
+      border-left:1px solid #eceff1;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:14px 8px;
+      gap:14px;
+    }
+    .railIcon{
+      width:40px;height:40px;
+      border-radius:10px;
+      display:grid;place-items:center;
+      color:#5f6368;
+      cursor:pointer;
+    }
+    .railIcon:hover{background:#f1f3f4}
+    .railSpacer{flex:1 1 auto}
+    .railPlus{
+      width:44px;height:44px;
+      border-radius:50%;
+      display:grid;place-items:center;
+      background:#f1f3f4;
+      color:#1f1f1f;
+      cursor:pointer;
+    }
+    .railPlus:hover{background:#e6eaee}
+
+    /* Bottom bar */
+    .bottom{
+      height:var(--bottomBarH);
+      border-top:1px solid #eceff1;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+    }
+    .bottomBtn{
+      width:38px;height:38px;
+      border-radius:50%;
+      border:0;
+      background:transparent;
+      display:grid;place-items:center;
+      color:#3c4043;
+      cursor:pointer;
+    }
+    .bottomBtn:hover{background:#f1f3f4}
+    .tabs{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:1 1 auto;
+      min-width:0;
+    }
+    .tab{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:10px;
+      cursor:default;
+      color:#3c4043;
+      user-select:none;
+    }
+    .tab.active{
+      color:var(--blue);
+      font-weight:700;
+      background:rgba(26,115,232,.10);
+    }
+    .tab .caret{
+      width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid currentColor;
+      opacity:.9;
+      margin-left:2px;
+    }
+    .statusSpacer{
+      width:44px;
+      display:flex;
+      justify-content:flex-end;
+      color:#5f6368;
+    }
+
+    /* Make scrollbars a bit closer to Chrome look (best-effort) */
+    .gridScroller::-webkit-scrollbar{height:12px;width:12px}
+    .gridScroller::-webkit-scrollbar-track{background:#f1f3f4}
+    .gridScroller::-webkit-scrollbar-thumb{background:#c7cbd1;border-radius:999px;border:3px solid #f1f3f4}
+    .gridScroller::-webkit-scrollbar-thumb:hover{background:#b8bcc2}
+
+    /* Prevent selection highlight while clicking around */
+    .noSelect{user-select:none}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      :root{ --cellW: 120px }
+      .menuRow{display:none}
+      .sharePill{min-width:110px}
+      .docTitle{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="window" role="application" aria-label="Spreadsheet UI">
+      <div class="top">
+        <div class="titleRow">
+          <div class="logo" aria-hidden="true">
+            <!-- Sheets-like icon -->
+            <svg width="34" height="34" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#0F9D58" d="M10 6h18l10 10v26a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z"/>
+              <path fill="#34A853" d="M28 6v10a4 4 0 0 0 4 4h10z"/>
+              <path fill="#E6F4EA" d="M14 22h20v14H14z"/>
+              <path fill="#0F9D58" d="M14 22h20v3H14zm0 6h20v3H14zm0 6h20v3H14z"/>
+              <path fill="#0F9D58" d="M20 22h3v14h-3zm8 0h3v14h-3z"/>
+            </svg>
+          </div>
+
+          <div class="docArea">
+            <div class="docTitle">Untitled spreadsheet</div>
+            <button class="iconBtn" title="Star" aria-label="Star">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 17.3l-6.2 3.7 1.6-7.1L2 9.2l7.3-.6L12 2l2.7 6.6 7.3.6-5.4 4.7 1.6 7.1L12 17.3z" stroke="currentColor" stroke-width="1.6" fill="none"/>
+              </svg>
+            </button>
+            <button class="iconBtn" title="Move" aria-label="Move">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 7h10v10H10z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M7 10H4V4h6v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" title="Cloud" aria-label="Cloud status">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7.5 18.5h9a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.7 1.6A3.5 3.5 0 0 0 7.5 18.5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M10 12.5l1.6 1.6 3.4-3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="rightActions">
+            <button class="iconBtn" title="Last edit" aria-label="Last edit">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 22a10 10 0 1 1 10-10 10 10 0 0 1-10 10z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" title="Comments" aria-label="Comments">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 5h16v12H7l-3 3V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M7 9h10M7 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" title="Meet" aria-label="Meet">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M16 10l4-2v8l-4-2v-4z" fill="currentColor" opacity=".7"/>
+              </svg>
+            </button>
+            <button class="sharePill" aria-label="Share">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M6 11h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M12 15v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <span>Share</span>
+              <span class="sep" aria-hidden="true"></span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7 10l5 5 5-5z"/>
+              </svg>
+            </button>
+            <div class="iconBtn" title="Sparkle" aria-label="Sparkle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2l1.2 4.7L18 8l-4.8 1.3L12 14l-1.2-4.7L6 8l4.8-1.3L12 2z" fill="currentColor" opacity=".75"/>
+              </svg>
+            </div>
+            <div class="avatar" aria-label="User avatar"></div>
+          </div>
+        </div>
+
+        <div class="menuRow noSelect" aria-label="Menu">
+          <span>File</span><span>Edit</span><span>View</span><span>Insert</span><span>Format</span><span>Data</span><span>Tools</span><span>Extensions</span><span>Help</span>
+        </div>
+
+        <div class="toolRow" aria-label="Toolbar">
+          <div class="toolGroup">
+            <button class="iconBtn" aria-label="Search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Undo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 10H4V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 10c2-4 7-6 11-4s6 7 4 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Redo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M15 10h5V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 10c-2-4-7-6-11-4s-6 7-4 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Print">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 8V3h10v5" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M7 14h10v7H7z" stroke="currentColor" stroke-width="1.6"/>
+              </svg>
+            </button>
+
+            <button class="iconBtn" aria-label="Paint format">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 3h8v6H8z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M10 9v12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M10 21h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="toolSep" aria-hidden="true"></div>
+
+          <div class="toolPill" aria-label="Zoom">
+            <span class="toolText">100%</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+
+          <div class="toolSep" aria-hidden="true"></div>
+
+          <div class="toolGroup">
+            <button class="iconBtn" aria-label="Currency">£</button>
+            <button class="iconBtn" aria-label="Percent">%</button>
+            <button class="iconBtn" aria-label="Decrease decimals">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 7h10M7 12h6M7 17h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M17 13l2 2 2-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Increase decimals">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 7h10M7 12h6M7 17h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M17 15l2-2 2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="toolPill small" aria-label="More formats">
+              <span class="toolMuted">123</span>
+            </div>
+          </div>
+
+          <div class="toolSep" aria-hidden="true"></div>
+
+          <div class="toolPill" aria-label="Font">
+            <span class="toolText">Arial</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+
+          <div class="toolGroup">
+            <button class="iconBtn" aria-label="Font size decrease">–</button>
+            <div class="toolPill small" aria-label="Font size"><span class="toolText">10</span></div>
+            <button class="iconBtn" aria-label="Font size increase">+</button>
+          </div>
+
+          <div class="toolGroup">
+            <button class="iconBtn" aria-label="Bold"><strong>B</strong></button>
+            <button class="iconBtn" aria-label="Italic"><em>I</em></button>
+            <button class="iconBtn" aria-label="Strikethrough">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 7c0-2 2-3 4-3s4 1 4 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M8 17c0 2 2 3 4 3s4-1 4-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Text color">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 20h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M12 4l5 14H7l5-14z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M8 16h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <div style="width:14px;height:3px;background:#202124;border-radius:2px;margin-top:-2px" aria-hidden="true"></div>
+            </button>
+            <button class="iconBtn" aria-label="Fill color">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 14l5-10 5 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M17 14l2 2c1 1 1 3-1 3H6c-2 0-2-2-1-3l2-2" fill="currentColor" opacity=".18"/>
+              </svg>
+            </button>
+            <button class="iconBtn" aria-label="Borders">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.2" opacity=".7"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="spacer"></div>
+          <div class="collapseChevron" aria-label="Collapse toolbar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 14l5-5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="formulaRow" aria-label="Formula bar">
+          <div class="nameBox noSelect" role="button" aria-label="Name box">
+            <span class="nm" id="nameBoxText">A1</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7 10l5 5 5-5z"/>
+            </svg>
+          </div>
+          <div class="fx noSelect" aria-label="Function">ƒx</div>
+          <div class="formulaInputWrap">
+            <input id="formulaInput" spellcheck="false" aria-label="Formula input" />
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="sheetArea">
+          <div class="gridWrap">
+            <div class="gridScroller" id="gridScroller" tabindex="0" aria-label="Grid scroller">
+              <table class="sheet" id="sheetTable" aria-label="Sheet grid"></table>
+
+              <div class="selection" id="selection" aria-hidden="true">
+                <div class="handle" aria-hidden="true"></div>
+              </div>
+
+              <div class="cellEditor" id="cellEditor" aria-hidden="true">
+                <input id="cellEditorInput" spellcheck="false" />
+              </div>
+            </div>
+          </div>
+
+          <div class="bottom" aria-label="Sheets tabs">
+            <button class="bottomBtn" aria-label="Add sheet">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="bottomBtn" aria-label="Sheets list">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <div class="tabs">
+              <div class="tab active" aria-label="Sheet1 tab">
+                <span>Sheet1</span>
+                <span class="caret" aria-hidden="true"></span>
+              </div>
+            </div>
+
+            <div class="statusSpacer" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <aside class="rightRail" aria-label="Side panel">
+          <div class="railIcon" title="Calendar" aria-label="Calendar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3v3M17 3v3" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M5 6h14v14H5z" stroke="#1a73e8" stroke-width="1.8" fill="none"/>
+              <path d="M7.5 10h9" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M8 13h2v2H8zM11 13h2v2h-2zM14 13h2v2h-2z" fill="#fbbc04"/>
+            </svg>
+          </div>
+          <div class="railIcon" title="Keep" aria-label="Keep">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 4h10v16H7z" fill="#fbbc04" opacity=".25"/>
+              <path d="M9 8h6" stroke="#fbbc04" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M12 18c2 0 3-2 3-4H9c0 2 1 4 3 4z" fill="#fbbc04"/>
+            </svg>
+          </div>
+          <div class="railIcon" title="Tasks" aria-label="Tasks">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="#1a73e8" stroke-width="1.8" opacity=".35"/>
+              <path d="M8.5 12l2.2 2.2L16 8.8" stroke="#1a73e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="railIcon" title="Contacts" aria-label="Contacts">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4z" fill="#1a73e8" opacity=".9"/>
+              <path d="M6 20a6 6 0 0 1 12 0" stroke="#1a73e8" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="railIcon" title="Maps" aria-label="Maps">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z" fill="#34a853" opacity=".9"/>
+              <path d="M12 21s3.5-2.6 5.5-6.2" stroke="#fbbc04" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="10" r="2.2" fill="#ea4335"/>
+            </svg>
+          </div>
+
+          <div style="width:26px;height:1px;background:#dadce0;margin:6px 0" aria-hidden="true"></div>
+
+          <div class="railSpacer"></div>
+
+          <div class="railPlus" aria-label="Add-ons">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const table = document.getElementById('sheetTable');
+      const scroller = document.getElementById('gridScroller');
+      const selectionEl = document.getElementById('selection');
+      const nameBoxText = document.getElementById('nameBoxText');
+      const formulaInput = document.getElementById('formulaInput');
+
+      const editor = document.getElementById('cellEditor');
+      const editorInput = document.getElementById('cellEditorInput');
+
+      const COLS = 26;   // A-Z
+      const ROWS = 200;
+
+      const data = new Map(); // key: "r,c" 1-based
+      let sel = { r: 1, c: 1 };
+
+      const colLabel = (n) => {
+        let s = '';
+        while (n > 0) {
+          const m = (n - 1) % 26;
+          s = String.fromCharCode(65 + m) + s;
+          n = Math.floor((n - 1) / 26);
+        }
+        return s;
+      };
+
+      const addr = (r, c) => `${colLabel(c)}${r}`;
+      const keyOf = (r, c) => `${r},${c}`;
+      const getCellValue = (r, c) => data.get(keyOf(r, c)) ?? '';
+      const setCellValue = (r, c, v) => {
+        const k = keyOf(r, c);
+        if (v == null || v === '') data.delete(k);
+        else data.set(k, v);
+        const td = table.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+        if (td) td.textContent = v;
+      };
+
+      function buildTable(){
+        const thead = document.createElement('thead');
+        const hr = document.createElement('tr');
+
+        const corner = document.createElement('th');
+        corner.className = 'corner';
+        corner.textContent = '';
+        hr.appendChild(corner);
+
+        for (let c = 1; c <= COLS; c++){
+          const th = document.createElement('th');
+          th.textContent = colLabel(c);
+          th.dataset.c = String(c);
+          hr.appendChild(th);
+        }
+        thead.appendChild(hr);
+
+        const tbody = document.createElement('tbody');
+        for (let r = 1; r <= ROWS; r++){
+          const tr = document.createElement('tr');
+
+          const rh = document.createElement('th');
+          rh.textContent = r;
+          rh.dataset.r = String(r);
+          tr.appendChild(rh);
+
+          for (let c = 1; c <= COLS; c++){
+            const td = document.createElement('td');
+            td.dataset.r = String(r);
+            td.dataset.c = String(c);
+            td.textContent = '';
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+
+        table.replaceChildren(thead, tbody);
+
+        // Set fixed sizes via colgroup for stability
+        const colgroup = document.createElement('colgroup');
+        const colCorner = document.createElement('col');
+        colCorner.style.width = getComputedStyle(document.documentElement).getPropertyValue('--rowHdrW').trim() || '56px';
+        colgroup.appendChild(colCorner);
+        for (let c = 1; c <= COLS; c++){
+          const col = document.createElement('col');
+          col.style.width = getComputedStyle(document.documentElement).getPropertyValue('--cellW').trim() || '150px';
+          colgroup.appendChild(col);
+        }
+        table.prepend(colgroup);
+      }
+
+      function clearHeaderSelection(){
+        table.querySelectorAll('thead th.isColSel').forEach(el => el.classList.remove('isColSel'));
+        table.querySelectorAll('tbody th.isRowSel').forEach(el => el.classList.remove('isRowSel'));
+      }
+
+      function updateHeaderSelection(){
+        clearHeaderSelection();
+        const colTh = table.querySelector(`thead th[data-c="${sel.c}"]`);
+        const rowTh = table.querySelector(`tbody th[data-r="${sel.r}"]`);
+        if (colTh) colTh.classList.add('isColSel');
+        if (rowTh) rowTh.classList.add('isRowSel');
+      }
+
+      function cellRectInScroller(td){
+        const tdRect = td.getBoundingClientRect();
+        const scRect = scroller.getBoundingClientRect();
+        return {
+          left: tdRect.left - scRect.left + scroller.scrollLeft,
+          top: tdRect.top - scRect.top + scroller.scrollTop,
+          width: tdRect.width,
+          height: tdRect.height
+        };
+      }
+
+      function positionSelection(){
+        const td = table.querySelector(`td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+        if (!td) return;
+
+        const r = cellRectInScroller(td);
+        selectionEl.style.left = `${r.left}px`;
+        selectionEl.style.top = `${r.top}px`;
+        selectionEl.style.width = `${r.width}px`;
+        selectionEl.style.height = `${r.height}px`;
+
+        nameBoxText.textContent = addr(sel.r, sel.c);
+        const v = getCellValue(sel.r, sel.c);
+        if (document.activeElement !== formulaInput) formulaInput.value = v;
+
+        updateHeaderSelection();
+      }
+
+      function ensureVisible(){
+        const td = table.querySelector(`td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+        if (!td) return;
+
+        // Use scrollIntoView on cell, but keep sticky headers behavior acceptable.
+        td.scrollIntoView({block:'nearest', inline:'nearest'});
+        // After the scroll, reposition selection.
+        requestAnimationFrame(positionSelection);
+      }
+
+      function setSelection(r, c, opts = {}){
+        sel.r = Math.max(1, Math.min(ROWS, r));
+        sel.c = Math.max(1, Math.min(COLS, c));
+        if (opts.ensureVisible !== false) ensureVisible();
+        else positionSelection();
+      }
+
+      function openEditor(source = 'cell'){
+        const td = table.querySelector(`td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+        if (!td) return;
+
+        const r = cellRectInScroller(td);
+        editor.style.left = `${r.left}px`;
+        editor.style.top = `${r.top}px`;
+        editor.style.width = `${r.width}px`;
+        editor.style.height = `${r.height}px`;
+        editor.style.display = 'block';
+        editor.setAttribute('aria-hidden','false');
+
+        const v = (source === 'formula') ? formulaInput.value : getCellValue(sel.r, sel.c);
+        editorInput.value = v;
+        editorInput.focus();
+        editorInput.setSelectionRange(editorInput.value.length, editorInput.value.length);
+      }
+
+      function closeEditor(commit, move = null){
+        if (editor.style.display !== 'block') return;
+
+        const v = editorInput.value;
+        editor.style.display = 'none';
+        editor.setAttribute('aria-hidden','true');
+
+        if (commit){
+          setCellValue(sel.r, sel.c, v);
+          formulaInput.value = v;
+        } else {
+          formulaInput.value = getCellValue(sel.r, sel.c);
+        }
+
+        // Move selection if requested
+        if (move){
+          setSelection(sel.r + (move.dr || 0), sel.c + (move.dc || 0));
+        } else {
+          positionSelection();
+        }
+
+        scroller.focus();
+      }
+
+      function commitFormulaBar(){
+        setCellValue(sel.r, sel.c, formulaInput.value);
+        positionSelection();
+      }
+
+      // Build
+      buildTable();
+
+      // Preload a subtle default state (A1 selected)
+      setSelection(1, 1, { ensureVisible:false });
+
+      // Events: click selects
+      table.addEventListener('mousedown', (e) => {
+        const td = e.target.closest('td');
+        const thCol = e.target.closest('thead th[data-c]');
+        const thRow = e.target.closest('tbody th[data-r]');
+
+        if (td){
+          const r = +td.dataset.r, c = +td.dataset.c;
+          setSelection(r, c);
+          e.preventDefault();
+          scroller.focus();
+          return;
+        }
+        if (thCol){
+          const c = +thCol.dataset.c;
+          setSelection(sel.r, c);
+          e.preventDefault();
+          scroller.focus();
+          return;
+        }
+        if (thRow){
+          const r = +thRow.dataset.r;
+          setSelection(r, sel.c);
+          e.preventDefault();
+          scroller.focus();
+          return;
+        }
+      });
+
+      // Double click to edit
+      table.addEventListener('dblclick', (e) => {
+        const td = e.target.closest('td');
+        if (!td) return;
+        const r = +td.dataset.r, c = +td.dataset.c;
+        setSelection(r, c);
+        openEditor('cell');
+      });
+
+      // Scroll updates selection overlay position
+      scroller.addEventListener('scroll', () => {
+        // selection is positioned in scroller coordinates using scroll offsets
+        positionSelection();
+        if (editor.style.display === 'block'){
+          // keep editor attached to cell while scrolling
+          const td = table.querySelector(`td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+          if (td){
+            const r = cellRectInScroller(td);
+            editor.style.left = `${r.left}px`;
+            editor.style.top = `${r.top}px`;
+          }
+        }
+      }, { passive:true });
+
+      window.addEventListener('resize', () => {
+        positionSelection();
+        if (editor.style.display === 'block'){
+          const td = table.querySelector(`td[data-r="${sel.r}"][data-c="${sel.c}"]`);
+          if (td){
+            const r = cellRectInScroller(td);
+            editor.style.left = `${r.left}px`;
+            editor.style.top = `${r.top}px`;
+            editor.style.width = `${r.width}px`;
+            editor.style.height = `${r.height}px`;
+          }
+        }
+      });
+
+      // Keyboard navigation on scroller
+      scroller.addEventListener('keydown', (e) => {
+        const editing = editor.style.display === 'block';
+        if (editing){
+          if (e.key === 'Escape'){ e.preventDefault(); closeEditor(false); }
+          return;
+        }
+
+        let handled = true;
+        const k = e.key;
+
+        if (k === 'ArrowUp') setSelection(sel.r - 1, sel.c);
+        else if (k === 'ArrowDown') setSelection(sel.r + 1, sel.c);
+        else if (k === 'ArrowLeft') setSelection(sel.r, sel.c - 1);
+        else if (k === 'ArrowRight') setSelection(sel.r, sel.c + 1);
+        else if (k === 'Tab') setSelection(sel.r, sel.c + (e.shiftKey ? -1 : 1));
+        else if (k === 'Enter') openEditor('cell');
+        else if (k === 'F2') openEditor('cell');
+        else if (k.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey){
+          // start typing -> edit
+          openEditor('cell');
+          editorInput.value = k;
+          editorInput.setSelectionRange(1,1);
+        } else handled = false;
+
+        if (handled) e.preventDefault();
+      });
+
+      // Formula bar behavior
+      formulaInput.addEventListener('focus', () => {
+        formulaInput.select();
+      });
+      formulaInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          commitFormulaBar();
+          setSelection(sel.r + 1, sel.c);
+        }
+        if (e.key === 'Escape'){
+          e.preventDefault();
+          formulaInput.value = getCellValue(sel.r, sel.c);
+          scroller.focus();
+        }
+      });
+
+      // Open editor from formula bar by clicking into it and pressing Ctrl+Enter? Keep minimal
+      formulaInput.addEventListener('dblclick', () => openEditor('formula'));
+
+      // Editor commits
+      editorInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter'){
+          e.preventDefault();
+          closeEditor(true, {dr: 1, dc: 0});
+        } else if (e.key === 'Tab'){
+          e.preventDefault();
+          closeEditor(true, {dr: 0, dc: e.shiftKey ? -1 : 1});
+        } else if (e.key === 'Escape'){
+          e.preventDefault();
+          closeEditor(false);
+        }
+      });
+      editorInput.addEventListener('blur', () => closeEditor(true));
+
+      // Initial positioning after paint
+      requestAnimationFrame(() => {
+        positionSelection();
+        // scroll to top-left like the screenshot
+        scroller.scrollTop = 0;
+        scroller.scrollLeft = 0;
+        positionSelection();
+      });
+    })();
+  </script>
+</body>
+</html>

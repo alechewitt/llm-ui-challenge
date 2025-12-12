@@ -115,6 +115,7 @@ Return a single HTML file with embedded CSS and JavaScript ONLY. Do not return a
 
     payload = {
         "model": model,
+        "max_tokens": 50000,
         "messages": [
             {
                 "role": "user",

@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Word UI Mock</title>
+  <style>
+    :root{
+      --blue:#0f62d6;
+      --blue2:#0b57c7;
+      --ui:#f4f5f7;
+      --ui2:#ffffff;
+      --line:#d7d9dd;
+      --text:#1f2328;
+      --muted:#6b7280;
+      --shadow:0 10px 24px rgba(0,0,0,.12);
+      --zoom:1.0;
+      --page-w:980px;
+      --page-h:1260px;
+      --font:"-apple-system","BlinkMacSystemFont","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:#cfd3d8;
+      font-family:var(--font);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .app{
+      height:100vh;
+      width:100vw;
+      display:flex;
+      flex-direction:column;
+      background:#e9ecf1;
+    }
+
+    /* Title bar */
+    .titlebar{
+      height:48px;
+      background:linear-gradient(0deg,var(--blue2),var(--blue));
+      color:#fff;
+      display:grid;
+      grid-template-columns: 250px 1fr 360px;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+      border-bottom:1px solid rgba(255,255,255,.18);
+    }
+    .title-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+    .traffic{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .dot{
+      width:13px;height:13px;border-radius:50%;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .dot.red{background:#ff5f57}
+    .dot.yellow{background:#febc2e}
+    .dot.green{background:#28c840}
+
+    .autosave{
+      display:flex; align-items:center; gap:10px;
+      font-weight:600;
+      opacity:.95;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .switch{
+      position:relative; width:44px; height:22px; flex:0 0 auto;
+    }
+    .switch input{opacity:0; width:0; height:0}
+    .slider{
+      position:absolute; inset:0;
+      background:rgba(255,255,255,.35);
+      border:1px solid rgba(0,0,0,.18);
+      border-radius:999px;
+      transition:.2s;
+    }
+    .slider:before{
+      content:"";
+      position:absolute; width:18px; height:18px; top:1px; left:2px;
+      background:#fff; border-radius:999px;
+      box-shadow:0 2px 6px rgba(0,0,0,.25);
+      transition:.2s;
+    }
+    .switch input:checked + .slider{
+      background:rgba(255,255,255,.55);
+    }
+    .switch input:checked + .slider:before{transform:translateX(20px)}
+    .quick{
+      display:flex; align-items:center; gap:6px;
+      margin-left:2px;
+    }
+    .qbtn{
+      width:30px; height:30px;
+      display:grid; place-items:center;
+      border-radius:7px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      cursor:pointer;
+    }
+    .qbtn:hover{background:rgba(255,255,255,.18)}
+    .qbtn:active{transform:translateY(1px)}
+    .qbtn svg{width:16px;height:16px; fill:#fff}
+
+    .title-center{
+      justify-self:center;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .docname{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:420px;
+    }
+    .conf{
+      display:flex; align-items:center; gap:8px;
+      font-weight:700;
+      opacity:.95;
+      white-space:nowrap;
+    }
+    .shield{
+      width:16px;height:16px; display:inline-block;
+      background:rgba(255,255,255,.2);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:5px;
+      position:relative;
+    }
+    .shield:before{
+      content:"";
+      position:absolute;
+      left:4px; top:3px;
+      width:8px; height:10px;
+      border:2px solid rgba(255,255,255,.9);
+      border-bottom-left-radius:8px;
+      border-bottom-right-radius:8px;
+      border-top-left-radius:4px;
+      border-top-right-radius:4px;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 60%, 50% 100%, 0% 60%);
+    }
+
+    .title-right{
+      justify-self:end;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      width:100%;
+    }
+    .search{
+      display:flex; align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(255,255,255,.14);
+      width:100%;
+      max-width:340px;
+    }
+    .search svg{width:16px;height:16px; fill:rgba(255,255,255,.92)}
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:#fff;
+      font-weight:600;
+      font-size:14px;
+    }
+    .search input::placeholder{color:rgba(255,255,255,.75)}
+
+    /* Tabs row */
+    .tabsbar{
+      height:44px;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 10px 0 8px;
+      gap:10px;
+    }
+    .tabs{
+      display:flex;
+      align-items:flex-end;
+      gap:12px;
+      padding-left:6px;
+    }
+    .tab{
+      border:0;
+      background:transparent;
+      font-weight:700;
+      color:#2b3138;
+      font-size:18px;
+      padding:10px 8px 9px;
+      cursor:pointer;
+      border-bottom:3px solid transparent;
+      border-radius:7px 7px 0 0;
+    }
+    .tab:not(.active){opacity:.85}
+    .tab.active{
+      border-bottom-color:#2a6fe5;
+      opacity:1;
+    }
+    .tab:hover{background:#f5f7fb}
+
+    .tab-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:420px;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:flex; align-items:center; gap:8px;
+      height:30px;
+      padding:0 12px;
+      border-radius:8px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#111827;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .pill svg{width:16px;height:16px; fill:#111827}
+    .pill:hover{background:#f4f6fa}
+    .dropdown{
+      height:30px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      padding:0 10px;
+      gap:8px;
+      font-weight:700;
+      color:#111827;
+      background:#fff;
+      cursor:pointer;
+      user-select:none;
+    }
+    .dropdown:after{
+      content:"";
+      width:0;height:0;
+      border-left:5px solid transparent;
+      border-right:5px solid transparent;
+      border-top:6px solid #111827;
+      opacity:.8;
+    }
+    .share{
+      height:30px;
+      border:1px solid rgba(15,98,214,.25);
+      background:#0f62d6;
+      color:#fff;
+      border-radius:8px;
+      padding:0 12px;
+      font-weight:800;
+      display:flex; align-items:center; gap:8px;
+      cursor:pointer;
+    }
+    .share svg{width:16px;height:16px; fill:#fff}
+    .share:hover{background:#0b57c7}
+
+    /* Ribbon */
+    .ribbon{
+      background:var(--ui);
+      border-bottom:1px solid var(--line);
+      padding:8px 10px 10px;
+    }
+    .panel{display:none}
+    .panel.active{display:block}
+    .rrow{
+      display:flex;
+      align-items:stretch;
+      gap:12px;
+      flex-wrap:nowrap;
+      overflow:hidden;
+    }
+    .group{
+      background:rgba(255,255,255,.55);
+      border:1px solid #e2e5ea;
+      border-radius:10px;
+      padding:8px 10px 6px;
+      min-width:120px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .gtitle{
+      font-size:12px;
+      color:#555c66;
+      font-weight:800;
+      text-align:center;
+      margin-top:6px;
+    }
+    .gbody{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .iconbtn{
+      width:34px;height:34px;
+      border-radius:8px;
+      border:1px solid #dde2ea;
+      background:#fff;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      color:#111827;
+      font-weight:900;
+      user-select:none;
+    }
+    .iconbtn:hover{background:#f4f6fa}
+    .iconbtn:active{transform:translateY(1px)}
+    .iconbtn svg{width:18px;height:18px; fill:#334155}
+    .iconbtn.small{width:30px;height:30px;border-radius:7px}
+    .iconbtn.active{
+      background:#e7f0ff;
+      border-color:#b9d2ff;
+      box-shadow: inset 0 0 0 1px rgba(15,98,214,.15);
+    }
+    .bigbtn{
+      width:76px; min-width:76px;
+      height:68px;
+      border-radius:10px;
+      border:1px solid #dde2ea;
+      background:#fff;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      font-weight:900;
+      color:#111827;
+    }
+    .bigbtn svg{width:22px;height:22px; fill:#334155}
+    .bigbtn span{font-size:12px}
+    .bigbtn:hover{background:#f4f6fa}
+    .bigbtn:active{transform:translateY(1px)}
+
+    .select{
+      height:30px;
+      border-radius:8px;
+      border:1px solid #dde2ea;
+      background:#fff;
+      padding:0 10px;
+      font-weight:700;
+      outline:0;
+      color:#111827;
+    }
+    .select.wide{min-width:180px}
+    .select.narrow{min-width:70px}
+
+    .divider{
+      width:1px;
+      background:#dde2ea;
+      border-radius:999px;
+      margin:0 2px;
+    }
+
+    .toolsline{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .addon{
+      width:86px; min-width:86px;
+      height:68px;
+      border-radius:10px;
+      border:1px solid #dde2ea;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .addon .badge{
+      width:28px;height:28px;border-radius:8px;
+      display:grid;place-items:center;
+      color:#fff;font-weight:900;
+      background:#7c3aed;
+    }
+    .addon .badge.orange{background:#f97316}
+    .addon .badge.blue{background:#2563eb}
+    .addon .badge.pink{background:#db2777}
+    .addon span{font-size:12px}
+    .addon:hover{background:#f4f6fa}
+
+    /* Workspace */
+    .workspace{
+      flex:1;
+      background:#e6e9ef;
+      display:flex;
+      overflow:hidden;
+    }
+    .scroll{
+      flex:1;
+      overflow:auto;
+      padding:26px 24px;
+    }
+    .pagewrap{
+      width:100%;
+      display:flex;
+      justify-content:center;
+    }
+    .page{
+      width:var(--page-w);
+      min-height:var(--page-h);
+      background:#fff;
+      border:1px solid #cfd5de;
+      box-shadow:0 2px 0 rgba(0,0,0,.03);
+      transform:scale(var(--zoom));
+      transform-origin:top center;
+      padding:120px 110px;
+      outline:none;
+      font-family:Calibri, "Segoe UI", var(--font);
+      font-size:16px;
+      line-height:1.45;
+      caret-color:#111;
+    }
+    .page:focus{
+      box-shadow:0 0 0 3px rgba(15,98,214,.12), 0 2px 0 rgba(0,0,0,.03);
+      border-color:#b9d2ff;
+    }
+    .page p{margin:0 0 10px}
+    .page p:last-child{margin-bottom:0}
+
+    /* Status bar */
+    .statusbar{
+      height:36px;
+      background:#fff;
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns: 1fr 1fr 420px;
+      align-items:center;
+      gap:10px;
+      padding:0 12px;
+      color:#39424e;
+      font-weight:600;
+    }
+    .status-left, .status-center{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .status-left{
+      display:flex;
+      gap:26px;
+      align-items:center;
+      color:#535c68;
+      font-weight:700;
+    }
+    .status-center{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      justify-content:center;
+      color:#6b7280;
+      font-weight:800;
+    }
+    .status-center svg{width:16px;height:16px; fill:#6b7280}
+    .status-right{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+    }
+    .sbtn{
+      width:34px;height:26px;
+      border-radius:8px;
+      border:1px solid transparent;
+      background:transparent;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+    }
+    .sbtn:hover{border-color:#e5e7eb; background:#f6f7fb}
+    .sbtn svg{width:16px;height:16px; fill:#4b5563}
+
+    .zoom{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:260px;
+    }
+    .zoom .minus, .zoom .plus{
+      width:26px;height:26px;border-radius:8px;
+      border:1px solid #e5e7eb;
+      background:#fff;
+      font-weight:900;
+      cursor:pointer;
+      color:#374151;
+      display:grid; place-items:center;
+    }
+    .zoom .minus:hover, .zoom .plus:hover{background:#f4f6fa}
+    .zoom input[type="range"]{
+      flex:1;
+      accent-color:#0f62d6;
+    }
+    .zoom .pct{
+      width:56px;
+      text-align:right;
+      font-weight:900;
+      color:#4b5563;
+    }
+
+    /* Dropdown overlays */
+    .menu{
+      position:fixed;
+      top:0; left:0;
+      width:0; height:0;
+      pointer-events:none;
+    }
+    .pop{
+      position:absolute;
+      min-width:190px;
+      background:#fff;
+      border:1px solid #e3e6ec;
+      border-radius:10px;
+      box-shadow:var(--shadow);
+      padding:6px;
+      pointer-events:auto;
+      display:none;
+    }
+    .pop.open{display:block}
+    .pop .mi{
+      padding:8px 10px;
+      border-radius:8px;
+      font-weight:800;
+      color:#111827;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .pop .mi:hover{background:#f4f6fa}
+    .kbd{
+      font-family:var(--mono);
+      font-size:12px;
+      color:#6b7280;
+      font-weight:800;
+    }
+
+    /* Scrollbar to feel like app */
+    .scroll::-webkit-scrollbar{width:12px}
+    .scroll::-webkit-scrollbar-track{background:#eef1f6}
+    .scroll::-webkit-scrollbar-thumb{background:#b6bdc8; border-radius:999px; border:3px solid #eef1f6}
+    .scroll::-webkit-scrollbar-thumb:hover{background:#9aa3b0}
+
+    /* Small screen tweak */
+    @media (max-width:1100px){
+      .titlebar{grid-template-columns: 240px 1fr 260px}
+      .tab-actions{min-width:320px}
+      .search{max-width:240px}
+      :root{--page-w:900px}
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="titlebar">
+    <div class="title-left">
+      <div class="traffic" aria-hidden="true">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+
+      <div class="autosave">
+        <span>AutoSave</span>
+        <label class="switch" title="Toggle AutoSave">
+          <input id="autosave" type="checkbox"/>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="quick" aria-label="Quick Access Toolbar">
+        <button class="qbtn" title="Home">
+          <svg viewBox="0 0 24 24"><path d="M12 3 3 10v11h6v-7h6v7h6V10z"/></svg>
+        </button>
+        <button class="qbtn" title="Save">
+          <svg viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7zm0 2 3 3h-3zM7 5h8v4H7zm12 14H5V7h1v4h10V7h3z"/></svg>
+        </button>
+        <button class="qbtn" id="undoBtn" title="Undo">
+          <svg viewBox="0 0 24 24"><path d="M12 5c-3.9 0-7.2 2.4-8.5 5.8L1 8v7h7l-3-3c.9-2.7 3.5-4.7 7-4.7 3.9 0 7 2.7 7 6.5S15.9 20 12 20c-2.3 0-4.3-.9-5.7-2.3l-1.4 1.4C6.6 20.7 9.1 22 12 22c5 0 9-3.6 9-8.2S17 5 12 5z"/></svg>
+        </button>
+        <button class="qbtn" id="redoBtn" title="Redo">
+          <svg viewBox="0 0 24 24"><path d="M12 5c-5 0-9 3.6-9 8.2S7 22 12 22c2.9 0 5.4-1.3 7.1-3.1l-1.4-1.4C16.3 19.1 14.3 20 12 20c-3.9 0-7-2.7-7-6.5S8.1 7 12 7c3.5 0 6.1 2 7 4.7l-3 3h7V8l-2.5 2.8C19.2 7.4 15.9 5 12 5z"/></svg>
+        </button>
+        <button class="qbtn" title="Print">
+          <svg viewBox="0 0 24 24"><path d="M6 9V3h12v6H6zm11-4H7v2h10V5zM6 19v2h12v-2H6zm14-8H4a2 2 0 0 0-2 2v5h4v-3h12v3h4v-5a2 2 0 0 0-2-2z"/></svg>
+        </button>
+        <button class="qbtn" title="More">
+          <svg viewBox="0 0 24 24"><path d="M5 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="title-center">
+      <div class="docname">Document3</div>
+      <div class="conf"><span class="shield" aria-hidden="true"></span>Confidential*</div>
+    </div>
+
+    <div class="title-right">
+      <div class="search" role="search">
+        <svg viewBox="0 0 24 24"><path d="M10 4a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm0-2a8 8 0 1 0 4.9 14.3l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0 0 10 2z"/></svg>
+        <input id="searchInput" type="text" placeholder="Search (Cmd + Ctrl + U)" />
+      </div>
+    </div>
+  </div>
+
+  <div class="tabsbar">
+    <div class="tabs" role="tablist" aria-label="Ribbon Tabs">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="home">Home</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="insert">Insert</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="draw">Draw</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="design">Design</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="layout">Layout</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="references">References</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="mailings">Mailings</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="review">Review</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="view">View</button>
+    </div>
+
+    <div class="tab-actions">
+      <button class="pill" id="commentsBtn" title="Comments">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm4 5h10v2H8V9zm0 4h7v2H8v-2z"/></svg>
+        Comments
+      </button>
+      <div class="dropdown" id="editingDrop" title="Editing">Editing</div>
+      <button class="share" id="shareBtn" title="Share">
+        <svg viewBox="0 0 24 24"><path d="M14 9V5l7 7-7 7v-4H9a6 6 0 0 1-6-6V6h2v3a4 4 0 0 0 4 4h5z"/></svg>
+        Share
+      </button>
+    </div>
+  </div>
+
+  <div class="ribbon" aria-label="Ribbon">
+    <div class="panel active" id="panel-home" role="tabpanel">
+      <div class="rrow">
+
+        <div class="group" style="min-width:150px">
+          <div class="gbody" style="gap:12px">
+            <button class="bigbtn" id="pasteBtn" title="Paste">
+              <svg viewBox="0 0 24 24"><path d="M16 2H8v2H5a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3V2zm-6 2h4v2h-4V4zm9 18H5V6h2v2h10V6h2v16z"/></svg>
+              <span>Paste</span>
+            </button>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="iconbtn small" id="cutBtn" title="Cut">
+                <svg viewBox="0 0 24 24"><path d="M9.64 7.64 12 10l8-8 2 2-8 8 1.36 1.36a4 4 0 1 1-1.41 1.41L12 12.83l-1.95 1.95a4 4 0 1 1-1.41-1.41L10 12 7.64 9.64A4 4 0 1 1 9.05 8.23L10.83 10 12 8.83 10.23 7.05a4 4 0 1 1-.59.59zM6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm12 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
+              </button>
+              <button class="iconbtn small" id="copyBtn" title="Copy">
+                <svg viewBox="0 0 24 24"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H10V7h9v14z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="gtitle">Clipboard</div>
+        </div>
+
+        <div class="group" style="min-width:360px">
+          <div class="gbody" style="flex-direction:column; gap:8px">
+            <div class="toolsline" style="justify-content:flex-start; width:100%">
+              <select class="select wide" id="fontName" title="Font">
+                <option selected>Calibri (Body)</option>
+                <option>Calibri</option>
+                <option>Arial</option>
+                <option>Times New Roman</option>
+                <option>Georgia</option>
+                <option>Helvetica</option>
+                <option>Verdana</option>
+                <option>Courier New</option>
+              </select>
+              <select class="select narrow" id="fontSize" title="Size">
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+                <option>11</option>
+                <option selected>12</option>
+                <option>14</option>
+                <option>16</option>
+                <option>18</option>
+                <option>20</option>
+                <option>24</option>
+                <option>28</option>
+                <option>32</option>
+                <option>36</option>
+                <option>48</option>
+              </select>
+              <div class="divider"></div>
+              <button class="iconbtn small" id="incFont" title="Increase Font Size">
+                <svg viewBox="0 0 24 24"><path d="M5 20h2l1.4-4h7.2l1.4 4h2L12 4 5 20zm4.1-6 3.9-11 3.9 11H9.1zM19 8V6h-2V4h-2v2h-2v2h2v2h2V8h2z"/></svg>
+              </button>
+              <button class="iconbtn small" id="decFont" title="Decrease Font Size">
+                <svg viewBox="0 0 24 24"><path d="M5 20h2l1.4-4h7.2l1.4 4h2L12 4 5 20zm4.1-6 3.9-11 3.9 11H9.1zM13 7v2h8V7h-8z"/></svg>
+              </button>
+            </div>
+
+            <div class="toolsline" style="justify-content:flex-start; width:100%">
+              <button class="iconbtn small" data-cmd="bold" id="boldBtn" title="Bold (Cmd+B)"><span style="font-weight:1000; font-size:16px">B</span></button>
+              <button class="iconbtn small" data-cmd="italic" id="italicBtn" title="Italic (Cmd+I)"><span style="font-style:italic; font-weight:900; font-size:16px">I</span></button>
+              <button class="iconbtn small" data-cmd="underline" id="underBtn" title="Underline (Cmd+U)"><span style="text-decoration:underline; font-weight:900; font-size:16px">U</span></button>
+              <div class="divider"></div>
+              <button class="iconbtn small" id="subBtn" title="Subscript">
+                <svg viewBox="0 0 24 24"><path d="M5 4h3l4 6 4-6h3l-5.5 8L19 20h-3l-4-6-4 6H5l5.5-8L5 4zm14.6 9.5c1.2 0 2.1.9 2.1 2.1 0 .6-.2 1.1-.7 1.6l-1.6 1.6H22V21h-6.4v-1.5l3.4-3.4c.2-.2.3-.4.3-.6 0-.4-.3-.7-.8-.7-.4 0-.9.2-1.3.5l-.8-1.3c.7-.5 1.5-.7 2.2-.7z"/></svg>
+              </button>
+              <button class="iconbtn small" id="supBtn" title="Superscript">
+                <svg viewBox="0 0 24 24"><path d="M5 20h3l4-6 4 6h3l-5.5-8L19 4h-3l-4 6-4-6H5l5.5 8L5 20zm12.9-12.6c.7-.6 1.5-.9 2.4-.9 1.2 0 2.2.7 2.2 1.9 0 .7-.3 1.2-.8 1.7l-1.6 1.5H23v1.5h-6.7v-1.4l3.6-3.3c.3-.3.5-.6.5-.9 0-.4-.3-.7-.8-.7-.5 0-1.1.2-1.6.6l-.8-1z"/></svg>
+              </button>
+              <div class="divider"></div>
+              <button class="iconbtn small" id="hiliteBtn" title="Text Highlight Color">
+                <svg viewBox="0 0 24 24"><path d="M6 14 14 6l4 4-8 8H6v-4zm-2 6h16v2H4v-2z"/></svg>
+              </button>
+              <button class="iconbtn small" id="colorBtn" title="Font Color">
+                <svg viewBox="0 0 24 24"><path d="M9 3h6l6 18h-3l-1.3-4H7.3L6 21H3L9 3zm-.9 12h7.8L12 5.6 8.1 15z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="gtitle">Font</div>
+        </div>
+
+        <div class="group" style="min-width:280px">
+          <div class="gbody" style="gap:8px">
+            <button class="iconbtn" data-cmd="insertUnorderedList" title="Bullets">
+              <svg viewBox="0 0 24 24"><path d="M4 6h2v2H4V6zm4 0h14v2H8V6zM4 11h2v2H4v-2zm4 0h14v2H8v-2zM4 16h2v2H4v-2zm4 0h14v2H8v-2z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="insertOrderedList" title="Numbering">
+              <svg viewBox="0 0 24 24"><path d="M4 6h3v2H6v1H4V8h1V8H4V6zm4 0h14v2H8V6zM4 11h3v1H6v1h1v2H4v-1h2v-1H4v-2zm4 0h14v2H8v-2zM4 16h3v4H4v-1h1v-2H4v-1zm4 0h14v2H8v-2z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="outdent" title="Decrease Indent">
+              <svg viewBox="0 0 24 24"><path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h18v2H3v-2zm0 4h12v2H3v-2zM3 12l6-4v8l-6-4z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="indent" title="Increase Indent">
+              <svg viewBox="0 0 24 24"><path d="M3 7h18v2H3V7zm0 4h12v2H3v-2zm0 4h18v2H3v-2zm0 4h12v2H3v-2zm12-8 6 4-6 4v-8z"/></svg>
+            </button>
+            <div class="divider"></div>
+            <button class="iconbtn" data-cmd="justifyLeft" title="Align Left">
+              <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 4h12v2H3V9zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="justifyCenter" title="Center">
+              <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm3 4h12v2H6V9zm-3 4h18v2H3v-2zm3 4h12v2H6v-2z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="justifyRight" title="Align Right">
+              <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm6 4h12v2H9V9zm-6 4h18v2H3v-2zm6 4h12v2H9v-2z"/></svg>
+            </button>
+            <button class="iconbtn" data-cmd="justifyFull" title="Justify">
+              <svg viewBox="0 0 24 24"><path d="M3 5h18v2H3V5zm0 4h18v2H3V9zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/></svg>
+            </button>
+          </div>
+          <div class="gtitle">Paragraph</div>
+        </div>
+
+        <div class="group" style="min-width:170px">
+          <div class="gbody" style="gap:10px">
+            <button class="bigbtn" title="Styles">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 4h10v2H4V8zm0 4h16v2H4v-2zm0 4h10v2H4v-2zm0 4h16v2H4v-2z"/></svg>
+              <span>Styles</span>
+            </button>
+            <button class="bigbtn" title="Styles Pane">
+              <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5zm2 2v10h5V7H6zm7 0v2h5V7h-5zm0 4v2h5v-2h-5zm0 4v2h5v-2h-5z"/></svg>
+              <span>Styles<br/>Pane</span>
+            </button>
+          </div>
+          <div class="gtitle">Styles</div>
+        </div>
+
+        <div class="group" style="min-width:150px">
+          <div class="gbody" style="gap:12px">
+            <button class="bigbtn" title="Dictate">
+              <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
+              <span>Dictate</span>
+            </button>
+            <button class="bigbtn" title="Sensitivity">
+              <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3zm0 6a3 3 0 0 1 3 3c0 2-3 6-3 6s-3-4-3-6a3 3 0 0 1 3-3z"/></svg>
+              <span>Sensitivity</span>
+            </button>
+          </div>
+          <div class="gtitle">Voice</div>
+        </div>
+
+        <div class="group" style="min-width:310px">
+          <div class="gbody" style="gap:10px">
+            <div class="addon" title="Add-ins">
+              <div class="badge orange">
+                <svg viewBox="0 0 24 24" width="18" height="18" style="fill:#fff"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/></svg>
+              </div>
+              <span>Add-ins</span>
+            </div>
+            <div class="addon" title="Editor">
+              <div class="badge blue">
+                <svg viewBox="0 0 24 24" width="18" height="18" style="fill:#fff"><path d="M3 17.25V21h3.75L17.8 9.95l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+              </div>
+              <span>Editor</span>
+            </div>
+            <div class="addon" title="Amazon Quick Suite">
+              <div class="badge pink">
+                <svg viewBox="0 0 24 24" width="18" height="18" style="fill:#fff"><path d="M7 7h10v10H7V7zm-3 5 8-8h8l-8 8 8 8h-8l-8-8z"/></svg>
+              </div>
+              <span>Amazon<br/>Quick Suite</span>
+            </div>
+          </div>
+          <div class="gtitle">Add-ins</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="panel" id="panel-insert" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:420px">
+          <div class="gbody">
+            <button class="bigbtn" title="Table">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v3h12V6H6zm0 5v3h5v-3H6zm7 0v3h5v-3h-5zM6 16v2h12v-2H6z"/></svg>
+              <span>Table</span>
+            </button>
+            <button class="bigbtn" title="Pictures">
+              <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 11A1.5 1.5 0 1 0 7 9.5 1.5 1.5 0 0 0 8.5 11zM5 19l4.5-6 3.5 4.5 2.5-3L19 19H5z"/></svg>
+              <span>Pictures</span>
+            </button>
+            <button class="bigbtn" title="Shapes">
+              <svg viewBox="0 0 24 24"><path d="M3 6h10v10H3V6zm12 0h6v6h-6V6zM15 14h6v8h-6v-8z"/></svg>
+              <span>Shapes</span>
+            </button>
+          </div>
+          <div class="gtitle">Insert</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-draw" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:420px">
+          <div class="gbody">
+            <button class="bigbtn" title="Pen">
+              <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L19.81 7.94l-3.75-3.75L3 17.25zM20.71 6.04a1 1 0 0 0 0-1.41L19.37 3.29a1 1 0 0 0-1.41 0l-1.82 1.82 3.75 3.75 1.82-1.82z"/></svg>
+              <span>Pen</span>
+            </button>
+            <button class="bigbtn" title="Highlighter">
+              <svg viewBox="0 0 24 24"><path d="M6 14 14 6l4 4-8 8H6v-4zm-2 6h16v2H4v-2z"/></svg>
+              <span>Highlighter</span>
+            </button>
+          </div>
+          <div class="gtitle">Draw</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-design" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:520px">
+          <div class="gbody">
+            <button class="bigbtn" title="Themes">
+              <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 0 1 0-16v16z"/></svg>
+              <span>Themes</span>
+            </button>
+            <button class="bigbtn" title="Colors">
+              <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9c0 5 4 9 9 9h1a2 2 0 0 0 2-2c0-1.1-.9-2-2-2h-1a5 5 0 0 1 0-10h2a2 2 0 0 0 0-4h-2z"/></svg>
+              <span>Colors</span>
+            </button>
+          </div>
+          <div class="gtitle">Design</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-layout" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:520px">
+          <div class="gbody">
+            <button class="bigbtn" title="Margins">
+              <svg viewBox="0 0 24 24"><path d="M5 3h14v18H5V3zm2 2v14h10V5H7z"/></svg>
+              <span>Margins</span>
+            </button>
+            <button class="bigbtn" title="Orientation">
+              <svg viewBox="0 0 24 24"><path d="M7 2h10v20H7V2zm2 2v16h6V4H9z"/></svg>
+              <span>Orientation</span>
+            </button>
+          </div>
+          <div class="gtitle">Layout</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-references" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:520px">
+          <div class="gbody">
+            <button class="bigbtn" title="Table of Contents">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4V4zm0 4h10v2H4V8zm0 4h16v2H4v-2zm0 4h10v2H4v-2zm0 4h16v2H4v-2z"/></svg>
+              <span>Contents</span>
+            </button>
+            <button class="bigbtn" title="Footnotes">
+              <svg viewBox="0 0 24 24"><path d="M6 4h12v2H6V4zm0 4h12v2H6V8zm0 4h7v2H6v-2zm0 7v-3h2v1h2v-1h2v1h2v2H6z"/></svg>
+              <span>Footnotes</span>
+            </button>
+          </div>
+          <div class="gtitle">References</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-mailings" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:520px">
+          <div class="gbody">
+            <button class="bigbtn" title="Envelopes">
+              <svg viewBox="0 0 24 24"><path d="M2 6h20v12H2V6zm2 2v.5l8 5.3 8-5.3V8H4zm16 8V10.7l-8 5.3-8-5.3V16h16z"/></svg>
+              <span>Envelopes</span>
+            </button>
+            <button class="bigbtn" title="Labels">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v6H4V4zm0 10h7v6H4v-6zm9 0h7v6h-7v-6z"/></svg>
+              <span>Labels</span>
+            </button>
+          </div>
+          <div class="gtitle">Mailings</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-review" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:520px">
+          <div class="gbody">
+            <button class="bigbtn" title="Spelling & Grammar">
+              <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12 3.4 13.4 9 19 21 7l-1.4-1.4z"/></svg>
+              <span>Spelling</span>
+            </button>
+            <button class="bigbtn" title="Track Changes">
+              <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5.6l4.2 2.5-1 1.7L11 13V7h2z"/></svg>
+              <span>Track</span>
+            </button>
+          </div>
+          <div class="gtitle">Review</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-view" role="tabpanel">
+      <div class="rrow">
+        <div class="group" style="min-width:640px">
+          <div class="gbody">
+            <button class="bigbtn" id="focusBtn" title="Focus">
+              <svg viewBox="0 0 24 24"><path d="M7 3H3v4h2V5h2V3zm14 0h-4v2h2v2h2V3zM5 17H3v4h4v-2H5v-2zm16 0h-2v2h-2v2h4v-4z"/></svg>
+              <span>Focus</span>
+            </button>
+            <button class="bigbtn" id="view100Btn" title="100%">
+              <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6z"/></svg>
+              <span>100%</span>
+            </button>
+            <button class="bigbtn" id="onePageBtn" title="One Page">
+              <svg viewBox="0 0 24 24"><path d="M6 3h12v18H6V3zm2 2v14h8V5H8z"/></svg>
+              <span>One Page</span>
+            </button>
+          </div>
+          <div class="gtitle">View</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="workspace">
+    <div class="scroll" id="scroll">
+      <div class="pagewrap">
+        <div class="page" id="editor" contenteditable="true" spellcheck="false" aria-label="Document">
+          <p><br/></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="status-left">
+      <span>Page 1 of 1</span>
+      <span>0 words</span>
+      <span>English (United States)</span>
+    </div>
+    <div class="status-center">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-1 14-4-4 1.4-1.4L11 13.2l5.6-5.6L18 9l-7 7z"/></svg>
+      Accessibility: Good to go
+    </div>
+    <div class="status-right">
+      <button class="sbtn" id="focusToggle" title="Focus">
+        <svg viewBox="0 0 24 24"><path d="M7 3H3v4h2V5h2V3zm14 0h-4v2h2v2h2V3zM5 17H3v4h4v-2H5v-2zm16 0h-2v2h-2v2h4v-4z"/></svg>
+      </button>
+      <button class="sbtn" title="Read Mode">
+        <svg viewBox="0 0 24 24"><path d="M6 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 0-4 4V4zm2 2v14.1A6 6 0 0 1 12 20h6V8a2 2 0 0 0-2-2H8z"/></svg>
+      </button>
+      <button class="sbtn" title="Web Layout">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4V5zm2 2v2h12V7H6zm0 4v6h8v-6H6zm10 0v6h2v-6h-2z"/></svg>
+      </button>
+
+      <div class="zoom" aria-label="Zoom">
+        <button class="minus" id="zoomOut" title="Zoom out">−</button>
+        <input id="zoomRange" type="range" min="50" max="250" value="185" />
+        <button class="plus" id="zoomIn" title="Zoom in">+</button>
+        <div class="pct" id="zoomPct">185%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="menu" id="menuRoot" aria-hidden="true">
+  <div class="pop" id="editingMenu" role="menu">
+    <div class="mi" data-editing="editing">Editing <span class="kbd">⌥E</span></div>
+    <div class="mi" data-editing="reviewing">Reviewing <span class="kbd">⌥R</span></div>
+    <div class="mi" data-editing="viewing">Viewing <span class="kbd">⌥V</span></div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const editor = document.getElementById('editor');
+    const scroll = document.getElementById('scroll');
+
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const panels = new Map(Array.from(document.querySelectorAll('.panel')).map(p => [p.id.replace('panel-',''), p]));
+
+    function setActiveTab(name){
+      tabs.forEach(t => {
+        const active = t.dataset.tab === name;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      panels.forEach((p, key) => p.classList.toggle('active', key === name));
+    }
+    tabs.forEach(t => t.addEventListener('click', () => setActiveTab(t.dataset.tab)));
+
+    function focusEditor(){ editor.focus({preventScroll:true}); }
+
+    const commandButtons = Array.from(document.querySelectorAll('[data-cmd]'));
+    function exec(cmd, value=null){
+      focusEditor();
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand(cmd, false, value);
+      updateToggleStates();
+    }
+
+    function updateToggleStates(){
+      const map = [
+        ['bold', document.getElementById('boldBtn')],
+        ['italic', document.getElementById('italicBtn')],
+        ['underline', document.getElementById('underBtn')]
+      ];
+      for(const [cmd, btn] of map){
+        try { btn.classList.toggle('active', document.queryCommandState(cmd)); } catch(e){}
+      }
+    }
+
+    commandButtons.forEach(btn => btn.addEventListener('click', () => exec(btn.dataset.cmd)));
+
+    document.getElementById('cutBtn').addEventListener('click', ()=>exec('cut'));
+    document.getElementById('copyBtn').addEventListener('click', ()=>exec('copy'));
+    document.getElementById('pasteBtn').addEventListener('click', ()=>exec('paste'));
+    document.getElementById('undoBtn').addEventListener('click', ()=>exec('undo'));
+    document.getElementById('redoBtn').addEventListener('click', ()=>exec('redo'));
+
+    const fontName = document.getElementById('fontName');
+    const fontSize = document.getElementById('fontSize');
+
+    fontName.addEventListener('change', () => exec('fontName', fontName.value));
+
+    function applyFontSizePx(px){
+      focusEditor();
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('fontSize', false, '7');
+
+      const sel = window.getSelection();
+      if(!sel.rangeCount) return;
+
+      const root = editor;
+      const spans = root.querySelectorAll('font[size="7"], span[style*="font-size"]');
+
+      for(const node of spans){
+        if(node.tagName && node.tagName.toLowerCase() === 'font' && node.getAttribute('size') === '7'){
+          const span = document.createElement('span');
+          span.style.fontSize = px + 'px';
+          span.innerHTML = node.innerHTML;
+          node.parentNode.replaceChild(span, node);
+        }
+      }
+      updateToggleStates();
+    }
+
+    fontSize.addEventListener('change', () => applyFontSizePx(parseInt(fontSize.value,10)));
+
+    function bumpSize(delta){
+      const v = parseInt(fontSize.value,10);
+      const opts = Array.from(fontSize.options).map(o => parseInt(o.value,10)).sort((a,b)=>a-b);
+      let idx = opts.indexOf(v);
+      if(idx < 0) idx = opts.findIndex(x => x >= v);
+      idx = Math.max(0, Math.min(opts.length-1, idx + delta));
+      const next = opts[idx];
+      fontSize.value = String(next);
+      applyFontSizePx(next);
+    }
+    document.getElementById('incFont').addEventListener('click', () => bumpSize(+1));
+    document.getElementById('decFont').addEventListener('click', () => bumpSize(-1));
+
+    document.getElementById('subBtn').addEventListener('click', () => exec('subscript'));
+    document.getElementById('supBtn').addEventListener('click', () => exec('superscript'));
+
+    function wrapSelection(styleObj){
+      focusEditor();
+      const sel = window.getSelection();
+      if(!sel.rangeCount) return;
+      const range = sel.getRangeAt(0);
+      if(range.collapsed) return;
+      const span = document.createElement('span');
+      Object.assign(span.style, styleObj);
+      try{
+        range.surroundContents(span);
+      }catch(e){
+        document.execCommand('styleWithCSS', false, true);
+        if(styleObj.backgroundColor) document.execCommand('hiliteColor', false, styleObj.backgroundColor);
+        if(styleObj.color) document.execCommand('foreColor', false, styleObj.color);
+      }
+      updateToggleStates();
+    }
+
+    document.getElementById('hiliteBtn').addEventListener('click', () => wrapSelection({backgroundColor:'#fff59d'}));
+    document.getElementById('colorBtn').addEventListener('click', () => wrapSelection({color:'#d11a2a'}));
+
+    editor.addEventListener('keyup', updateToggleStates);
+    editor.addEventListener('mouseup', updateToggleStates);
+    document.addEventListener('selectionchange', () => {
+      if(document.activeElement === editor) updateToggleStates();
+    });
+
+    const zoomRange = document.getElementById('zoomRange');
+    const zoomPct = document.getElementById('zoomPct');
+    function setZoom(pct){
+      pct = Math.max(50, Math.min(250, pct|0));
+      zoomRange.value = String(pct);
+      zoomPct.textContent = pct + '%';
+      document.documentElement.style.setProperty('--zoom', (pct/100).toFixed(2));
+    }
+    zoomRange.addEventListener('input', () => setZoom(parseInt(zoomRange.value,10)));
+    document.getElementById('zoomOut').addEventListener('click', ()=>setZoom(parseInt(zoomRange.value,10)-10));
+    document.getElementById('zoomIn').addEventListener('click', ()=>setZoom(parseInt(zoomRange.value,10)+10));
+
+    document.getElementById('view100Btn')?.addEventListener('click', ()=>setZoom(100));
+    document.getElementById('onePageBtn')?.addEventListener('click', ()=>{
+      const available = scroll.clientWidth - 80;
+      const w = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-w'));
+      const pct = Math.floor((available / w) * 100);
+      setZoom(Math.max(50, Math.min(250, pct)));
+      scroll.scrollTo({top:0, behavior:'smooth'});
+    });
+
+    function setFocusMode(on){
+      document.body.style.background = on ? '#0b1220' : '#cfd3d8';
+      document.getElementById('app').style.boxShadow = on ? '0 20px 60px rgba(0,0,0,.55)' : 'none';
+      document.getElementById('app').style.margin = on ? '12px auto' : '0';
+      document.getElementById('app').style.width = on ? 'calc(100vw - 24px)' : '100vw';
+      document.getElementById('app').style.height = on ? 'calc(100vh - 24px)' : '100vh';
+      document.getElementById('app').style.borderRadius = on ? '12px' : '0';
+      document.getElementById('app').style.overflow = 'hidden';
+    }
+    let focusMode = false;
+    document.getElementById('focusToggle').addEventListener('click', ()=>{ focusMode = !focusMode; setFocusMode(focusMode); });
+    document.getElementById('focusBtn')?.addEventListener('click', ()=>{ focusMode = !focusMode; setFocusMode(focusMode); });
+
+    const editingDrop = document.getElementById('editingDrop');
+    const editingMenu = document.getElementById('editingMenu');
+    const menuRoot = document.getElementById('menuRoot');
+
+    function openMenu(anchor){
+      const r = anchor.getBoundingClientRect();
+      editingMenu.style.left = Math.round(r.right - 190) + 'px';
+      editingMenu.style.top = Math.round(r.bottom + 8) + 'px';
+      editingMenu.classList.add('open');
+      menuRoot.style.width = '100vw';
+      menuRoot.style.height = '100vh';
+      menuRoot.setAttribute('aria-hidden','false');
+    }
+    function closeMenu(){
+      editingMenu.classList.remove('open');
+      menuRoot.style.width = '0';
+      menuRoot.style.height = '0';
+      menuRoot.setAttribute('aria-hidden','true');
+    }
+
+    editingDrop.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(editingMenu.classList.contains('open')) closeMenu(); else openMenu(editingDrop);
+    });
+
+    editingMenu.addEventListener('click', (e)=>{
+      const item = e.target.closest('.mi');
+      if(!item) return;
+      editingDrop.firstChild && (editingDrop.childNodes[0].nodeValue = item.textContent.trim().split('  ')[0]);
+      closeMenu();
+    });
+
+    document.addEventListener('click', ()=>closeMenu());
+    window.addEventListener('resize', ()=>closeMenu());
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape') closeMenu();
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b'){ e.preventDefault(); exec('bold'); }
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'i'){ e.preventDefault(); exec('italic'); }
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'u'){ e.preventDefault(); exec('underline'); }
+      if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey){ e.preventDefault(); exec('undo'); }
+      if(((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && e.shiftKey) || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y')){
+        e.preventDefault(); exec('redo');
+      }
+    });
+
+    const autosave = document.getElementById('autosave');
+    const docName = document.querySelector('.docname');
+    autosave.addEventListener('change', ()=>{
+      docName.textContent = autosave.checked ? 'Document3' : 'Document3';
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        focusEditor();
+        const q = searchInput.value.trim();
+        if(!q) return;
+        try{
+          window.find(q);
+        }catch(_){}
+      }
+    });
+
+    function ensureEditableHasParagraph(){
+      const text = editor.textContent.replace(/\u200B/g,'').trim();
+      if(text.length === 0 && editor.innerHTML.replace(/\s|<br\s*\/?>/gi,'').trim() === ''){
+        editor.innerHTML = '<p><br/></p>';
+      }
+    }
+    editor.addEventListener('blur', ensureEditableHasParagraph);
+
+    setZoom(parseInt(zoomRange.value,10));
+    setTimeout(()=>{ editor.focus(); }, 80);
+  })();
+</script>
+</body>
+</html>

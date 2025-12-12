@@ -1,0 +1,1374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Spotify UI (Replica)</title>
+<style>
+  :root{
+    --bg:#0b0b0c;
+    --panel:#121214;
+    --panel2:#151516;
+    --panel3:#1a1a1c;
+    --stroke:rgba(255,255,255,.08);
+    --muted:rgba(255,255,255,.62);
+    --muted2:rgba(255,255,255,.45);
+    --text:rgba(255,255,255,.92);
+    --pill:rgba(255,255,255,.10);
+    --pill2:rgba(255,255,255,.16);
+    --shadow: 0 14px 40px rgba(0,0,0,.55);
+    --radius:16px;
+    --radius2:12px;
+    --green:#1ed760;
+    --green2:#1db954;
+    --white:#fff;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background: radial-gradient(1200px 650px at 60% 15%, rgba(255,255,255,.06), transparent 55%),
+                linear-gradient(#050506, #0b0b0c);
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+  }
+
+  /* Window frame */
+  .window{
+    width:min(1360px, 100%);
+    height:min(860px, 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 22%),
+                linear-gradient(180deg, #0b0b0c, #09090a);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:18px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    position:relative;
+  }
+
+  .app{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Top bar */
+  .topbar{
+    height:66px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 14px;
+    background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.20));
+    border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .mac-controls{display:flex; gap:8px; padding:0 10px 0 6px; align-items:center}
+  .dot{width:12px;height:12px;border-radius:50%}
+  .dot.r{background:#ff5f57}
+  .dot.y{background:#febc2e}
+  .dot.g{background:#28c840}
+
+  .navbtns{display:flex; gap:10px; align-items:center; margin-left:2px}
+  .iconbtn{
+    width:34px;height:34px;border-radius:50%;
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    display:grid; place-items:center;
+    color:rgba(255,255,255,.9);
+    cursor:pointer;
+    transition: transform .08s ease, background .18s ease, border-color .18s ease;
+  }
+  .iconbtn:hover{background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.14)}
+  .iconbtn:active{transform: scale(.98)}
+  .iconbtn svg{width:18px;height:18px;opacity:.92}
+
+  .searchWrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0 12px;
+    height:40px;
+    border-radius:999px;
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    max-width: 680px;
+    margin-left: 6px;
+  }
+  .searchWrap:focus-within{
+    border-color: rgba(255,255,255,.18);
+    background: rgba(255,255,255,.08);
+  }
+  .searchWrap .homePill{
+    width:34px;height:34px;border-radius:50%;
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    display:grid;place-items:center;
+    margin-left:-6px;
+  }
+  .searchWrap input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color: rgba(255,255,255,.86);
+    font-size:16px;
+  }
+  .searchWrap input::placeholder{color: rgba(255,255,255,.52)}
+  .searchSep{
+    width:1px;height:22px;background:rgba(255,255,255,.12)
+  }
+
+  .topRight{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-left:auto;
+  }
+  .ghostbtn{
+    width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255,255,255,.86);
+    cursor:pointer;
+  }
+  .ghostbtn:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08)}
+  .ghostbtn svg{width:18px;height:18px;opacity:.9}
+  .avatar{
+    width:36px;height:36px;border-radius:50%;
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.16), transparent 55%),
+                linear-gradient(135deg, #ff5b3a, #ff8a3a);
+    border:2px solid rgba(0,0,0,.35);
+    display:grid;place-items:center;
+    font-weight:800;
+    color: rgba(0,0,0,.78);
+  }
+
+  /* Main split */
+  .main{
+    flex:1;
+    min-height:0;
+    display:flex;
+    gap:12px;
+    padding:12px;
+  }
+
+  /* Sidebar */
+  .sidebar{
+    width: 340px;
+    min-width: 300px;
+    background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.07);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .sideHeader{
+    padding:14px 14px 10px 14px;
+    display:flex; align-items:center; gap:10px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    background: linear-gradient(180deg, rgba(0,0,0,.25), transparent 60%);
+  }
+  .sideHeader h3{
+    margin:0;
+    font-size:18px;
+    letter-spacing:.2px;
+  }
+  .sideHeader .spacer{flex:1}
+  .smallIcon{
+    width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    cursor:pointer;
+  }
+  .smallIcon:hover{background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.14)}
+  .smallIcon svg{width:18px;height:18px;opacity:.9}
+
+  .sidePills{
+    padding:10px 12px 10px 12px;
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .pill{
+    padding:8px 12px;
+    border-radius:999px;
+    background: var(--pill);
+    border:1px solid rgba(255,255,255,.08);
+    font-size:14px;
+    color: rgba(255,255,255,.84);
+    cursor:pointer;
+    user-select:none;
+  }
+  .pill.active{
+    background: rgba(255,255,255,.92);
+    color: rgba(0,0,0,.9);
+    border-color: rgba(255,255,255,.92);
+  }
+
+  .libraryList{
+    padding:6px 8px 10px 8px;
+    overflow:auto;
+  }
+  .libraryList::-webkit-scrollbar{width:10px}
+  .libraryList::-webkit-scrollbar-thumb{background: rgba(255,255,255,.10); border-radius:999px; border:2px solid rgba(0,0,0,.25)}
+  .libItem{
+    display:flex;
+    gap:12px;
+    padding:10px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    transition: background .16s ease;
+  }
+  .libItem:hover{background: rgba(255,255,255,.06)}
+  .libItem.active{background: rgba(255,255,255,.09)}
+  .thumb{
+    width:44px;height:44px;border-radius:8px;
+    background: rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.08);
+    overflow:hidden;
+    flex:none;
+    position:relative;
+  }
+  .thumb.round{border-radius:50%}
+  .thumb .art{
+    width:100%;height:100%;
+    display:grid;place-items:center;
+    font-weight:900;
+    color: rgba(0,0,0,.75);
+    font-size:12px;
+    letter-spacing:.2px;
+  }
+  .liMeta{min-width:0}
+  .liTitle{
+    font-size:17px;
+    color: rgba(255,255,255,.92);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .liSub{
+    margin-top:2px;
+    font-size:14px;
+    color: rgba(255,255,255,.55);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  /* Content area */
+  .content{
+    flex:1;
+    min-width:0;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02) 46%, rgba(0,0,0,.14));
+    border:1px solid rgba(255,255,255,.07);
+    border-radius: var(--radius);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .contentScroll{
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    padding:14px 18px 18px 18px;
+  }
+  .contentScroll::-webkit-scrollbar{width:10px}
+  .contentScroll::-webkit-scrollbar-thumb{background: rgba(255,255,255,.10); border-radius:999px; border:2px solid rgba(0,0,0,.22)}
+
+  .categoryRow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin: 2px 0 12px 0;
+  }
+  .cat{
+    padding:8px 14px;
+    border-radius:999px;
+    background: rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.08);
+    font-size:15px;
+    color: rgba(255,255,255,.86);
+    cursor:pointer;
+    user-select:none;
+  }
+  .cat.active{
+    background: rgba(255,255,255,.94);
+    color: rgba(0,0,0,.92);
+    border-color: rgba(255,255,255,.94);
+  }
+
+  .shortcutGrid{
+    display:grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap:12px;
+    margin: 10px 0 18px 0;
+  }
+  .shortcut{
+    height:56px;
+    border-radius:10px;
+    background: rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.07);
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    cursor:pointer;
+    transition: background .16s ease, transform .08s ease, border-color .16s ease;
+  }
+  .shortcut:hover{background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.12)}
+  .shortcut:active{transform: scale(.995)}
+  .scArt{
+    width:56px;height:56px;
+    background: rgba(255,255,255,.11);
+    border-right:1px solid rgba(255,255,255,.08);
+    display:grid;place-items:center;
+    font-weight:900;
+    color: rgba(0,0,0,.75);
+  }
+  .scTitle{
+    padding:0 12px;
+    font-weight:700;
+    color: rgba(255,255,255,.92);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .section{
+    margin-top: 10px;
+  }
+  .sectionHead{
+    display:flex;
+    align-items:flex-end;
+    gap:10px;
+    margin: 18px 0 10px 0;
+  }
+  .sectionHead h2{
+    margin:0;
+    font-size:28px;
+    letter-spacing:-.3px;
+  }
+  .sectionHead .showAll{
+    margin-left:auto;
+    color: rgba(255,255,255,.55);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .sectionHead .showAll:hover{color: rgba(255,255,255,.8)}
+  .cards{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(170px, 1fr));
+    gap:14px;
+  }
+  .card{
+    background: rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.065);
+    border-radius:14px;
+    padding:12px;
+    cursor:pointer;
+    transition: background .18s ease, border-color .18s ease, transform .08s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .card:hover{background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.10)}
+  .card:active{transform: scale(.995)}
+  .cover{
+    width:100%;
+    aspect-ratio: 1 / 1;
+    border-radius:12px;
+    background: linear-gradient(135deg, rgba(255,255,255,.20), rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.10);
+    position:relative;
+    overflow:hidden;
+  }
+  .cover.round{border-radius:999px}
+  .cover .badge{
+    position:absolute;
+    top:10px; right:10px;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    background: rgba(255,255,255,.92);
+    color: rgba(0,0,0,.85);
+  }
+  .cover .tag{
+    position:absolute;
+    bottom:10px; left:10px;
+    padding:5px 8px;
+    border-radius:6px;
+    background: rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.10);
+    color: rgba(255,255,255,.92);
+    font-weight:800;
+    font-size:12px;
+  }
+  .cover .tag.yellow{background: rgba(255,214,64,.92); color: rgba(0,0,0,.88); border-color: rgba(255,214,64,.92)}
+  .cover .tag.cyan{background: rgba(88,245,255,.92); color: rgba(0,0,0,.88); border-color: rgba(88,245,255,.92)}
+  .cover .tag.red{background: rgba(255,97,97,.92); color: rgba(0,0,0,.88); border-color: rgba(255,97,97,.92)}
+  .cardTitle{
+    margin-top:10px;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:.1px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .cardSub{
+    margin-top:6px;
+    color: rgba(255,255,255,.55);
+    font-size:14px;
+    line-height:1.25;
+    height: 34px;
+    overflow:hidden;
+  }
+  .playFab{
+    position:absolute;
+    right:14px;
+    bottom:72px;
+    width:46px;height:46px;border-radius:50%;
+    background: var(--green);
+    display:grid; place-items:center;
+    box-shadow: 0 12px 28px rgba(0,0,0,.55);
+    border: 1px solid rgba(0,0,0,.25);
+    opacity:0;
+    transform: translateY(10px);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .card:hover .playFab{opacity:1; transform: translateY(0)}
+  .playFab svg{width:18px;height:18px; fill: rgba(0,0,0,.85)}
+  .card:hover .playFab:hover{filter:brightness(1.05)}
+  .card:hover .playFab:active{transform: translateY(1px) scale(.99)}
+
+  /* Bottom player */
+  .player{
+    height:94px;
+    border-top:1px solid rgba(255,255,255,.07);
+    background: linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.55));
+    display:grid;
+    grid-template-columns: 1.2fr 1.6fr 1.1fr;
+    gap:10px;
+    padding:12px 14px;
+    align-items:center;
+  }
+  .now{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+  .now .miniCover{
+    width:56px;height:56px;border-radius:8px;
+    border:1px solid rgba(255,255,255,.10);
+    background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.05));
+    overflow:hidden;
+    flex:none;
+    position:relative;
+  }
+  .now .miniCover::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(20px 20px at 25% 30%, rgba(255,255,255,.25), transparent 55%),
+      linear-gradient(135deg, rgba(0,0,0,.15), transparent 55%);
+    mix-blend-mode: overlay;
+  }
+  .nowMeta{min-width:0}
+  .nowMeta .t{
+    font-weight:800;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .nowMeta .a{
+    color: rgba(255,255,255,.55);
+    font-size:13px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-top:2px;
+  }
+  .nowActions{
+    margin-left:8px;
+    display:flex; gap:8px;
+  }
+  .tinyBtn{
+    width:30px;height:30px;border-radius:8px;
+    display:grid; place-items:center;
+    background: transparent;
+    border: 1px solid transparent;
+    cursor:pointer;
+    color: rgba(255,255,255,.75);
+  }
+  .tinyBtn:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08)}
+  .tinyBtn svg{width:16px;height:16px;opacity:.92}
+
+  .controls{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    min-width:0;
+  }
+  .ctrlRow{
+    display:flex;
+    align-items:center;
+    gap:18px;
+  }
+  .ctrl{
+    width:34px;height:34px;border-radius:50%;
+    display:grid; place-items:center;
+    cursor:pointer;
+    background: transparent;
+    border:1px solid transparent;
+    color: rgba(255,255,255,.80);
+  }
+  .ctrl:hover{background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.08)}
+  .ctrl svg{width:18px;height:18px}
+  .play{
+    width:42px;height:42px;
+    background: rgba(255,255,255,.92);
+    color: rgba(0,0,0,.92);
+    border-color: rgba(255,255,255,.92);
+  }
+  .play:hover{filter:brightness(1.02)}
+  .play svg{width:18px;height:18px}
+  .timeline{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color: rgba(255,255,255,.55);
+    font-size:13px;
+  }
+  .bar{
+    flex:1;
+    height:5px;
+    background: rgba(255,255,255,.16);
+    border-radius:999px;
+    position:relative;
+    cursor:pointer;
+  }
+  .bar .fill{
+    position:absolute; left:0; top:0; bottom:0;
+    width:20%;
+    background: rgba(255,255,255,.92);
+    border-radius:999px;
+  }
+  .bar .knob{
+    position:absolute;
+    top:50%;
+    left:20%;
+    width:12px;height:12px;border-radius:50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,.96);
+    box-shadow: 0 8px 18px rgba(0,0,0,.45);
+    opacity:0;
+  }
+  .bar:hover .knob{opacity:1}
+  .bar:hover .fill{background: var(--green)}
+  .bar.dragging .knob{opacity:1}
+  .bar.dragging .fill{background: var(--green)}
+
+  .rightTools{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:10px;
+  }
+  .vol{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:220px;
+  }
+  .vol .vbar{flex:1;height:5px;background: rgba(255,255,255,.16); border-radius:999px; position:relative; cursor:pointer}
+  .vol .vfill{position:absolute;left:0;top:0;bottom:0;width:62%; background: rgba(255,255,255,.90); border-radius:999px}
+  .vol:hover .vfill{background: var(--green)}
+  .kbd{
+    display:none;
+  }
+
+  /* Utility covers (inline “album art”) */
+  .art1{background: linear-gradient(135deg,#f7d38a,#c06dff)}
+  .art2{background: linear-gradient(135deg,#71d7ff,#0f6cff)}
+  .art3{background: linear-gradient(135deg,#ff4c4c,#ffb84d)}
+  .art4{background: linear-gradient(135deg,#4cffb3,#0c7b67)}
+  .art5{background: linear-gradient(135deg,#d2d2d2,#7f7f7f)}
+  .art6{background: linear-gradient(135deg,#ff7bc8,#7b4dff)}
+  .art7{background: linear-gradient(135deg,#ffd24d,#ff5b3a)}
+  .art8{background: linear-gradient(135deg,#9cff7a,#1c9bff)}
+  .art9{background: linear-gradient(135deg,#ffa0a0,#59e3ff)}
+  .art10{background: linear-gradient(135deg,#ffa24d,#c8ff4d)}
+  .cover::before, .thumb::before, .scArt::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(36px 36px at 25% 25%, rgba(255,255,255,.22), transparent 58%),
+      radial-gradient(46px 46px at 80% 25%, rgba(255,255,255,.10), transparent 60%),
+      linear-gradient(180deg, rgba(0,0,0,.12), transparent 55%);
+    pointer-events:none;
+  }
+  .scArt, .thumb, .cover{position:relative}
+  .muted{color:var(--muted)}
+  .muted2{color:var(--muted2)}
+
+  /* Responsive */
+  @media (max-width: 1100px){
+    .sidebar{width:300px}
+    .shortcutGrid{grid-template-columns: repeat(3, minmax(160px, 1fr))}
+    .cards{grid-template-columns: repeat(4, minmax(170px, 1fr))}
+    .vol{width:160px}
+  }
+  @media (max-width: 880px){
+    body{padding:10px}
+    .sidebar{display:none}
+    .player{grid-template-columns: 1fr 1.4fr .9fr}
+    .cards{grid-template-columns: repeat(3, minmax(160px, 1fr))}
+    .shortcutGrid{grid-template-columns: repeat(2, minmax(160px, 1fr))}
+  }
+</style>
+</head>
+<body>
+  <div class="window">
+    <div class="app">
+      <div class="topbar">
+        <div class="mac-controls" aria-hidden="true">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+        </div>
+
+        <div class="navbtns">
+          <button class="iconbtn" id="backBtn" title="Back" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6"></path>
+            </svg>
+          </button>
+          <button class="iconbtn" id="fwdBtn" title="Forward" aria-label="Forward" style="opacity:.65">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="searchWrap" role="search">
+          <div class="homePill" title="Home" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;opacity:.92">
+              <path d="M12 3l9 8h-3v10a1 1 0 0 1-1 1h-4v-6H11v6H7a1 1 0 0 1-1-1V11H3l9-8z"/>
+            </svg>
+          </div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px;opacity:.8">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+          <input id="searchInput" placeholder="What do you want to play?" />
+          <div class="searchSep" aria-hidden="true"></div>
+          <button class="ghostbtn" title="Browse" aria-label="Browse">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h16"></path>
+              <path d="M6 11h12"></path>
+              <path d="M8 15h8"></path>
+              <path d="M10 19h4"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="topRight">
+          <button class="ghostbtn" title="Notifications" aria-label="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path>
+              <path d="M13.7 21a2 2 0 01-3.4 0"></path>
+            </svg>
+          </button>
+          <button class="ghostbtn" title="Friends" aria-label="Friends">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="3.5"></circle>
+              <path d="M20 21v-2a3.5 3.5 0 00-2.5-3.4"></path>
+              <path d="M17.5 3.4a3.5 3.5 0 010 6.8"></path>
+            </svg>
+          </button>
+          <div class="avatar" title="Account">A</div>
+        </div>
+      </div>
+
+      <div class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sideHeader">
+            <h3>Your Library</h3>
+            <div class="spacer"></div>
+            <div class="smallIcon" title="Create" aria-label="Create">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+              </svg>
+            </div>
+            <div class="smallIcon" title="Expand" aria-label="Expand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 10l7-7"></path>
+                <path d="M16 3h5v5"></path>
+                <path d="M10 14l-7 7"></path>
+                <path d="M3 16v5h5"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="sidePills" role="tablist" aria-label="Library filters">
+            <div class="pill active" data-sidepill="playlists" role="tab" aria-selected="true">Playlists</div>
+            <div class="pill" data-sidepill="podcasts" role="tab" aria-selected="false">Podcasts</div>
+            <div class="pill" data-sidepill="albums" role="tab" aria-selected="false">Albums</div>
+            <div class="pill" data-sidepill="more" role="tab" aria-selected="false" title="More">›</div>
+          </div>
+
+          <div class="libraryList" id="libraryList">
+            <div class="libItem active" data-track="Virtual Insanity - Remastered 2006" data-artist="Jamiroquai">
+              <div class="thumb">
+                <div class="art art3"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Man of Steel!</div>
+                <div class="liSub">Playlist • 31t73z5sngqxqxh...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Discover Weekly" data-artist="DJ">
+              <div class="thumb">
+                <div class="art art2"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">We are the champions!</div>
+                <div class="liSub">Playlist • 31t73z5sngqxqxh...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Daily Mix 01" data-artist="CantaJuego">
+              <div class="thumb">
+                <div class="art art7"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Duo</div>
+                <div class="liSub">Playlist • 31t73z5sngqxqxh...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Chill Mix" data-artist="Kat Eaton">
+              <div class="thumb">
+                <div class="art art6"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">I'll cover you!</div>
+                <div class="liSub">Playlist • 31t73z5sngqxqxh...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Morning Motivation" data-artist="Spotify">
+              <div class="thumb">
+                <div class="art art8"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Morning Motivation</div>
+                <div class="liSub">Playlist • Spotify</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="80's" data-artist="Spotify">
+              <div class="thumb">
+                <div class="art art10"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">80's</div>
+                <div class="liSub">Playlist • 31t73z5sngqxqxh...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Jazz band, club jazz..." data-artist="Spotify">
+              <div class="thumb">
+                <div class="art art1"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">jazz band, club jazz, and jazz tr...</div>
+                <div class="liSub">Playlist • Spotify</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="DJ" data-artist="Click to start listening">
+              <div class="thumb">
+                <div class="art art2"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">DJ</div>
+                <div class="liSub">Click to start listening</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Herb Alpert" data-artist="Artist">
+              <div class="thumb round">
+                <div class="art art5"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Herb Alpert</div>
+                <div class="liSub">Artist</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Your Episodes" data-artist="Saved & downloaded episodes">
+              <div class="thumb">
+                <div class="art art4"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Your Episodes</div>
+                <div class="liSub">Playlist • Saved & downloaded epis...</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="Peaceful Piano" data-artist="Spotify">
+              <div class="thumb">
+                <div class="art art9"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">Peaceful Piano</div>
+                <div class="liSub">Playlist • Spotify</div>
+              </div>
+            </div>
+
+            <div class="libItem" data-track="White Noise 10 Hours" data-artist="Sleep">
+              <div class="thumb">
+                <div class="art art5"></div>
+              </div>
+              <div class="liMeta">
+                <div class="liTitle">White Noise</div>
+                <div class="liSub">Playlist • 10 Hours</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Content -->
+        <section class="content">
+          <div class="contentScroll">
+            <div class="categoryRow" role="tablist" aria-label="Top categories">
+              <div class="cat active" data-cat="all" role="tab" aria-selected="true">All</div>
+              <div class="cat" data-cat="music" role="tab" aria-selected="false">Music</div>
+              <div class="cat" data-cat="podcasts" role="tab" aria-selected="false">Podcasts</div>
+              <div class="cat" data-cat="audiobooks" role="tab" aria-selected="false">Audiobooks</div>
+            </div>
+
+            <div class="shortcutGrid" aria-label="Shortcuts">
+              <div class="shortcut" data-play="Peaceful Piano" data-artist="Spotify">
+                <div class="scArt art9"></div>
+                <div class="scTitle">Peaceful Piano</div>
+              </div>
+              <div class="shortcut" data-play="White Noise 10 Hours" data-artist="Sleep">
+                <div class="scArt art5"></div>
+                <div class="scTitle">White Noise 10 Hours</div>
+              </div>
+              <div class="shortcut" data-play="Spanish Songs for Kids" data-artist="Kids">
+                <div class="scArt art7"></div>
+                <div class="scTitle">Spanish Songs for Kids</div>
+              </div>
+              <div class="shortcut" data-play="daylist" data-artist="Spotify">
+                <div class="scArt art6"></div>
+                <div class="scTitle">daylist</div>
+              </div>
+
+              <div class="shortcut" data-play="Spanish Lullabies ❤️" data-artist="Kids">
+                <div class="scArt art3"></div>
+                <div class="scTitle">Spanish Lullabies ❤️</div>
+              </div>
+              <div class="shortcut" data-play="Cuento de SPIDEY y su..." data-artist="Stories">
+                <div class="scArt art10"></div>
+                <div class="scTitle">Cuento de SPIDEY y su...</div>
+              </div>
+              <div class="shortcut" data-play="Stevie Wonder Radio" data-artist="Radio">
+                <div class="scArt art1"></div>
+                <div class="scTitle">Stevie Wonder Radio</div>
+              </div>
+              <div class="shortcut" data-play="Chill Mix" data-artist="Made for you">
+                <div class="scArt art8"></div>
+                <div class="scTitle">Chill Mix</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="sectionHead">
+                <h2>Made For You</h2>
+                <div class="showAll">Show all</div>
+              </div>
+
+              <div class="cards">
+                <div class="card" data-play="Discover Weekly" data-artist="Your weekly mixtape">
+                  <div class="cover art2">
+                    <div class="badge" style="background:rgba(255,255,255,.14); color:rgba(255,255,255,.92); border:1px solid rgba(255,255,255,.18); font-weight:900; letter-spacing:.6px">DISCOVER</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Discover Weekly</div>
+                  <div class="cardSub">Your shortcut to hidden gems, deep cuts, and fresh finds.</div>
+                </div>
+
+                <div class="card" data-play="DJ" data-artist="Pick your vibe">
+                  <div class="cover art2">
+                    <div class="badge">BETA</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">DJ</div>
+                  <div class="cardSub">All kinds of music, picked by your own DJ.</div>
+                </div>
+
+                <div class="card" data-play="Daily Mix 01" data-artist="CantaJuego, Marta Gómez">
+                  <div class="cover art3">
+                    <div class="tag cyan">Daily Mix</div>
+                    <div class="tag" style="left:auto; right:10px; background:rgba(88,245,255,.92); color:rgba(0,0,0,.9)">01</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Daily Mix 1</div>
+                  <div class="cardSub">CantaJuego, Marta Gómez, Canciones de... and more.</div>
+                </div>
+
+                <div class="card" data-play="Daily Mix 02" data-artist="Kat Eaton, MT Jones">
+                  <div class="cover art8">
+                    <div class="tag yellow">Daily Mix</div>
+                    <div class="tag yellow" style="left:auto; right:10px;">02</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Daily Mix 2</div>
+                  <div class="cardSub">Kat Eaton, MT Jones, Flo Naegeli and more.</div>
+                </div>
+
+                <div class="card" data-play="Daily Mix 03" data-artist="Tankeflukt, Sam">
+                  <div class="cover art5">
+                    <div class="tag red">Daily Mix</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Daily Mix 3</div>
+                  <div class="cardSub">Tankeflukt, Sam, Kees, Into the... and more.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="sectionHead">
+                <h2>Recently played</h2>
+                <div class="showAll">Show all</div>
+              </div>
+
+              <div class="cards">
+                <div class="card" data-play="Virtual Insanity - Remastered 2006" data-artist="Jamiroquai">
+                  <div class="cover round art3"></div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Jamiroquai</div>
+                  <div class="cardSub">Virtual Insanity - Remastered 2006</div>
+                </div>
+
+                <div class="card" data-play="Peaceful Piano" data-artist="Spotify">
+                  <div class="cover art9"></div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Peaceful Piano</div>
+                  <div class="cardSub">Gentle keys for focus, calm, and quiet mornings.</div>
+                </div>
+
+                <div class="card" data-play="White Noise 10 Hours" data-artist="Sleep">
+                  <div class="cover art5"></div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">White Noise 10 Hours</div>
+                  <div class="cardSub">A steady wash of sound for rest and concentration.</div>
+                </div>
+
+                <div class="card" data-play="Spanish Baby Lullabies" data-artist="Kids">
+                  <div class="cover art7"></div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">Spanish Baby Lullabies</div>
+                  <div class="cardSub">Soft lullabies and gentle favorites in Spanish.</div>
+                </div>
+
+                <div class="card" data-play="daylist" data-artist="instrumental vibes">
+                  <div class="cover art6">
+                    <div class="badge" style="top:auto; bottom:10px; left:10px; right:auto; background: rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.10); color: rgba(255,255,255,.86)">daylist</div>
+                  </div>
+                  <div class="playFab" title="Play">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l12-7z"></path></svg>
+                  </div>
+                  <div class="cardTitle">daylist</div>
+                  <div class="cardSub">instrumental w... thursday afternoon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Player -->
+      <footer class="player" aria-label="Player">
+        <div class="now">
+          <div class="miniCover art3" id="miniCover" aria-hidden="true"></div>
+          <div class="nowMeta">
+            <div class="t" id="nowTitle">Virtual Insanity - Remastered 2006</div>
+            <div class="a" id="nowArtist">Jamiroquai</div>
+          </div>
+          <div class="nowActions">
+            <button class="tinyBtn" title="Like" aria-label="Like">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M12 21s-7-4.5-9-9a5 5 0 019-4 5 5 0 019 4c-2 4.5-9 9-9 9z"></path>
+              </svg>
+            </button>
+            <button class="tinyBtn" title="Add to playlist" aria-label="Add to playlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 6h10"></path>
+                <path d="M4 12h10"></path>
+                <path d="M4 18h7"></path>
+                <path d="M18 9v8"></path>
+                <path d="M14 13h8"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="ctrlRow" aria-label="Playback controls">
+            <button class="ctrl" title="Shuffle" aria-label="Shuffle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 3h5v5"></path>
+                <path d="M4 20l6-6"></path>
+                <path d="M4 4l6 6"></path>
+                <path d="M16 21h5v-5"></path>
+                <path d="M21 8c-4 0-6 10-10 10"></path>
+                <path d="M21 16c-4 0-6-10-10-10"></path>
+              </svg>
+            </button>
+            <button class="ctrl" title="Previous" aria-label="Previous">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 5h2v14H6zM20 6.5v11L10 12z"></path>
+              </svg>
+            </button>
+            <button class="ctrl play" id="playBtn" title="Play/Pause" aria-label="Play">
+              <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l12-7z"></path>
+              </svg>
+            </button>
+            <button class="ctrl" title="Next" aria-label="Next">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M16 5h2v14h-2zM4 6.5v11L14 12z"></path>
+              </svg>
+            </button>
+            <button class="ctrl" title="Queue" aria-label="Queue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M4 6h16"></path>
+                <path d="M4 12h10"></path>
+                <path d="M4 18h16"></path>
+                <path d="M18 9v6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="timeline" aria-label="Timeline">
+            <div id="curTime">0:56</div>
+            <div class="bar" id="timeBar" role="slider" aria-label="Seek" aria-valuemin="0" aria-valuemax="229" aria-valuenow="56" tabindex="0">
+              <div class="fill" id="timeFill" style="width:24.45%"></div>
+              <div class="knob" id="timeKnob" style="left:24.45%"></div>
+            </div>
+            <div id="durTime">3:49</div>
+          </div>
+        </div>
+
+        <div class="rightTools">
+          <button class="tinyBtn" title="Now playing view" aria-label="Now playing view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+              <path d="M8 16h8"></path>
+              <path d="M8 12h8"></path>
+            </svg>
+          </button>
+          <button class="tinyBtn" title="Devices" aria-label="Devices">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+              <path d="M18 8h4v10h-4z"></path>
+            </svg>
+          </button>
+          <button class="tinyBtn" title="Lyrics" aria-label="Lyrics">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16v16H8l-4 4z"></path>
+              <path d="M8 9h8"></path>
+              <path d="M8 13h6"></path>
+            </svg>
+          </button>
+
+          <div class="vol" aria-label="Volume">
+            <button class="tinyBtn" id="muteBtn" title="Mute" aria-label="Mute">
+              <svg id="volIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4z"></path>
+                <path d="M15.5 8.5a5 5 0 010 7"></path>
+                <path d="M18.5 5.5a9 9 0 010 13"></path>
+              </svg>
+            </button>
+            <div class="vbar" id="volBar" role="slider" aria-label="Volume slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62" tabindex="0">
+              <div class="vfill" id="volFill" style="width:62%"></div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (q, el=document) => el.querySelector(q);
+  const $$ = (q, el=document) => Array.from(el.querySelectorAll(q));
+
+  // Pills / tabs
+  $$('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      $$('.pill').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+      p.classList.add('active');
+      p.setAttribute('aria-selected','true');
+    });
+  });
+  $$('.cat').forEach(c => {
+    c.addEventListener('click', () => {
+      $$('.cat').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected','false'); });
+      c.classList.add('active');
+      c.setAttribute('aria-selected','true');
+    });
+  });
+
+  // Library selection + now playing update
+  const nowTitle = $('#nowTitle');
+  const nowArtist = $('#nowArtist');
+  const miniCover = $('#miniCover');
+
+  function setNowPlaying(title, artist, artClass) {
+    nowTitle.textContent = title;
+    nowArtist.textContent = artist || 'Spotify';
+    miniCover.className = 'miniCover ' + (artClass || 'art3');
+
+    // Reset timeline to a pleasing "paused mid-track" state if not playing
+    if (!state.playing) {
+      state.current = 56;
+      renderTime();
+    }
+  }
+
+  $$('.libItem').forEach((item, idx) => {
+    item.addEventListener('click', () => {
+      $$('.libItem').forEach(x => x.classList.remove('active'));
+      item.classList.add('active');
+
+      const title = item.getAttribute('data-track') || item.querySelector('.liTitle')?.textContent?.trim() || 'Track';
+      const artist = item.getAttribute('data-artist') || item.querySelector('.liSub')?.textContent?.trim() || 'Artist';
+      const thumbArt = item.querySelector('.thumb .art');
+      const artClass = thumbArt ? thumbArt.className.split(' ').find(c => c.startsWith('art')) : 'art3';
+      setNowPlaying(title, artist, artClass);
+    });
+  });
+
+  // Card / shortcut click -> update now playing & play
+  function bindPlayables(selector) {
+    $$(selector).forEach(el => {
+      el.addEventListener('click', (e) => {
+        // Avoid double triggering if clicking inside playFab
+        const title = el.getAttribute('data-play') || el.querySelector('.cardTitle,.scTitle')?.textContent?.trim() || 'Track';
+        const artist = el.getAttribute('data-artist') || 'Spotify';
+        const cover = el.querySelector('.cover,.scArt');
+        let artClass = 'art3';
+        if (cover) {
+          const c = (cover.className || '').split(' ').find(x => x.startsWith('art'));
+          if (c) artClass = c;
+        }
+        setNowPlaying(title, artist, artClass);
+        if (!state.playing) togglePlay(true);
+      });
+    });
+  }
+  bindPlayables('.card');
+  bindPlayables('.shortcut');
+
+  // Player state
+  const playBtn = $('#playBtn');
+  const playIcon = $('#playIcon');
+  const timeBar = $('#timeBar');
+  const timeFill = $('#timeFill');
+  const timeKnob = $('#timeKnob');
+  const curTime = $('#curTime');
+  const durTime = $('#durTime');
+
+  const state = {
+    playing: false,
+    duration: 3*60 + 49, // 3:49
+    current: 56,
+    timer: null
+  };
+
+  function fmt(sec) {
+    sec = Math.max(0, Math.min(state.duration, Math.round(sec)));
+    const m = Math.floor(sec/60);
+    const s = sec % 60;
+    return `${m}:${String(s).padStart(2,'0')}`;
+  }
+
+  function renderTime() {
+    const pct = (state.current / state.duration) * 100;
+    timeFill.style.width = `${pct}%`;
+    timeKnob.style.left = `${pct}%`;
+    curTime.textContent = fmt(state.current);
+    durTime.textContent = fmt(state.duration);
+    timeBar.setAttribute('aria-valuenow', String(Math.round(state.current)));
+  }
+
+  function setPlayIcon(playing){
+    playIcon.innerHTML = playing
+      ? '<path d="M7 5h4v14H7zM13 5h4v14h-4z"></path>'
+      : '<path d="M8 5v14l12-7z"></path>';
+    playBtn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    playBtn.title = playing ? 'Pause' : 'Play';
+  }
+
+  function togglePlay(force) {
+    const next = (typeof force === 'boolean') ? force : !state.playing;
+    state.playing = next;
+    setPlayIcon(state.playing);
+
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+    if (state.playing) {
+      state.timer = setInterval(() => {
+        state.current += 1;
+        if (state.current >= state.duration) {
+          state.current = state.duration;
+          togglePlay(false);
+        }
+        renderTime();
+      }, 1000);
+    }
+  }
+
+  playBtn.addEventListener('click', () => togglePlay());
+
+  // Seeking
+  let dragging = false;
+  function seekFromEvent(evt){
+    const r = timeBar.getBoundingClientRect();
+    const x = (evt.touches ? evt.touches[0].clientX : evt.clientX);
+    const pct = Math.max(0, Math.min(1, (x - r.left) / r.width));
+    state.current = pct * state.duration;
+    renderTime();
+  }
+
+  timeBar.addEventListener('mousedown', (e) => {
+    dragging = true;
+    timeBar.classList.add('dragging');
+    seekFromEvent(e);
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    seekFromEvent(e);
+  });
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    timeBar.classList.remove('dragging');
+  });
+
+  timeBar.addEventListener('touchstart', (e) => { dragging = true; timeBar.classList.add('dragging'); seekFromEvent(e); }, {passive:true});
+  window.addEventListener('touchmove', (e) => { if (dragging) seekFromEvent(e); }, {passive:true});
+  window.addEventListener('touchend', () => { dragging = false; timeBar.classList.remove('dragging'); });
+
+  // Keyboard seek on bar
+  timeBar.addEventListener('keydown', (e) => {
+    const step = (e.shiftKey ? 10 : 5);
+    if (e.key === 'ArrowLeft') { state.current = Math.max(0, state.current - step); renderTime(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { state.current = Math.min(state.duration, state.current + step); renderTime(); e.preventDefault(); }
+    if (e.key === ' ' || e.key === 'Enter') { togglePlay(); e.preventDefault(); }
+  });
+
+  // Volume
+  const volBar = $('#volBar');
+  const volFill = $('#volFill');
+  const muteBtn = $('#muteBtn');
+  const volIcon = $('#volIcon');
+
+  const volState = { value: 62, muted: false, last: 62 };
+
+  function renderVol(){
+    volFill.style.width = `${volState.muted ? 0 : volState.value}%`;
+    volBar.setAttribute('aria-valuenow', String(volState.muted ? 0 : volState.value));
+    if (volState.muted || volState.value === 0) {
+      volIcon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4z"></path><path d="M16 9l6 6"></path><path d="M22 9l-6 6"></path>';
+    } else if (volState.value < 35) {
+      volIcon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4z"></path><path d="M15.5 12a2.5 2.5 0 010 0"></path>';
+      // keep stroke style consistent by using same attributes on svg
+    } else {
+      volIcon.innerHTML = '<path d="M11 5L6 9H2v6h4l5 4z"></path><path d="M15.5 8.5a5 5 0 010 7"></path><path d="M18.5 5.5a9 9 0 010 13"></path>';
+    }
+  }
+
+  function setVolFromEvent(e){
+    const r = volBar.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX);
+    const pct = Math.max(0, Math.min(1, (x - r.left) / r.width));
+    volState.value = Math.round(pct * 100);
+    volState.muted = false;
+    renderVol();
+  }
+
+  volBar.addEventListener('mousedown', (e) => setVolFromEvent(e));
+  volBar.addEventListener('touchstart', (e) => setVolFromEvent(e), {passive:true});
+  volBar.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { volState.value = Math.max(0, volState.value - 5); volState.muted = false; renderVol(); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { volState.value = Math.min(100, volState.value + 5); volState.muted = false; renderVol(); e.preventDefault(); }
+    if (e.key === ' ' || e.key === 'Enter') { muteBtn.click(); e.preventDefault(); }
+  });
+
+  muteBtn.addEventListener('click', () => {
+    if (!volState.muted) {
+      volState.last = volState.value;
+      volState.muted = true;
+    } else {
+      volState.muted = false;
+      volState.value = Math.max(1, volState.last || 62);
+    }
+    renderVol();
+  });
+
+  // Global keyboard shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.isContentEditable)) return;
+    if (e.key === ' ') { togglePlay(); e.preventDefault(); }
+    if (e.key.toLowerCase() === 'k') { $('#searchInput').focus(); e.preventDefault(); }
+  });
+
+  // Seed render
+  renderTime();
+  setPlayIcon(false);
+  renderVol();
+
+  // Decorative: fill thumb/cover with minimal "art" hint (no external assets)
+  // Convert simple div.art into visible gradient
+  $$('.art').forEach(a => {
+    const artClass = a.className.split(' ').find(c => c.startsWith('art')) || 'art3';
+    a.classList.add(artClass);
+  });
+
+  // Clicking playFab triggers card click but ensures play toggles
+  $$('.playFab').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = btn.closest('.card');
+      if (card) card.click();
+    });
+  });
+})();
+</script>
+</body>
+</html>
