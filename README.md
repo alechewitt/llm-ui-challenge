@@ -70,8 +70,10 @@ After the initial creation, a few follow-up prompts were needed. Some of the Gem
 
 - Claude Sonnet 4.5
 - Claude Opus 4.5
+- Claude Opus 4.6
 - GPT-5.1
 - GPT-5.1 Codex
+- GPT-5.2
 - Gemini 2.5 Pro
 - Gemini 3 Pro Preview
 - Grok 4 Fast
@@ -84,6 +86,28 @@ After the initial creation, a few follow-up prompts were needed. Some of the Gem
 - Spotify
 - VS Code
 - Google Sheets
+
+## Adding a New Model
+
+You can benchmark a new model using the `llm-ui-benchmark` Claude Code skill. Run the following slash command in Claude Code from the project root:
+
+```
+/llm-ui-benchmark <openrouter-model-id>
+```
+
+For example:
+
+```
+/llm-ui-benchmark anthropic/claude-opus-4.6
+```
+
+This will automatically:
+
+1. Generate HTML for all 5 applications by calling the OpenRouter API via `create_interface.py`
+2. Capture screenshots of each generated HTML page at the correct viewport dimensions using Playwright
+3. Add the new model to the gallery in `index.html`
+
+The model identifier should be in [OpenRouter format](https://openrouter.ai/models) (e.g., `anthropic/claude-opus-4.6`, `openai/gpt-5.1`, `google/gemini-3-pro-preview`). You'll need an `OPENROUTER_API_KEY` environment variable set.
 
 ## View All Results
 
