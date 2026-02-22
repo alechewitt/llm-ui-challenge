@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spotify Interface</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Top Bar */
+  .top-bar {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: #000;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .window-controls {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+  }
+
+  .window-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28c840; }
+
+  .nav-arrows {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+  }
+
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+  .home-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  .search-bar {
+    flex: 1;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    background: #242424;
+    border-radius: 24px;
+    padding: 0 16px;
+    height: 40px;
+    margin-right: auto;
+  }
+
+  .search-bar svg {
+    color: #b3b3b3;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .search-bar input {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+  }
+
+  .search-bar .browse-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: #b3b3b3;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #444;
+    padding-left: 8px;
+    margin-left: 8px;
+  }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+  }
+
+  .top-right-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e87d1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  /* Main Layout */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 340px;
+    background: #121212;
+    border-radius: 8px;
+    margin: 0 0 0 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+
+  .sidebar-header h2 {
+    font-size: 16px;
+    color: #b3b3b3;
+    font-weight: 600;
+  }
+
+  .sidebar-header-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .sidebar-header-actions button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: #b3b3b3;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-header-actions button:hover { color: #fff; }
+
+  .filter-chips {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+    overflow-x: auto;
+  }
+
+  .filter-chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .chip:hover { background: rgba(255,255,255,0.15); }
+
+  .sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px;
+  }
+
+  .sidebar-list::-webkit-scrollbar { width: 8px; }
+  .sidebar-list::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .sidebar-item:hover { background: rgba(255,255,255,0.07); }
+
+  .sidebar-item-img {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+
+  .sidebar-item-img.rounded { border-radius: 50%; }
+
+  .sidebar-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar-item-title {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+  }
+
+  .sidebar-item-subtitle {
+    font-size: 12px;
+    color: #b3b3b3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    background: #121212;
+    border-radius: 8px;
+    margin: 0 8px;
+    overflow-y: auto;
+    padding: 16px 24px;
+  }
+
+  .main-content::-webkit-scrollbar { width: 8px; }
+  .main-content::-webkit-scrollbar-track { background: transparent; }
+  .main-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+  /* Category Chips */
+  .category-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .cat-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .cat-chip.active {
+    background: #fff;
+    color: #000;
+  }
+
+  .cat-chip:hover:not(.active) { background: rgba(255,255,255,0.15); }
+
+  /* Quick Access Grid */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .quick-card {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    height: 56px;
+    transition: background 0.2s;
+  }
+
+  .quick-card:hover { background: rgba(255,255,255,0.15); }
+
+  .quick-card img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .quick-card span {
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .quick-card .blue-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1db954;
+    margin-left: auto;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Section Header */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .section-header a {
+    font-size: 14px;
+    font-weight: 600;
+    color: #b3b3b3;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .section-header a:hover { color: #fff; text-decoration: underline; }
+
+  /* Card Row */
+  .card-row {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    margin-bottom: 30px;
+    padding-bottom: 4px;
+  }
+
+  .card-row::-webkit-scrollbar { display: none; }
+
+  .card {
+    min-width: 180px;
+    max-width: 180px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .card:hover { background: rgba(255,255,255,0.1); }
+
+  .card-img-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .card .beta-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #333;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .card .spotify-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: #b3b3b3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+
+  /* Player Bar */
+  .player-bar {
+    height: 80px;
+    background: #181818;
+    border-top: 1px solid #282828;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+
+  .player-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 280px;
+    flex-shrink: 0;
+  }
+
+  .player-left img {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
+  .player-track-info {
+    min-width: 0;
+  }
+
+  .player-track-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-track-artist {
+    font-size: 11px;
+    color: #b3b3b3;
+  }
+
+  .player-like {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+
+  .player-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .player-controls button {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .player-controls button:hover { color: #fff; }
+
+  .play-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 16px !important;
+  }
+
+  .progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .progress-time {
+    font-size: 11px;
+    color: #b3b3b3;
+    min-width: 35px;
+    text-align: center;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: #4d4d4d;
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+    width: 25%;
+    position: relative;
+  }
+
+  .progress-bar:hover .progress-bar-fill { background: #1db954; }
+
+  .progress-bar:hover .progress-dot { display: block; }
+
+  .progress-dot {
+    display: none;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    right: -6px;
+    top: -4px;
+  }
+
+  .player-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 280px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  .player-right button {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .player-right button:hover { color: #fff; }
+
+  .volume-bar {
+    width: 100px;
+    height: 4px;
+    background: #4d4d4d;
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .volume-bar-fill {
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+    width: 70%;
+  }
+
+  .volume-bar:hover .volume-bar-fill { background: #1db954; }
+
+  /* Color Helpers for placeholder images */
+  .img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .sidebar-item .img-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-item .img-placeholder.rounded { border-radius: 50%; }
+
+  /* Generated gradient backgrounds */
+  .bg-1 { background: linear-gradient(135deg, #1a237e, #4a148c); }
+  .bg-2 { background: linear-gradient(135deg, #004d40, #1b5e20); }
+  .bg-3 { background: linear-gradient(135deg, #b71c1c, #880e4f); }
+  .bg-4 { background: linear-gradient(135deg, #e65100, #bf360c); }
+  .bg-5 { background: linear-gradient(135deg, #311b92, #4a148c); }
+  .bg-6 { background: linear-gradient(135deg, #0d47a1, #01579b); }
+  .bg-7 { background: linear-gradient(135deg, #f57f17, #ff6f00); }
+  .bg-8 { background: linear-gradient(135deg, #1b5e20, #33691e); }
+  .bg-9 { background: linear-gradient(135deg, #263238, #37474f); }
+  .bg-10 { background: linear-gradient(135deg, #4e342e, #3e2723); }
+  .bg-11 { background: linear-gradient(135deg, #1db954, #191414); }
+  .bg-12 { background: linear-gradient(135deg, #e91e63, #9c27b0); }
+  .bg-13 { background: linear-gradient(135deg, #ff9800, #f44336); }
+  .bg-14 { background: linear-gradient(135deg, #2196f3, #00bcd4); }
+  .bg-15 { background: linear-gradient(135deg, #9c27b0, #673ab7); }
+
+  .quick-card .img-placeholder {
+    width: 56px;
+    height: 56px;
+    font-size: 9px;
+    flex-shrink: 0;
+  }
+
+  .card .img-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+
+  .player-left .img-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    font-size: 8px;
+    flex-shrink: 0;
+  }
+
+  /* SVG icons */
+  svg {
+    flex-shrink: 0;
+  }
+
+  .arrow-right-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="window-controls">
+    <div class="window-dot dot-red"></div>
+    <div class="window-dot dot-yellow"></div>
+    <div class="window-dot dot-green"></div>
+  </div>
+  <div class="nav-arrows">
+    <button class="nav-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.03.47a.75.75 0 010 1.06L4.56 8l6.47 6.47a.75.75 0 11-1.06 1.06L2.44 8l7.53-7.53a.75.75 0 011.06 0z"/></svg>
+    </button>
+    <button class="nav-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.97.47a.75.75 0 000 1.06L11.44 8l-6.47 6.47a.75.75 0 101.06 1.06L13.56 8 6.03.47a.75.75 0 00-1.06 0z"/></svg>
+    </button>
+  </div>
+  <button class="home-btn">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3.247a1 1 0 00-1 0L4 7.577V20h4.5v-6a1 1 0 011-1h5a1 1 0 011 1v6H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 013 0l7.5 4.33a2 2 0 011 1.732V21a1 1 0 01-1 1h-6.5a1 1 0 01-1-1v-6h-3v6a1 1 0 01-1 1H3a1 1 0 01-1-1V7.577a2 2 0 011-1.732l7.5-4.33z"/></svg>
+  </button>
+  <div class="search-bar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 101.414-1.414l-4.344-4.344a9.157 9.157 0 002.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.28c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z"/></svg>
+    <input type="text" placeholder="What do you want to play?">
+    <button class="browse-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2a1 1 0 011-1h14a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V2zm0 8a1 1 0 011-1h5a1 1 0 011 1v12a1 1 0 01-1 1H5a1 1 0 01-1-1V10zm9 0a1 1 0 011-1h5a1 1 0 011 1v5a1 1 0 01-1 1h-5a1 1 0 01-1-1v-5zm0 9a1 1 0 011-1h5a1 1 0 011 1v3a1 1 0 01-1 1h-5a1 1 0 01-1-1v-3z"/></svg>
+    </button>
+  </div>
+  <div class="top-right">
+    <button class="top-right-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5.85 3.5a.75.75 0 00-1.117-1 9.719 9.719 0 000 13.5.75.75 0 001.117-1 8.22 8.22 0 010-11.5zm14.417-1a.75.75 0 00-1.117 1 8.22 8.22 0 010 11.5.75.75 0 001.117 1 9.72 9.72 0 000-13.5z"/><path d="M8.737 6.386a.75.75 0 00-1.104-.872 6.468 6.468 0 000 8.972.75.75 0 001.104-.872 4.97 4.97 0 010-7.228zm7.63-.872a.75.75 0 00-1.104.872 4.97 4.97 0 010 7.228.75.75 0 001.104.872 6.47 6.47 0 000-8.972z"/><circle cx="12" cy="10.25" r="2.5"/></svg>
+    </button>
+    <button class="top-right-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM8.5 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm0 5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM12 18.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+    </button>
+    <div class="avatar">A</div>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="main-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>📚 Your Library</h2>
+      <div class="sidebar-header-actions">
+        <button>+</button>
+        <button>↗</button>
+      </div>
+    </div>
+    <div class="filter-chips">
+      <button class="chip">Playlists</button>
+      <button class="chip">Podcasts</button>
+      <button class="chip">Albums</button>
+      <button class="arrow-right-chip">›</button>
+    </div>
+    <div class="sidebar-list" id="sidebarList">
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <!-- Category Chips -->
+    <div class="category-chips">
+      <button class="cat-chip active">All</button>
+      <button class="cat-chip">Music</button>
+      <button class="cat-chip">Podcasts</button>
+      <button class="cat-chip">Audiobooks</button>
+    </div>
+
+    <!-- Quick Access Grid -->
+    <div class="quick-grid" id="quickGrid">
+    </div>
+
+    <!-- Made For You -->
+    <div class="section-header">
+      <h2>Made For You</h2>
+      <a href="#">Show all</a>
+    </div>
+    <div class="card-row" id="madeForYou">
+    </div>
+
+    <!-- Recently Played -->
+    <div class="section-header">
+      <h2>Recently played</h2>
+      <a href="#">Show all</a>
+    </div>
+    <div class="card-row" id="recentlyPlayed">
+    </div>
+  </div>
+</div>
+
+<!-- Player Bar -->
+<div class="player-bar">
+  <div class="player-left">
+    <div class="img-placeholder bg-4" style="width:56px;height:56px;border-radius:4px;font-size:8px;flex-shrink:0;">Jamiroquai</div>
+    <div class="player-track-info">
+      <div class="player-track-name">Virtual Insanity - Remastered 2006</div>
+      <div class="player-track-artist">Jamiroquai</div>
+    </div>
+    <button class="player-like">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8z"/><path d="M7.25 11.25V5.5H8.75v5.75H7.25zM4.75 8.75V5.5h1.5v3.25h-1.5zm4.5 0V5.5h1.5v3.25h-1.5z"/></svg>
+    </button>
+  </div>
+  <div class="player-center">
+    <div class="player-controls">
+      <button title="Shuffle">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13.151.922a.75.75 0 10-1.06 1.06L13.109 3H11.16a3.75 3.75 0 00-2.873 1.34l-6.173 7.356A2.25 2.25 0 01.39 12.5H0V14h.391a3.75 3.75 0 002.873-1.34l6.173-7.356a2.25 2.25 0 011.724-.804h1.947l-1.017 1.018a.75.75 0 001.06 1.06L15.98 3.75 13.15.922zM.391 3.5H0V2h.391c1.109 0 2.16.49 2.873 1.34L4.89 5.277l-.979 1.167-1.796-2.14A2.25 2.25 0 00.39 3.5z"/><path d="M7.5 10.723l.98-1.167 1.796 2.14a2.25 2.25 0 001.724.804h1.947l-1.017-1.018a.75.75 0 111.06-1.06l2.829 2.828-2.829 2.828a.75.75 0 11-1.06-1.06L13.109 13H11.16a3.75 3.75 0 01-2.873-1.34L7.5 10.723z"/></svg>
+      </button>
+      <button title="Previous">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3.3 1a.7.7 0 01.7.7v5.15l9.95-5.744a.7.7 0 011.05.606v12.575a.7.7 0 01-1.05.607L4 9.149V14.3a.7.7 0 01-.7.7H2.7a.7.7 0 01-.7-.7V1.7a.7.7 0 01.7-.7h.6z"/></svg>
+      </button>
+      <button class="play-btn" title="Play" id="playBtn">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 1.713a.7.7 0 011.05-.607l10.89 6.288a.7.7 0 010 1.212L4.05 14.894A.7.7 0 013 14.288V1.713z"/></svg>
+      </button>
+      <button title="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M12.7 1a.7.7 0 00-.7.7v5.15L2.05 1.107A.7.7 0 001 1.712v12.575a.7.7 0 001.05.607L12 9.149V14.3a.7.7 0 00.7.7h.6a.7.7 0 00.7-.7V1.7a.7.7 0 00-.7-.7h-.6z"/></svg>
+      </button>
+      <button title="Repeat">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 4.75A3.75 3.75 0 013.75 1h8.5A3.75 3.75 0 0116 4.75v5a3.75 3.75 0 01-3.75 3.75H9.81l1.018 1.018a.75.75 0 11-1.06 1.06L6.939 12.75l2.829-2.828a.75.75 0 111.06 1.06L9.811 12h2.439a2.25 2.25 0 002.25-2.25v-5a2.25 2.25 0 00-2.25-2.25h-8.5A2.25 2.25 0 001.5 4.75v5A2.25 2.25 0 003.75 12H5v1.5H3.75A3.75 3.75 0 010 9.75v-5z"/></svg>
+      </button>
+    </div>
+    <div class="progress-bar-container">
+      <span class="progress-time">0:56</span>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-bar-fill" id="progressFill" style="width: 25%;">
+          <div class="progress-dot"></div>
+        </div>
+      </div>
+      <span class="progress-time">3:49</span>
+    </div>
+  </div>
+  <div class="player-right">
+    <button title="Now Playing View">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M1 3v9h14V3H1zm0-1h14a1 1 0 011 1v10a1 1 0 01-1 1H1a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M4 7h1v2H4V7zm2.5-1h1v4h-1V6zM9 5.5h1v5H9v-5zM11.5 7h1v2h-1V7z"/></svg>
+    </button>
+    <button title="Lyrics">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8.5 1A4.505 4.505 0 004 5.5c0 .731.191 1.411.502 2.022L1.99 13.163a1.307 1.307 0 00.296 1.542 1.303 1.303 0 001.542.296L9.478 11.5A4.5 4.5 0 108.5 1z"/></svg>
+    </button>
+    <button title="Queue">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M15 15H1v-1.5h14V15zm0-4.5H1V9h14v1.5zm-14-7A2.5 2.5 0 013.5 1h9a2.5 2.5 0 010 5h-9A2.5 2.5 0 011 3.5zm2.5-1a1 1 0 000 2h9a1 1 0 100-2h-9z"/></svg>
+    </button>
+    <button title="Connect to device">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6 2.75C6 1.784 6.784 1 7.75 1h6.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15h-6.5A1.75 1.75 0 016 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h6.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25h-6.5z"/><path d="M4 4H2.75A1.75 1.75 0 001 5.75v6.5c0 .966.784 1.75 1.75 1.75H4v-1.5H2.75a.25.25 0 01-.25-.25v-6.5a.25.25 0 01.25-.25H4V4z"/></svg>
+    </button>
+    <button title="Volume">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M9.741.85a.75.75 0 01.375.65v13a.75.75 0 01-1.125.65l-6.925-4a3.642 3.642 0 01-1.33-4.967 3.639 3.639 0 011.33-1.332l6.925-4a.75.75 0 01.75 0zm4.44 2.166a.75.75 0 011.063.031c1.656 1.74 1.656 4.466 0 6.207a.75.75 0 01-1.094-1.028c1.156-1.215 1.156-3.136 0-4.15a.75.75 0 01.03-1.06z"/><path d="M11.95 5.28a.75.75 0 011.06-.03 2.9 2.9 0 010 4.173.75.75 0 11-1.03-1.09 1.4 1.4 0 000-1.963.75.75 0 01-.03-1.09z"/></svg>
+    </button>
+    <div class="volume-bar">
+      <div class="volume-bar-fill"></div>
+    </div>
+    <button title="Full screen">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M6.53 9.47a.75.75 0 010 1.06l-2.72 2.72h1.018a.75.75 0 010 1.5H1.25v-3.578a.75.75 0 011.5 0v1.018l2.72-2.72a.75.75 0 011.06 0zm2.94-2.94a.75.75 0 010-1.06l2.72-2.72h-1.018a.75.75 0 110-1.5h3.578v3.578a.75.75 0 01-1.5 0V3.81l-2.72 2.72a.75.75 0 01-1.06 0z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // Sidebar data
+  const sidebarItems = [
+    { title: "Man of Steel!", subtitle: "Playlist • 31t73z5sngxqxhd7vxsk7l2...", color: "bg-1" },
+    { title: "We are the champions!", subtitle: "Playlist • 31t73z5sngxqxhd7vxsk7l2...", color: "bg-3" },
+    { title: "Duo", subtitle: "Playlist • 31t73z5sngxqxhd7vxsk7l2...", color: "bg-2" },
+    { title: "I'll cover you!", subtitle: "Playlist • 31t73z5sngxqxhd7vxsk7l2...", color: "bg-5" },
+    { title: "Morning Motivation", subtitle: "Playlist • Spotify", color: "bg-7" },
+    { title: "80's", subtitle: "Playlist • 31t73z5sngxqxhd7vxsk7l2...", color: "bg-12" },
+    { title: "jazz band, club jazz, and jazz tr...", subtitle: "Playlist • Spotify", color: "bg-9" },
+    { title: "DJ", subtitle: "Click to start listening", color: "bg-11", rounded: false },
+    { title: "Herb Alpert", subtitle: "Artist", color: "bg-10", rounded: true },
+    { title: "Your Episodes", subtitle: "Playlist • Saved & downloaded epis...", color: "bg-11" },
+  ];
+
+  const sidebarList = document.getElementById('sidebarList');
+  sidebarItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'sidebar-item';
+    div.innerHTML = `
+      <div class="img-placeholder ${item.color} ${item.rounded ? 'rounded' : ''}" style="font-size:9px;">${item.title.substring(0, 3)}</div>
+      <div class="sidebar-item-info">
+        <div class="sidebar-item-title">${item.title}</div>
+        <div class="sidebar-item-subtitle">${item.subtitle}</div>
+      </div>
+    `;
+    sidebarList.appendChild(div);
+  });
+
+  // Quick access grid
+  const quickItems = [
+    { title: "Peaceful Piano", color: "bg-6" },
+    { title: "White Noise 10 Hours", color: "bg-8" },
+    { title: "Spanish Songs for Kids", color: "bg-7" },
+    { title: "daylist", color: "bg-10" },
+    { title: "Spanish Lullabies ❤️", color: "bg-3" },
+    { title: "Cuento de SPIDEY y su...", color: "bg-13", dot: true },
+    { title: "Stevie Wonder Radio", color: "bg-5" },
+    { title: "Chill Mix", color: "bg-9" },
+  ];
+
+  const quickGrid = document.getElementById('quickGrid');
+  quickItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'quick-card';
+    div.innerHTML = `
+      <div class="img-placeholder ${item.color}" style="width:56px;height:56px;font-size:8px;flex-shrink:0;">${item.title.substring(0, 4)}</div>
+      <span>${item.title}</span>
+      ${item.dot ? '<div class="blue-dot"></div>' : ''}
+    `;
+    quickGrid.appendChild(div);
+  });
+
+  // Made For You cards
+  const madeForYouData = [
+    { title: "Discover Weekly", subtitle: "Your shortcut to hidden gems, deep...", color: "bg-11", badge: null },
+    { title: "DJ", subtitle: "All kinds of music, picked by your own ...", color: "bg-14", badge: "BETA" },
+    { title: "Daily Mix 1", subtitle: "CantaJuego, Marta Gómez, Canciones d...", color: "bg-13" },
+    { title: "Daily Mix 2", subtitle: "Kat Eaton, MT Jones, Flo Naegeli and more", color: "bg-9" },
+    { title: "Daily Mix 3", subtitle: "Tankeflukt, San Kees, Into the...", color: "bg-15" },
+  ];
+
+  const madeForYou = document.getElementById('madeForYou');
+  madeForYouData.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="card-img-wrapper">
+        <div class="img-placeholder ${item.color}" style="font-size:14px;font-weight:800;">${item.title.includes('Discover') ? 'DISCOVER WEEKLY' : item.title.includes('DJ') ? 'DJ' : item.title.includes('1') ? 'O1' : item.title.includes('2') ? 'O2' : 'O3'}</div>
+        ${item.badge ? `<div class="beta-badge">${item.badge}</div>` : ''}
+      </div>
+      <div class="card-title">${item.title}</div>
+      <div class="card-subtitle">${item.subtitle}</div>
+    `;
+    madeForYou.appendChild(div);
+  });
+
+  // Recently Played cards
+  const recentlyPlayedData = [
+    { title: "Jamiroquai", subtitle: "", color: "bg-4" },
+    { title: "Peaceful Piano", subtitle: "", color: "bg-6" },
+    { title: "White Noise 10 Hours", subtitle: "", color: "bg-8" },
+    { title: "Spanish Baby Lullabies", subtitle: "", color: "bg-12" },
+    { title: "instrumental w... thursday aftern...", subtitle: "", color: "bg-15" },
+  ];
+
+  const recentlyPlayed = document.getElementById('recentlyPlayed');
+  recentlyPlayedData.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <div class="card-img-wrapper">
+        <div class="img-placeholder ${item.color}" style="font-size:12px;font-weight:700;">${item.title.substring(0, 6)}</div>
+      </div>
+      <div class="card-title">${item.title}</div>
+      <div class="card-subtitle">${item.subtitle}</div>
+    `;
+    recentlyPlayed.appendChild(div);
+  });
+
+  // Category chips toggle
+  document.querySelectorAll('.cat-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+
+  // Play button toggle
+  let isPlaying = false;
+  const playBtn = document.getElementById('playBtn');
+  playBtn.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    if (isPlaying) {
+      playBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2.7 1a.7.7 0 00-.7.7v12.6a.7.7 0 00.7.7h2.6a.7.7 0 00.7-.7V1.7a.7.7 0 00-.7-.7H2.7zm8 0a.7.7 0 00-.7.7v12.6a.7.7 0 00.7.7h2.6a.7.7 0 00.7-.7V1.7a.7.7 0 00-.7-.7h-2.6z"/></svg>`;
+    } else {
+      playBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M3 1.713a.7.7 0 011.05-.607l10.89 6.288a.7.7 0 010 1.212L4.05 14.894A.7.7 0 013 14.288V1.713z"/></svg>`;
+    }
+  });
+
+  // Progress bar click
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  progressBar.addEventListener('click', (e) => {
+    const rect = progressBar.getBoundingClientRect();
+    const percent = ((e.clientX - rect.left) / rect.width) * 100;
+    progressFill.style.width = Math.max(0, Math.min(100, percent)) + '%';
+  });
+
+  // Hover effects on cards with play button
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      if (!card.querySelector('.card-play-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'card-play-btn';
+        btn.innerHTML = '▶';
+        btn.style.cssText = 'position:absolute;bottom:8px;right:8px;width:40px;height:40px;border-radius:50%;background:#1db954;border:none;color:#000;font-size:16px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.4);opacity:0;transition:opacity 0.2s,transform 0.2s;transform:translateY(4px);display:flex;align-items:center;justify-content:center;';
+        card.querySelector('.card-img-wrapper').appendChild(btn);
+        requestAnimationFrame(() => {
+          btn.style.opacity = '1';
+          btn.style.transform = 'translateY(0)';
+        });
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      const btn = card.querySelector('.card-play-btn');
+      if (btn) {
+        btn.style.opacity = '0';
+        btn.style.transform = 'translateY(4px)';
+        setTimeout(() => btn.remove(), 200);
+      }
+    });
+  });
+</script>
+</body>
+</html>

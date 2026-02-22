@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document3 - Microsoft Word</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; background: #e8e8e8; }
+
+  /* Title Bar */
+  .title-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #2b579a; color: white; height: 32px; padding: 0 8px;
+    font-size: 12px; flex-shrink: 0;
+  }
+  .title-bar-left { display: flex; align-items: center; gap: 6px; }
+  .traffic-lights { display: flex; gap: 6px; margin-right: 8px; }
+  .traffic-light { width: 12px; height: 12px; border-radius: 50%; }
+  .tl-red { background: #ff5f57; }
+  .tl-yellow { background: #febc2e; }
+  .tl-green { background: #28c840; }
+  .title-bar-left span { font-size: 12px; color: rgba(255,255,255,0.9); }
+  .autosave-toggle { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+  .toggle-switch { width: 34px; height: 18px; background: #555; border-radius: 9px; position: relative; cursor: pointer; }
+  .toggle-switch::after { content: ''; position: absolute; width: 14px; height: 14px; background: white; border-radius: 50%; top: 2px; right: 2px; }
+  .title-bar-icons { display: flex; align-items: center; gap: 8px; }
+  .title-bar-icons span { cursor: pointer; font-size: 14px; opacity: 0.8; }
+  .title-center { display: flex; align-items: center; gap: 8px; }
+  .title-center .doc-name { font-size: 13px; }
+  .title-center .confidential { display: flex; align-items: center; gap: 3px; font-size: 11px; opacity: 0.85; }
+  .confidential::before { content: '🔒'; font-size: 10px; }
+  .search-bar { display: flex; align-items: center; gap: 4px; font-size: 11px; opacity: 0.7; }
+  .search-bar::before { content: '🔍'; font-size: 10px; }
+
+  /* Ribbon Tabs */
+  .ribbon-tabs {
+    display: flex; align-items: center; background: #f3f3f3; border-bottom: 1px solid #d1d1d1;
+    height: 34px; padding: 0 12px; flex-shrink: 0;
+  }
+  .ribbon-tabs .tab {
+    padding: 6px 14px; font-size: 13px; cursor: pointer; color: #444;
+    border-bottom: 2px solid transparent; position: relative;
+  }
+  .ribbon-tabs .tab.active { color: #2b579a; border-bottom: 2px solid #2b579a; font-weight: 500; }
+  .ribbon-tabs .tab:hover { background: #e0e0e0; }
+  .ribbon-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .ribbon-right .btn { display: flex; align-items: center; gap: 4px; padding: 4px 10px; font-size: 12px; cursor: pointer; border-radius: 3px; border: none; background: none; color: #444; }
+  .ribbon-right .btn:hover { background: #e0e0e0; }
+  .btn-comments { }
+  .btn-editing { }
+  .btn-share { background: #2b579a !important; color: white !important; border-radius: 3px; padding: 4px 14px !important; }
+
+  /* Ribbon Content */
+  .ribbon {
+    display: flex; align-items: stretch; background: #f8f8f8; border-bottom: 1px solid #d1d1d1;
+    height: 95px; padding: 4px 8px; flex-shrink: 0; gap: 2px;
+  }
+  .ribbon-group {
+    display: flex; align-items: center; padding: 0 6px; border-right: 1px solid #ddd; gap: 2px;
+  }
+  .ribbon-group:last-child { border-right: none; }
+  .ribbon-group-label {
+    font-size: 9px; color: #888; text-align: center; position: absolute; bottom: 2px;
+  }
+
+  /* Clipboard Group */
+  .clipboard-group { flex-direction: column; align-items: center; padding: 2px 8px; }
+  .paste-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 50px; height: 55px; cursor: pointer; border: none; background: none; font-size: 10px; color: #444;
+  }
+  .paste-btn:hover { background: #e0e0e0; border-radius: 3px; }
+  .paste-icon { font-size: 24px; }
+  .clipboard-small { display: flex; flex-direction: column; gap: 1px; }
+  .clipboard-small button { background: none; border: none; cursor: pointer; padding: 2px 4px; font-size: 14px; }
+  .clipboard-small button:hover { background: #e0e0e0; border-radius: 2px; }
+
+  /* Font Group */
+  .font-group { flex-direction: column; gap: 3px; padding: 4px 8px; }
+  .font-row { display: flex; align-items: center; gap: 3px; }
+  .font-select {
+    width: 110px; height: 24px; font-size: 12px; border: 1px solid #bbb; border-radius: 2px;
+    padding: 0 4px; background: white;
+  }
+  .font-size-select {
+    width: 48px; height: 24px; font-size: 12px; border: 1px solid #bbb; border-radius: 2px;
+    padding: 0 4px; background: white;
+  }
+  .font-btn {
+    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    border: none; background: none; cursor: pointer; font-size: 13px; border-radius: 2px;
+  }
+  .font-btn:hover { background: #e0e0e0; }
+  .font-btn.bold { font-weight: bold; }
+  .font-btn.italic { font-style: italic; }
+  .font-btn.underline { text-decoration: underline; }
+  .font-color-a { color: red; font-weight: bold; }
+  .highlight-btn { background: yellow; }
+
+  /* Paragraph Group */
+  .para-group { flex-direction: column; gap: 3px; padding: 4px 6px; }
+  .para-row { display: flex; align-items: center; gap: 2px; }
+
+  /* Styles Group */
+  .styles-group { display: flex; align-items: center; gap: 4px; padding: 4px 8px; }
+  .style-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 50px; height: 65px; border: none; background: none; cursor: pointer;
+    font-size: 10px; color: #444; gap: 2px;
+  }
+  .style-btn:hover { background: #e0e0e0; border-radius: 3px; }
+  .style-btn .icon { font-size: 22px; }
+
+  /* Large Buttons */
+  .large-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 58px; height: 70px; border: none; background: none; cursor: pointer;
+    font-size: 10px; color: #444; gap: 2px; border-radius: 3px;
+  }
+  .large-btn:hover { background: #e0e0e0; }
+  .large-btn .icon { font-size: 24px; }
+
+  /* Document Area */
+  .document-area {
+    flex: 1; overflow-y: auto; display: flex; justify-content: center;
+    padding: 20px 0; background: #e0e0e0;
+  }
+  .page {
+    width: 816px; min-height: 1056px; background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); padding: 96px 96px;
+    font-family: 'Calibri', sans-serif; font-size: 12pt;
+    outline: none; position: relative; line-height: 1.5;
+  }
+  .page .cursor-line {
+    position: absolute; top: 96px; left: 96px;
+    width: 1px; height: 18px; background: black;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+  /* Status Bar */
+  .status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #f3f3f3; border-top: 1px solid #d1d1d1; height: 28px;
+    padding: 0 12px; flex-shrink: 0; font-size: 11px; color: #555;
+  }
+  .status-left { display: flex; align-items: center; gap: 20px; }
+  .status-right { display: flex; align-items: center; gap: 10px; }
+  .status-right .view-btn { cursor: pointer; font-size: 14px; opacity: 0.6; padding: 2px 4px; }
+  .status-right .view-btn:hover { opacity: 1; }
+  .zoom-controls { display: flex; align-items: center; gap: 4px; }
+  .zoom-slider { width: 100px; height: 3px; cursor: pointer; }
+  .zoom-btn { cursor: pointer; font-size: 14px; background: none; border: none; color: #555; }
+  .accessibility { display: flex; align-items: center; gap: 4px; }
+  .accessibility::before { content: '⚙'; font-size: 12px; }
+
+  .dropdown-arrow { font-size: 8px; margin-left: 2px; }
+
+  /* Editable page styling */
+  .page[contenteditable] { caret-color: black; }
+  .page[contenteditable]:focus { outline: none; }
+  .page[contenteditable]:focus .cursor-line { display: none; }
+
+  .more-btn { font-size: 16px; letter-spacing: 1px; cursor: pointer; color: rgba(255,255,255,0.7); }
+
+  .separator { width: 1px; height: 50px; background: #ddd; margin: 0 2px; }
+</style>
+</head>
+<body>
+
+<!-- Title Bar -->
+<div class="title-bar">
+  <div class="title-bar-left">
+    <div class="traffic-lights">
+      <div class="traffic-light tl-red"></div>
+      <div class="traffic-light tl-yellow"></div>
+      <div class="traffic-light tl-green"></div>
+    </div>
+    <div class="autosave-toggle">
+      <span>AutoSave</span>
+      <div class="toggle-switch"></div>
+    </div>
+    <div class="title-bar-icons">
+      <span>🏠</span>
+      <span>💾</span>
+      <span>↩</span>
+      <span>↪</span>
+      <span>🔄</span>
+      <span>📂</span>
+      <span class="more-btn">⋯</span>
+    </div>
+  </div>
+  <div class="title-center">
+    <span class="doc-name">Document3</span>
+    <span class="confidential">Confidential*</span>
+  </div>
+  <div class="search-bar">
+    Search (Cmd + Ctrl + U)
+  </div>
+</div>
+
+<!-- Ribbon Tabs -->
+<div class="ribbon-tabs">
+  <div class="tab active">Home</div>
+  <div class="tab">Insert</div>
+  <div class="tab">Draw</div>
+  <div class="tab">Design</div>
+  <div class="tab">Layout</div>
+  <div class="tab">References</div>
+  <div class="tab">Mailings</div>
+  <div class="tab">Review</div>
+  <div class="tab">View</div>
+  <div class="ribbon-right">
+    <button class="btn btn-comments">💬 Comments</button>
+    <button class="btn btn-editing">✏️ Editing ▾</button>
+    <button class="btn btn-share">Share ▾</button>
+  </div>
+</div>
+
+<!-- Ribbon -->
+<div class="ribbon">
+  <!-- Clipboard -->
+  <div class="ribbon-group" style="gap: 4px;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <button class="paste-btn">
+        <span style="font-size:28px;">📋</span>
+        <span>Paste</span>
+      </button>
+    </div>
+    <div class="clipboard-small" style="margin-top:-4px;">
+      <button title="Cut" style="font-size:16px;background:none;border:none;cursor:pointer;">✂</button>
+      <button title="Copy" style="font-size:14px;background:none;border:none;cursor:pointer;">📄</button>
+      <button title="Format Painter" style="font-size:14px;background:none;border:none;cursor:pointer;">🖌</button>
+    </div>
+  </div>
+
+  <!-- Font -->
+  <div class="ribbon-group" style="flex-direction:column;gap:4px;padding:6px 8px;">
+    <div class="font-row">
+      <select class="font-select"><option>Calibri (Bo...</option></select>
+      <select class="font-size-select"><option>12</option></select>
+      <button class="font-btn" title="Increase Font Size" style="font-size:15px;">A<span style="font-size:8px;vertical-align:super;">▲</span></button>
+      <button class="font-btn" title="Decrease Font Size" style="font-size:13px;">A<span style="font-size:8px;vertical-align:super;">▼</span></button>
+      <button class="font-btn" title="Change Case">Aa<span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Clear Formatting" style="font-size:16px;">🅰<span style="font-size:9px;">✨</span></button>
+    </div>
+    <div class="font-row">
+      <button class="font-btn bold" title="Bold">B</button>
+      <button class="font-btn italic" title="Italic">I</button>
+      <button class="font-btn underline" title="Underline">U<span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Strikethrough" style="text-decoration:line-through;">ab</button>
+      <button class="font-btn" title="Subscript" style="font-size:11px;">x<sub>2</sub></button>
+      <button class="font-btn" title="Superscript" style="font-size:11px;">x<sup>2</sup></button>
+      <span style="width:8px;"></span>
+      <button class="font-btn" title="Font Color"><span style="color:red;font-weight:bold;text-decoration:underline;text-decoration-color:red;">A</span><span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Highlight" style="font-size:13px;">🖊<span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Font Color"><span style="color:#c00;font-weight:bold;border-bottom:3px solid red;">A</span><span class="dropdown-arrow">▾</span></button>
+    </div>
+  </div>
+
+  <!-- Paragraph -->
+  <div class="ribbon-group" style="flex-direction:column;gap:4px;padding:6px 6px;">
+    <div class="para-row">
+      <button class="font-btn" title="Bullets">☰<span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Numbering">≡<span class="dropdown-arrow">▾</span></button>
+      <button class="font-btn" title="Multilevel List">☷<span class="dropdown-arrow">▾</span></button>
+      <span style="width:4px;"></span>
+      <button class="font-btn" title="Decrease Indent">⇤</button>
+      <button class="font-btn" title="Increase Indent">⇥</button>
+      <span style="width:4px;"></span>
+      <button class="font-btn" title="Sort">↕<span style="font-size:9px;">AZ</span></button>
+      <button class="font-btn" title="Show/Hide ¶">¶</button>
+    </div>
+    <div class="para-row">
+      <button class="font-btn" title="Align Left" style="font-size:14px;">≡</button>
+      <button class="font-btn" title="Center" style="font-size:14px;">≡</button>
+      <button class="font-btn" title="Align Right" style="font-size:14px;">≡</button>
+      <button class="font-btn" title="Justify" style="font-size:14px;">≡</button>
+      <span style="width:4px;"></span>
+      <button class="font-btn" title="Line Spacing">↕<span class="dropdown-arrow">▾</span></button>
+      <span style="width:4px;"></span>
+      <button class="font-btn" title="Shading">🎨</button>
+      <button class="font-btn" title="Borders">⊞<span class="dropdown-arrow">▾</span></button>
+    </div>
+  </div>
+
+  <!-- Styles -->
+  <div class="ribbon-group" style="gap:4px;">
+    <button class="large-btn" title="Styles">
+      <span class="icon" style="font-size:28px;color:#2b579a;font-weight:bold;font-family:serif;">A</span>
+      <span>Styles</span>
+    </button>
+    <button class="large-btn" title="Styles Pane">
+      <span class="icon" style="font-size:22px;">📄</span>
+      <span style="font-size:9px;text-align:center;">Styles<br>Pane</span>
+    </button>
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- Dictate -->
+  <div class="ribbon-group" style="border:none;gap:4px;">
+    <button class="large-btn" title="Dictate">
+      <span class="icon">🎤</span>
+      <span>Dictate</span>
+    </button>
+  </div>
+
+  <!-- Sensitivity -->
+  <div class="ribbon-group" style="border:none;gap:4px;">
+    <button class="large-btn" title="Sensitivity">
+      <span class="icon">🔒</span>
+      <span>Sensitivity</span>
+    </button>
+  </div>
+
+  <!-- Add-ins -->
+  <div class="ribbon-group" style="border:none;gap:4px;">
+    <button class="large-btn" title="Add-ins">
+      <span class="icon" style="color:#2b579a;">⊞</span>
+      <span>Add-ins</span>
+    </button>
+  </div>
+
+  <!-- Editor -->
+  <div class="ribbon-group" style="border:none;gap:4px;">
+    <button class="large-btn" title="Editor">
+      <span class="icon" style="color:#2b579a;">✏️</span>
+      <span>Editor</span>
+    </button>
+  </div>
+
+  <!-- Amazon Quick Suite -->
+  <div class="ribbon-group" style="border:none;gap:4px;">
+    <button class="large-btn" title="Amazon Quick Suite">
+      <span class="icon" style="font-size:20px;">📦</span>
+      <span style="font-size:9px;text-align:center;line-height:1.2;">Amazon<br>Quick Suite</span>
+    </button>
+  </div>
+</div>
+
+<!-- Document Area -->
+<div class="document-area" id="docArea">
+  <div class="page" contenteditable="true" id="editor" spellcheck="true">
+  </div>
+</div>
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <div class="status-left">
+    <span id="pageInfo">Page 1 of 1</span>
+    <span id="wordCount">0 words</span>
+    <span>English (United States)</span>
+    <span class="accessibility">Accessibility: Good to go</span>
+  </div>
+  <div class="status-right">
+    <span class="view-btn" title="Focus">✏</span>
+    <span class="view-btn" title="Print Layout" style="opacity:1;background:#ddd;border-radius:2px;padding:2px 4px;">📄</span>
+    <span class="view-btn" title="Web Layout">🌐</span>
+    <span class="view-btn" title="Read Mode">📖</span>
+    <div class="zoom-controls">
+      <button class="zoom-btn" id="zoomOut">−</button>
+      <input type="range" class="zoom-slider" min="50" max="300" value="185" id="zoomSlider">
+      <button class="zoom-btn" id="zoomIn">+</button>
+      <span id="zoomLevel">185%</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.ribbon-tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.ribbon-tabs .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Word count
+  const editor = document.getElementById('editor');
+  const wordCountEl = document.getElementById('wordCount');
+
+  function updateWordCount() {
+    const text = editor.innerText.trim();
+    const words = text === '' ? 0 : text.split(/\s+/).length;
+    wordCountEl.textContent = words + ' word' + (words !== 1 ? 's' : '');
+  }
+
+  editor.addEventListener('input', updateWordCount);
+
+  // Bold, Italic, Underline
+  document.querySelectorAll('.font-btn').forEach(btn => {
+    if (btn.classList.contains('bold')) {
+      btn.addEventListener('click', () => document.execCommand('bold'));
+    }
+    if (btn.classList.contains('italic')) {
+      btn.addEventListener('click', () => document.execCommand('italic'));
+    }
+    if (btn.classList.contains('underline')) {
+      btn.addEventListener('click', () => document.execCommand('underline'));
+    }
+  });
+
+  // Font family change
+  document.querySelector('.font-select').addEventListener('change', function() {
+    document.execCommand('fontName', false, this.value);
+  });
+
+  // Font size change
+  document.querySelector('.font-size-select').addEventListener('change', function() {
+    document.execCommand('fontSize', false, '4');
+    const fonts = document.querySelectorAll('font[size="4"]');
+    fonts.forEach(f => {
+      f.removeAttribute('size');
+      f.style.fontSize = this.value + 'pt';
+    });
+  });
+
+  // Zoom
+  const zoomSlider = document.getElementById('zoomSlider');
+  const zoomLevel = document.getElementById('zoomLevel');
+  const page = document.querySelector('.page');
+
+  function updateZoom(val) {
+    zoomLevel.textContent = val + '%';
+    zoomSlider.value = val;
+    const scale = val / 100;
+    page.style.transform = `scale(${scale})`;
+    page.style.transformOrigin = 'top center';
+  }
+
+  zoomSlider.addEventListener('input', function() {
+    updateZoom(this.value);
+  });
+
+  document.getElementById('zoomIn').addEventListener('click', () => {
+    let val = Math.min(300, parseInt(zoomSlider.value) + 10);
+    updateZoom(val);
+  });
+
+  document.getElementById('zoomOut').addEventListener('click', () => {
+    let val = Math.max(50, parseInt(zoomSlider.value) - 10);
+    updateZoom(val);
+  });
+
+  // Focus editor on load
+  editor.focus();
+</script>
+
+</body>
+</html>

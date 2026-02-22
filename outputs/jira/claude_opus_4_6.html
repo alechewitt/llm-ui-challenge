@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jira Board - Teams in Space</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  }
+
+  body {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f4f5f7;
+  }
+
+  /* Left Icon Sidebar */
+  .icon-sidebar {
+    width: 40px;
+    background: #0747a6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+    gap: 8px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .icon-sidebar .logo {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+
+  .icon-sidebar .logo svg {
+    fill: white;
+    width: 28px;
+    height: 28px;
+  }
+
+  .icon-sidebar .icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    color: #b3d4ff;
+    transition: background 0.2s;
+  }
+
+  .icon-sidebar .icon-btn:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  .icon-sidebar .icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  .icon-sidebar .help-btn {
+    position: absolute;
+    bottom: 12px;
+    width: 28px;
+    height: 28px;
+    background: #0052cc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* Navigation Sidebar */
+  .nav-sidebar {
+    width: 240px;
+    background: #fafbfc;
+    border-right: 1px solid #dfe1e6;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .project-header {
+    padding: 16px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #dfe1e6;
+  }
+
+  .project-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #00b8d9, #0065ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .project-info h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+  }
+
+  .project-info span {
+    font-size: 12px;
+    color: #6b778c;
+  }
+
+  .nav-menu {
+    padding: 8px 0;
+    list-style: none;
+  }
+
+  .nav-menu li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px;
+    cursor: pointer;
+    color: #42526e;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-menu li:hover {
+    background: #ebecf0;
+    color: #0052cc;
+  }
+
+  .nav-menu li.active {
+    color: #0052cc;
+    background: #e6f0ff;
+    border-left: 3px solid #0052cc;
+  }
+
+  .nav-menu li svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .board-header {
+    padding: 20px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .board-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #172b4d;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .release-btn {
+    padding: 6px 16px;
+    background: white;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #42526e;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .release-btn:hover {
+    background: #f4f5f7;
+  }
+
+  .more-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    background: none;
+    border: none;
+    color: #42526e;
+    font-size: 20px;
+  }
+
+  .more-btn:hover {
+    background: #ebecf0;
+  }
+
+  .filter-bar {
+    padding: 12px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    background: white;
+  }
+
+  .search-box svg {
+    width: 16px;
+    height: 16px;
+    fill: #6b778c;
+  }
+
+  .search-box input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 80px;
+    color: #172b4d;
+  }
+
+  .quick-filters {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #42526e;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .quick-filters svg {
+    width: 16px;
+    height: 16px;
+    fill: #42526e;
+  }
+
+  /* Board Columns */
+  .board-container {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    padding: 0 24px 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .column {
+    min-width: 280px;
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #f0f1f4;
+    border-radius: 4px;
+    max-height: 100%;
+  }
+
+  .column-header {
+    padding: 12px 12px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5e6c84;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .column-header span {
+    font-weight: 400;
+    color: #8993a4;
+  }
+
+  .column-cards {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .column-cards::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .column-cards::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .column-cards::-webkit-scrollbar-thumb {
+    background: #c1c7d0;
+    border-radius: 3px;
+  }
+
+  /* Cards */
+  .card {
+    background: white;
+    border-radius: 4px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(9,30,66,0.15);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    user-select: none;
+  }
+
+  .card:hover {
+    background: #f4f5f7;
+    box-shadow: 0 2px 4px rgba(9,30,66,0.2);
+  }
+
+  .card.dragging {
+    opacity: 0.5;
+    transform: rotate(2deg);
+  }
+
+  .card-title {
+    font-size: 14px;
+    color: #172b4d;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+
+  .card-label {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: white;
+  }
+
+  .label-space-travel {
+    background: #ff991f;
+    color: #172b4d;
+  }
+
+  .label-local-mars {
+    background: #ff5630;
+    color: white;
+  }
+
+  .label-seespace {
+    background: #00b8d9;
+    color: white;
+  }
+
+  .label-large-team {
+    background: #00875a;
+    color: white;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .card-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .priority-icon {
+    display: flex;
+    align-items: center;
+  }
+
+  .priority-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .story-points {
+    font-size: 12px;
+    color: #42526e;
+    font-weight: 600;
+    background: #f4f5f7;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .card-id {
+    font-size: 12px;
+    color: #6b778c;
+    font-weight: 500;
+  }
+
+  /* Priority colors */
+  .priority-high svg { fill: #ff5630; }
+  .priority-critical svg { fill: #ff5630; }
+  .priority-medium svg { fill: #ff991f; }
+
+  /* Drag over styles */
+  .column.drag-over .column-cards {
+    background: rgba(0,82,204,0.05);
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Icon Sidebar -->
+<div class="icon-sidebar">
+  <div class="logo">
+    <svg viewBox="0 0 32 32">
+      <path d="M15.52 2.62L3.71 14.43a1.43 1.43 0 000 2.02l11.81 11.81a1 1 0 001.42 0L22 23.2a1 1 0 000-1.42L15.9 15.7a.29.29 0 010-.4l6.1-6.08a1 1 0 000-1.42L16.94 2.62a1 1 0 00-1.42 0z" fill="white"/>
+      <path d="M15.52 10.81a6.29 6.29 0 00-.07 8.82l5.69 5.69a1 1 0 001.42 0l5.06-5.06a1 1 0 000-1.42z" fill="rgba(255,255,255,0.6)"/>
+    </svg>
+  </div>
+  <div class="icon-btn" title="Search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+  </div>
+  <div class="icon-btn" title="Create">
+    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  </div>
+  <div class="help-btn">?</div>
+</div>
+
+<!-- Navigation Sidebar -->
+<div class="nav-sidebar">
+  <div class="project-header">
+    <div class="project-avatar">🚀</div>
+    <div class="project-info">
+      <h3>Teams in Space</h3>
+      <span>Software project</span>
+    </div>
+  </div>
+  <ul class="nav-menu">
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+      Backlog
+    </li>
+    <li class="active">
+      <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>
+      Board
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+      Reports
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7v-7zm4-3h2v10h-2V7zm4 6h2v4h-2v-4z"/></svg>
+      Releases
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z"/></svg>
+      Components
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      Issues
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+      Repository
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+      Add item
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      Settings
+    </li>
+  </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="board-header">
+    <h1>Board</h1>
+    <div class="header-actions">
+      <button class="release-btn">Release</button>
+      <button class="more-btn">•••</button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" placeholder="">
+    </div>
+    <div class="quick-filters">
+      Quick Filters
+      <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+  </div>
+
+  <div class="board-container" id="board">
+    <!-- TO DO Column -->
+    <div class="column" data-column="todo" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="column-header">TO DO <span id="todo-count">5</span></div>
+      <div class="column-cards">
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage Jupiter Express for outer solar system travel</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 13l5-10 5 10H3z" fill="none" stroke="#ff5630" stroke-width="1.5"/><path d="M3 10l5-8 5 8H3z" fill="#ff5630" opacity="0.6"/><path d="M3 13l5-8 5 8H3z" fill="#ff5630" opacity="0.3"/></svg>
+              </div>
+              <span class="story-points">5</span>
+            </div>
+            <span class="card-id">TIS-25</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Create 90 day plans for all departments in the Mars Office</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-critical">
+                <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="#ff5630" stroke-width="1.5"/><line x1="5" y1="11" x2="11" y2="5" stroke="#ff5630" stroke-width="1.5"/></svg>
+              </div>
+              <span class="story-points">9</span>
+            </div>
+            <span class="card-id">TIS-12</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage Saturn's Rings Resort as a preferred provider</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-17</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Enable Speedy SpaceCraft as the preferred</div>
+          <div class="card-label label-seespace">SeeSpaceEZ Plus</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">4</span>
+            </div>
+            <span class="card-id">TIS-20</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Set up automated testing for Mars portal</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">5</span>
+            </div>
+            <span class="card-id">TIS-30</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IN PROGRESS Column -->
+    <div class="column" data-column="inprogress" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="column-header">IN PROGRESS <span id="inprogress-count">5</span></div>
+      <div class="column-cards">
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Requesting avaliable flights is now taking > 5 seconds</div>
+          <div class="card-label label-seespace">SeeSpaceEZ Plus</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-8</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">4</span>
+            </div>
+            <span class="card-id">TIS-15</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Establish a catering vendor to provide meal service</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">4</span>
+            </div>
+            <span class="card-id">TIS-15</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-18</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Configure monitoring for shuttle schedules</div>
+          <div class="card-label label-large-team">Large Team Support</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">5</span>
+            </div>
+            <span class="card-id">TIS-22</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODE REVIEW Column -->
+    <div class="column" data-column="codereview" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="column-header">CODE REVIEW <span id="codereview-count">2</span></div>
+      <div class="column-cards">
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Register with the Mars Ministry of Revenue</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-11</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Draft network plan for Mars Office</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-15</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DONE Column -->
+    <div class="column" data-column="done" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="column-header">DONE <span id="done-count">8</span></div>
+      <div class="column-cards">
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Homepage footer uses an inline style - should use a class</div>
+          <div class="card-label label-large-team">Large Team Support</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+            </div>
+            <span class="card-id">TIS-68</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage JetShuttle SpaceWays for travel</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">5</span>
+            </div>
+            <span class="card-id">TIS-23</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Engage Saturn Shuttle Lines for group tours</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-medium">
+                <svg viewBox="0 0 16 16"><path d="M8 3v10" stroke="#ff5630" stroke-width="2" fill="none"/><path d="M5 6l3-3 3 3" stroke="#ff5630" stroke-width="2" fill="none"/></svg>
+              </div>
+            </div>
+            <span class="card-id">TIS-15</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Establish a catering vendor to provide meal service</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">4</span>
+            </div>
+            <span class="card-id">TIS-19</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Deploy Mars Office network infrastructure</div>
+          <div class="card-label label-large-team">Large Team Support</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">8</span>
+            </div>
+            <span class="card-id">TIS-42</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Review security compliance for space travel</div>
+          <div class="card-label label-space-travel">Space Travel Partners</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">3</span>
+            </div>
+            <span class="card-id">TIS-35</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Update onboarding documentation</div>
+          <div class="card-label label-local-mars">Local Mars Office</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">2</span>
+            </div>
+            <span class="card-id">TIS-50</span>
+          </div>
+        </div>
+
+        <div class="card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+          <div class="card-title">Configure automated deployment pipeline</div>
+          <div class="card-label label-seespace">SeeSpaceEZ Plus</div>
+          <div class="card-footer">
+            <div class="card-footer-left">
+              <div class="priority-icon priority-high">
+                <svg viewBox="0 0 16 16"><path d="M3 12l5-8 5 8H3z" fill="#ff5630"/><path d="M3 15l5-8 5 8H3z" fill="#ff5630" opacity="0.5"/></svg>
+              </div>
+              <span class="story-points">5</span>
+            </div>
+            <span class="card-id">TIS-55</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let draggedCard = null;
+
+  function handleDragStart(e) {
+    draggedCard = e.target;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.target.outerHTML);
+  }
+
+  function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    draggedCard = null;
+    document.querySelectorAll('.column').forEach(col => col.classList.remove('drag-over'));
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const column = e.target.closest('.column');
+    if (column) {
+      column.classList.add('drag-over');
+    }
+  }
+
+  function handleDragLeave(e) {
+    const column = e.target.closest('.column');
+    if (column && !column.contains(e.relatedTarget)) {
+      column.classList.remove('drag-over');
+    }
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    const column = e.target.closest('.column');
+    if (column && draggedCard) {
+      column.classList.remove('drag-over');
+      const cardsContainer = column.querySelector('.column-cards');
+      
+      // Find the card we're dropping onto
+      const afterElement = getDragAfterElement(cardsContainer, e.clientY);
+      
+      if (afterElement == null) {
+        cardsContainer.appendChild(draggedCard);
+      } else {
+        cardsContainer.insertBefore(draggedCard, afterElement);
+      }
+      
+      updateCounts();
+    }
+  }
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+    
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function updateCounts() {
+    const columns = document.querySelectorAll('.column');
+    columns.forEach(column => {
+      const columnName = column.dataset.column;
+      const count = column.querySelectorAll('.card').length;
+      const countEl = document.getElementById(columnName + '-count');
+      if (countEl) {
+        countEl.textContent = count;
+      }
+    });
+  }
+
+  // Nav menu click handling
+  document.querySelectorAll('.nav-menu li').forEach(item => {
+    item.addEventListener('click', function() {
+      document.querySelectorAll('.nav-menu li').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
